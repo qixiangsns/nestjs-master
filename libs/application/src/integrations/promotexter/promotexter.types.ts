@@ -105,6 +105,18 @@ export type SendSmsResponse = {
 };
 
 /**
+ * Get account balance
+ * https://promotexter-api.redocly.app/api/account-balance/getaccountbalance
+ */
+
+export type AccountBalance = {
+  availableBalance: number;
+  accountBalance: number;
+  creditLimit: number;
+  withheld: number;
+};
+
+/**
  * Promotexter error response
  */
 export interface PromotexterErrorResponse {

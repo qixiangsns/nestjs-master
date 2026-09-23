@@ -10,6 +10,7 @@ import {
   GenerateTokenResponse,
   SendSmsRequest,
   SendSmsResponse,
+  AccountBalance,
 } from './promotexter.types';
 
 export class PromotexterBase {
@@ -61,17 +62,31 @@ export class PromotexterBase {
   private async request<T = unknown>(endpoint: string, method: Method, body?: Record<string, unknown>): Promise<T> {
     const requestHeaders: RawAxiosRequestHeaders = {};
     const requestBody = { ...body };
+    const requestQuery = {};
 
     if (this.options.auth.type === 'bearer_token') {
       requestHeaders['Authorization'] = `Bearer ${this.options.auth.token}`;
-    } else {
-      const { apiKey, apiSecret } = this.options.auth;
-      requestBody['apiKey'] = apiKey;
-      requestBody['apiSecret'] = apiSecret;
     }
 
+    if (this.options.auth.type === 'api_key') {
+      const { apiKey, apiSecret } = this.options.auth;
+
+      if (method === 'POST') {
+        requestBody['apiKey'] = apiKey;
+        requestBody['apiSecret'] = apiSecret;
+      }
+
+      if (method === 'GET') {
+        requestQuery['apiKey'] = apiKey;
+        requestQuery['apiSecret'] = apiSecret;
+      }
+    }
+
+    const queryString = new URLSearchParams(requestQuery).toString();
     try {
       const response = await this.client.request<T>({
+        url: endpoint,
+        params: requestQuery,
         method,
         data: requestBody,
         headers: {
@@ -95,13 +110,15 @@ export class PromotexterBase {
     }
   }
 
+  async getAccountBalance() {
+    return this.request<AccountBalance>('/account/balance', 'GET');
+  }
+
   protected async sendViberOtpMsg(endpoint: string, payload: SendViberOtpRequest) {
-    const result = await this.request<SendViberResponse>(endpoint, 'POST', payload);
-    return result;
+    return this.request<SendViberResponse>(endpoint, 'POST', payload);
   }
 
   protected async sendSmsMsg(endpoint: string, payload: SendSmsRequest) {
-    const result = await this.request<SendSmsResponse>(endpoint, 'POST', payload);
-    return result;
+    return this.request<SendSmsResponse>(endpoint, 'POST', payload);
   }
 }
