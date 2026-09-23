@@ -22,13 +22,27 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@application": ["libs/application/src"],
-      "@application/*": ["libs/application/src/*"],
-      "@framework": ["libs/framework/src"],
-      "@framework/*": ["libs/framework/src/*"],
-      "@package": ["./package.json"],
-      "@integrations": ["libs/application/src/integrations"],
-      "@integrations/*": ["libs/application/src/integrations/*"]
+      "@application": [
+        "libs/application/src"
+      ],
+      "@application/*": [
+        "libs/application/src/*"
+      ],
+      "@framework": [
+        "libs/framework/src"
+      ],
+      "@framework/*": [
+        "libs/framework/src/*"
+      ],
+      "@integrations": [
+        "libs/application/src/integrations"
+      ],
+      "@integrations/*": [
+        "libs/application/src/integrations/*"
+      ],
+      "@package": [
+        "./package.json"
+      ]
     }
   }
 }

@@ -1,22 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/api/src",
+  "sourceRoot": "apps/messaging-api/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/api/tsconfig.app.json"
+    "tsConfigPath": "apps/messaging-api/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/api",
+  "root": "apps/messaging-api",
   "projects": {
     "api": {
       "type": "application",
-      "root": "apps/api",
+      "root": "apps/messaging-api",
       "entryFile": "main",
-      "sourceRoot": "apps/api/src",
+      "sourceRoot": "apps/messaging-api/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/api/tsconfig.app.json"
+        "tsConfigPath": "apps/messaging-api/tsconfig.app.json"
       }
     },
     "application": {
@@ -44,6 +44,60 @@
       "sourceRoot": "libs/framework/src",
       "compilerOptions": {
         "tsConfigPath": "libs/framework/tsconfig.lib.json"
+      }
+    },
+    "messaging-admin": {
+      "type": "application",
+      "root": "apps/messaging-admin",
+      "entryFile": "main",
+      "sourceRoot": "apps/messaging-admin/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/messaging-admin/tsconfig.app.json"
+      }
+    },
+    "messaging-dlr-webhooks": {
+      "type": "application",
+      "root": "apps/messaging-dlr-webhooks",
+      "entryFile": "main",
+      "sourceRoot": "apps/messaging-dlr-webhooks/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/messaging-dlr-webhooks/tsconfig.app.json"
+      }
+    },
+    "sms-consumer-pldt": {
+      "type": "application",
+      "root": "apps/sms-consumer-pldt",
+      "entryFile": "main",
+      "sourceRoot": "apps/sms-consumer-pldt/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/sms-consumer-pldt/tsconfig.app.json"
+      }
+    },
+    "sms-consumer-pldt-smpp": {
+      "type": "application",
+      "root": "apps/sms-consumer-pldt-smpp",
+      "entryFile": "main",
+      "sourceRoot": "apps/sms-consumer-pldt-smpp/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/sms-consumer-pldt-smpp/tsconfig.app.json"
+      }
+    },
+    "sms-consumer-promotexter": {
+      "type": "application",
+      "root": "apps/sms-consumer-promotexter",
+      "entryFile": "main",
+      "sourceRoot": "apps/sms-consumer-promotexter/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/sms-consumer-promotexter/tsconfig.app.json"
+      }
+    },
+    "sms-router": {
+      "type": "application",
+      "root": "apps/sms-router",
+      "entryFile": "main",
+      "sourceRoot": "apps/sms-router/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/sms-router/tsconfig.app.json"
       }
     },
     "worker": {

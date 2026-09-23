@@ -1,25 +1,14 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { SecretsModule } from '@framework/secret';
-import {
-  SecretSchema,
-  SECRET_TOKEN,
-  EnvSchema,
-  Env,
-  ENV_TOKEN,
-} from './config';
-import {
-  RedisConnection,
-  MongoDbConnection,
-  PulsarConnection,
-} from './connnections';
+import { SecretSchema, SECRET_TOKEN, EnvSchema, Env, ENV_TOKEN } from './config';
+import { RedisConnection, MongoDbConnection, PulsarConnection } from './connnections';
 import { LoggerModule } from 'nestjs-pino';
 import { getPinoOptions } from '@framework/logger/pino-logger.config';
-import { CpmsPcrReaderModule } from '@integrations/cpms-pcr-reader';
-
+import { ViberModule } from './modules/viber/viber.module';
 const MongoConnModules: DynamicModule[] = [MongoDbConnection()];
 const RedisConnModules: DynamicModule[] = [RedisConnection()];
 const PulsarConnModules: DynamicModule[] = [PulsarConnection()];
-const FeatureModules = [CpmsPcrReaderModule];
+const FeatureModules = [ViberModule];
 
 const SecretsModules: DynamicModule[] = [
   SecretsModule.forRoot([
