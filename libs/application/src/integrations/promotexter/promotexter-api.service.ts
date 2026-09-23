@@ -7,7 +7,7 @@ export class PromotexterApi extends PromotexterBase {
   }
 
   async sendViberOtp(payload: SendViberOtpRequest) {
-    return super.sendViberOtpMsg('/viber/send‌', payload);
+    return super.sendViberOtpMsg('/viber/send', payload);
   }
 
   async sendSms(payload: SendSmsRequest) {
