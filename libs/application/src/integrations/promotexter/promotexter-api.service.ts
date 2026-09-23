@@ -1,27 +1,26 @@
 import { PromotexterBase } from './promotexter-base.service';
 import { type ClientOptions, SendViberOtpRequest, SendSmsRequest } from './promotexter.types';
 
-export class PromotexterApix extends PromotexterBase {
+export class PromotexterApi extends PromotexterBase {
   constructor(options: ClientOptions) {
     super(options);
   }
 
   async sendViberOtp(payload: SendViberOtpRequest) {
-    return super.sendViberOtpMsg('/viber-otp/v1', payload);
+    return super.sendViberOtpMsg('/viber/send‌', payload);
   }
 
   async sendSms(payload: SendSmsRequest) {
-    return super.sendSmsMsg('/sms/v1', payload);
+    return super.sendSmsMsg('/sms/send', payload);
   }
 }
 
 /** Example
-const sender = new PromotexterApix({
+const sender = new PromotexterApi({
   auth: {
-    type: 'bearer_token',
-    accountId: 'e1e2',
-    privateKey: 'dsds',
-    token: 'generated token',
+    type: 'api_key',
+    apiKey: 'xxxx',
+    apiSecret: 'xxxxx',
   },
   baseUrl: 'https://apix.promotexter.com',
 });
