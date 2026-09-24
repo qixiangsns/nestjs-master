@@ -30,6 +30,9 @@ export class ViberAccount {
   @Prop({ type: CredentialSchema, required: true })
   credential: Credential;
 
+  @Prop({ type: [String], required: true, default: [] })
+  senderIds: string[];
+
   @Prop({ type: Date })
   createdAt: Date;
 

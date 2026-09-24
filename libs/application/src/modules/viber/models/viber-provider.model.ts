@@ -1,5 +1,6 @@
 export const ViberProviderCode = {
   PROMOTEXTER: 'PROMOTEXTER',
+  PROMOTEXTER_APIX: 'PROMOTEXTER_APIX',
   INFOBIP: 'INFOBIP',
 } as const;
 

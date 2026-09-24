@@ -1,4 +1,5 @@
+import { ViberOtp, ViberMessage } from '../models/viber-message.model';
+
 export interface ViberSender {
-  sendViberMessage: () => Promise<void>;
-  getViberTemplate: (templateId: string) => Promise<void>;
+  sendViberOtp: (message: ViberOtp) => Promise<ViberMessage>;
 }

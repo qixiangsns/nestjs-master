@@ -55,8 +55,8 @@ export type SendViberOtpRequest = {
   ttl: number;
   dlrCallbackConfig: {
     url: string;
-    headers: RawAxiosHeaders;
-    body: Record<string, unknown>;
+    headers?: RawAxiosHeaders;
+    body?: Record<string, unknown>;
   };
   referenceId: string;
 };
