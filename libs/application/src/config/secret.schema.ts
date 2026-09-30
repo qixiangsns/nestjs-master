@@ -9,6 +9,8 @@ export const SecretSchema = z.object({
   PULSAR_URL: z.string(),
   PULSAR_TOKEN: z.string(),
   CLICKHOUSE_URL: z.url(), // https[s]://[username]:[password]@[host]:[port]
+  EXTERNAL_SMS_MISSION_URL: z.url(),
+  PLAYER_GRPC_URL: z.url(),
 });
 
 export type Secret = z.infer<typeof SecretSchema>;
