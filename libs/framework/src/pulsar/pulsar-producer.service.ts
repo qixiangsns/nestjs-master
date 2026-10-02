@@ -3,14 +3,24 @@ import { Client, Producer, type ProducerConfig } from 'pulsar-client';
 
 type Config = Omit<ProducerConfig, 'topic'>;
 
+type Options = {
+  /**
+   * Initialize producer connection at service startup
+   */
+  initTopics?: string[];
+  /**
+   *
+   */
+  producerConfig?: Config;
+};
+
 export abstract class PulsarProducerService implements OnModuleDestroy, OnModuleInit {
   protected abstract logger: Logger;
   private readonly producers = new Map<string, Producer>();
 
   constructor(
-    private readonly client: Client,
-    private readonly initTopics: string[],
-    private readonly config?: Config,
+    protected readonly client: Client,
+    private readonly options: Options,
   ) {}
 
   public isConnected() {
@@ -20,7 +30,9 @@ export abstract class PulsarProducerService implements OnModuleDestroy, OnModule
   }
 
   private async initializeProducers() {
-    for (const topic of this.initTopics) {
+    if (!this.options.initTopics) return;
+
+    for (const topic of this.options.initTopics) {
       await this.createProducer(topic);
     }
   }
@@ -35,8 +47,8 @@ export abstract class PulsarProducerService implements OnModuleDestroy, OnModule
     }
   }
 
-  protected async produce(topic: string, message: any) {
-    const producer = await this.createProducer(topic);
+  protected async produce(topic: string, message: unknown) {
+    const producer = this.producers.get(topic) || (await this.createProducer(topic));
 
     this.logger.log({ message, topic }, 'Producing message');
     await producer.send({
@@ -49,7 +61,7 @@ export abstract class PulsarProducerService implements OnModuleDestroy, OnModule
     if (!producer) {
       producer = await this.client.createProducer({
         topic,
-        ...this.config,
+        ...this.options.producerConfig,
       });
 
       this.logger.log(`${this.constructor.name} - Producer for topic [${topic}] created`);

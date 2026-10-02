@@ -6,7 +6,10 @@ import {
   RouteAccount as RouteAccountModel,
   RouteAccountVirtualField,
 } from '../schemas/viber-route-config.schema';
-import { ViberAccount as ViberAccountModel } from '../schemas/viber-account.schema';
+import {
+  ViberAccountBase as ViberAccountBaseModel,
+  ViberAccount as ViberAccountModel,
+} from '../schemas/viber-account.schema';
 import { MONGO_CONN_NAME } from '@application/connnections';
 import { RouteType, ViberRouteConfig, ViberRouteConfigWithAccount } from '../models/viber-route-config.model';
 import { Except } from 'type-fest';

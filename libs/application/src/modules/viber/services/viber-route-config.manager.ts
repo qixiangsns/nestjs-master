@@ -50,6 +50,9 @@ export class ViberRouteConfigManager implements OnModuleDestroy {
     }
   }
 
+  /**
+   * @description Retrieved synced config blazingly fast from local memory
+   */
   async getRouteConfig(routeType: RouteType, platformId: string) {
     const routeConfigMemory = this.configMap.get(platformId)?.get(routeType);
     if (routeConfigMemory) return routeConfigMemory;

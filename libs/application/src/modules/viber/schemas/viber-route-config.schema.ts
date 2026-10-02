@@ -22,6 +22,7 @@ export const RouteAccountSchema = SchemaFactory.createForClass(RouteAccount);
 export enum RouteAccountVirtualField {
   AccountDetails = 'accountDetails',
 }
+
 RouteAccountSchema.virtual(RouteAccountVirtualField.AccountDetails, {
   ref: ViberAccountBase.name,
   localField: 'id',

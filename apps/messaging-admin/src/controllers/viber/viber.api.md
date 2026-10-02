@@ -18,8 +18,7 @@ POST /viber/send
 
 # Routing management
 
-GET /viber/route-config
-GET /viber/:id/route-config
+GET /viber/route-config?platformId=<platformId>&routeType=<routeType>
 POST /viber/route-config
 PATCH /viber/:id/route-config
 

@@ -8,10 +8,9 @@ export type DeliveryStatus = (typeof DeliveryStatus)[number];
 
 export const MessageType = ['Otp', 'Mkt', 'Notif'] as const;
 export type MessageType = (typeof MessageType)[number];
-
 export interface ViberLog {
   id: string;
-  providerCode: ViberProviderCode;
+  providerCode?: ViberProviderCode;
   type: MessageType;
   refId?: string;
   content?: string;
@@ -22,8 +21,8 @@ export interface ViberLog {
   deliveryStatus: DeliveryStatus;
   campaignId?: string;
   campaignSender?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type ViberLogFilterDto = Pick<ViberLog, 'type' | 'requestStatus' | 'deliveryStatus' | 'campaignId'>;

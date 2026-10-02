@@ -36,11 +36,23 @@ export class ViberLogRepository {
     return logs.map((log) => ({ ...log, id: log._id.toString() }));
   }
 
-  async updateDeliveryStatus(id: string, status: DeliveryStatus) {
-    await this.logModel.updateOne({ _id: new Types.ObjectId(id) }, { deliveryStatus: status });
+  async updateByReferenceId(referenceId: string, log: Partial<ViberLog>) {
+    await this.logModel.updateOne({ refId: referenceId }, log);
   }
 
-  async addMany(logs: ViberLog) {
-    await this.logModel.insertMany(logs);
+  async batchInsert(logs: ViberLog[]) {
+    const newLogs = logs.map((log) => {
+      const { id, ...data } = log; //exclude
+      return {
+        _id: new Types.ObjectId(id),
+        ...data,
+      };
+    });
+
+    await this.logModel.insertMany(newLogs);
+  }
+
+  generateId() {
+    return new Types.ObjectId().toString();
   }
 }

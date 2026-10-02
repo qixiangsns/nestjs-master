@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { DeliveryStatus, RequestStatus, MessageType } from '../models/viber-log.model';
 
@@ -7,8 +7,11 @@ export type ViberLogDocument = HydratedDocument<ViberLog>;
 
 @Schema({ collection: 'viber_logs', timestamps: true })
 export class ViberLog {
-  @Prop({ type: String, enum: ViberProviderCode, required: true })
-  providerCode: ViberProviderCode;
+  @Prop({ type: mongoose.Types.ObjectId })
+  _id: mongoose.Types.ObjectId;
+
+  @Prop({ type: String, enum: ViberProviderCode })
+  providerCode?: ViberProviderCode;
 
   @Prop({ type: String, enum: MessageType, required: true })
   type: MessageType;

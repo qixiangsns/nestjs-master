@@ -1,16 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, VersioningType } from '@nestjs/common';
-import { ApiModule } from './messaging-api.module';
+import { Logger, VersioningType, INestApplication } from '@nestjs/common';
 import { Logger as PinoLogger } from 'nestjs-pino';
+import { cleanupOpenApiDoc } from 'nestjs-zod';
+import { ApiModule } from './messaging-api.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { API_ENV_TOKEN, ApiEnv } from './config';
-import { INestApplication } from '@nestjs/common';
-import { SwaggerModule } from '@nestjs/swagger';
-import { DocumentBuilder } from '@nestjs/swagger';
 import { DEFAULT_OPTIONS } from '@framework/scalar';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { version } from '@package';
 import { otelSdk } from '@framework/trace';
-import { cleanupOpenApiDoc } from 'nestjs-zod';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiModule, {
@@ -32,6 +30,7 @@ async function bootstrap() {
 
   app.listen(env.PORT).then(() => {
     logger.log({ url: `http://localhost:${env.PORT}` }, `Server is running`);
+    logger.log({ url: `http://localhost:${env.PORT}/api` }, 'API documentation is hosted');
   });
 }
 

@@ -4,7 +4,8 @@ import { SecretSchema, SECRET_TOKEN, EnvSchema, Env, ENV_TOKEN } from './config'
 import { RedisConnection, MongoDbConnection, PulsarConnection } from './connnections';
 import { LoggerModule } from 'nestjs-pino';
 import { getPinoOptions } from '@framework/logger/pino-logger.config';
-import { ViberModule } from './modules/viber/viber.module';
+import { ViberModule } from './modules/viber';
+
 const MongoConnModules: DynamicModule[] = [MongoDbConnection()];
 const RedisConnModules: DynamicModule[] = [RedisConnection()];
 const PulsarConnModules: DynamicModule[] = [PulsarConnection()];

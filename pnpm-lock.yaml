@@ -110,9 +110,6 @@ importers:
       '@scalar/nestjs-api-reference':
         specifier: ^1.2.13
         version: 1.2.13
-      '@semyonf/smpp':
-        specifier: 1.6.0
-        version: 1.6.0
       axios:
         specifier: ^1.20.0
         version: 1.20.0(debug@4.4.3)
@@ -179,6 +176,9 @@ importers:
       save-dev:
         specifier: 0.0.1-security
         version: 0.0.1-security
+      smpp:
+        specifier: 0.6.0-rc.4
+        version: 0.6.0-rc.4
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -1932,10 +1932,6 @@ packages:
   '@scarf/scarf@1.4.0':
     resolution: {integrity: sha512-xxeapPiUXdZAE3che6f3xogoJPeZgig6omHEy1rIY5WVsB3H2BHNnZH+gHG6x91SCWyQCzWGsuL2Hh3ClO5/qQ==}
 
-  '@semyonf/smpp@1.6.0':
-    resolution: {integrity: sha512-2ZahDEDaHOeTpjsYc61WuOVRnxF0NYXAXXqTTHSSy8EXQf8WxZsV3cLMNXA23JjAqW6HXmgxJ7DjWk+U/Gm1yw==}
-    engines: {node: '>=22'}
-
   '@sinclair/typebox@0.34.52':
     resolution: {integrity: sha512-XiMQh7qqVlxZzcVD+kkGMNGMzcTrDMLWI7S4x7z1MkCkbDPrekpZXEUK0eZqZFMuHQg2a2DZOcDIh9o5v3Gonw==}
 
@@ -3383,10 +3379,6 @@ packages:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
 
-  iconv-lite@0.6.3:
-    resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
-    engines: {node: '>=0.10.0'}
-
   iconv-lite@0.7.3:
     resolution: {integrity: sha512-IKXpvIzjnC9XTAUbVBcMfGS0EPaIXtW6v+zr+RRp+hqULEpo0owZax6wyRwPOJbWbzjYspQwusTsfVr0ifh4uQ==}
     engines: {node: '>=0.10.0'}
@@ -4604,6 +4596,10 @@ packages:
   smart-buffer@4.2.0:
     resolution: {integrity: sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==}
     engines: {node: '>= 6.0.0', npm: '>= 3.0.0'}
+
+  smpp@0.6.0-rc.4:
+    resolution: {integrity: sha512-WDa0XBRQkkJJPcKRtoC9C0cnzhopFIK9/zFcWBOy3sD4xZr3i/Dt3yX+XRparKzpp9QkqRr2/8EYt8JNGxu85w==}
+    engines: {node: '>=4'}
 
   socks-proxy-agent@6.2.1:
     resolution: {integrity: sha512-a6KW9G+6B3nWZ1yB8G7pJwL3ggLy1uTzKAgCb7ttblwqdz9fMGJUuTy3uFzEP48FAs9FLILlmzDlE2JJhVQaXQ==}
@@ -7276,11 +7272,6 @@ snapshots:
 
   '@scarf/scarf@1.4.0': {}
 
-  '@semyonf/smpp@1.6.0':
-    dependencies:
-      findhit-proxywrap: 0.3.13
-      iconv-lite: 0.6.3
-
   '@sinclair/typebox@0.34.52': {}
 
   '@sinonjs/commons@3.0.1':
@@ -8819,10 +8810,6 @@ snapshots:
 
   human-signals@2.1.0: {}
 
-  iconv-lite@0.6.3:
-    dependencies:
-      safer-buffer: 2.1.2
-
   iconv-lite@0.7.3:
     dependencies:
       safer-buffer: 2.1.2
@@ -10169,6 +10156,12 @@ snapshots:
   sm3@1.0.3: {}
 
   smart-buffer@4.2.0: {}
+
+  smpp@0.6.0-rc.4:
+    dependencies:
+      findhit-proxywrap: 0.3.13
+      iconv-lite: 0.7.3
+      safer-buffer: 2.1.2
 
   socks-proxy-agent@6.2.1:
     dependencies:

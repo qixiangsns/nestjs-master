@@ -36,6 +36,7 @@ export class ViberAccountRepository {
     acc.type = 'ApiKeySecret';
     await acc.save();
   }
+
   async addApiTokenAcc(account: Except<ViberAccountApiToken, 'id' | 'createdAt' | 'updatedAt'>) {
     const acc = new this.accountApiTokenModel(account);
     acc.type = 'ApiToken';

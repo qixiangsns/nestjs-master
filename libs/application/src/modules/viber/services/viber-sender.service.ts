@@ -5,13 +5,17 @@ import { ViberAccount } from '../models/viber-account.model';
 import { ViberRouteConfigManager } from './viber-route-config.manager';
 import { ViberRouterService } from './viber-router.service';
 import { PlayerService } from '@application/modules/player';
-import { Except } from 'type-fest';
+import { SendViberMkt, SendViberResponse, SendViberOtp, SendViberNotif } from '../dtos';
+import { ViberLogService } from './viber-log.service';
+import { ViberEventPublisher } from './viber-event-publisher.service';
 @Injectable()
 export class ViberSenderService {
   constructor(
     private readonly configManager: ViberRouteConfigManager,
     private readonly routerService: ViberRouterService,
     private readonly playerService: PlayerService,
+    private readonly logService: ViberLogService,
+    private readonly eventService: ViberEventPublisher,
   ) {}
 
   async sendViberOtp(message: ViberOtp, account: ViberAccount) {
@@ -19,50 +23,138 @@ export class ViberSenderService {
     return sender.sendOtp(message);
   }
 
-  private async dispatchViberMessage(message: string, account: Except<ViberAccount, 'id' | 'createdAt' | 'updatedAt'>) {
-    // publish topic
-  }
-  async acceptOtpRequest(message: ViberOtp, platformId: string) {
-    try {
-      // validate dto
+  async acceptOtpRequest(message: SendViberOtp): Promise<SendViberResponse> {
+    // generate a message id
+    const messageId = this.logService.generateId();
 
+    try {
       // Get player phone number
-      const phoneNumber = await this.playerService.getPhoneNumber('1900000');
-      if (!phoneNumber) throw new Error(`Failed to obtain player's phone number`);
+      const phoneNo = await this.playerService.getPhoneNumber(message.playerId);
+      if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
 
       // retrieve available config
-      const routeConfig = await this.configManager.getRouteConfig('Otp', platformId);
+      const routeConfig = await this.configManager.getRouteConfig('Otp', message.platformId);
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider
       const routeTo = this.routerService.routeTo(routeConfig);
       if (!routeTo) throw new Error('System cannot determine destination route');
 
-      // publish to topic
-      await this.dispatchViberMessage('', routeTo);
+      // dispatch message task to provider
+      await this.eventService.publishOtpRequested(routeTo, {
+        id: messageId,
+        platformId: message.platformId,
+        playerId: message.playerId,
+        phoneNo,
+        type: 'Otp',
+        otp: message.otp,
+        otpValidityMinutes: message.otpValidityMinutes,
+        deliverBy: routeTo,
+        templateId: message.templateId,
+      });
+      return { messageId };
     } catch (err) {
-      await this.publishProcessedMessage();
-      throw new Error('Message has failed');
+      await this.eventService.publishLogCreated({
+        id: messageId,
+        platformId: message.platformId,
+        playerId: message.playerId,
+        deliveryStatus: 'Failed',
+        requestStatus: 'Failed',
+        type: 'Otp',
+        content: message.otp,
+      });
+      throw new Error('Message has failed', { cause: err });
     }
   }
 
-  async acceptMktRequest() {
-    // validate dto
-    // retrieve config
-    const routes = this.configManager.getRouteConfig('Mkt', '50');
+  async acceptNotifRequest(message: SendViberNotif): Promise<SendViberResponse> {
+    // generate a message id
+    const messageId = this.logService.generateId();
 
-    // selected config (routing)
-    // publish to topic
+    try {
+      // Get player phone number
+      const phoneNo = await this.playerService.getPhoneNumber(message.playerId);
+      if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
+
+      // retrieve available config
+      const routeConfig = await this.configManager.getRouteConfig('Notif', message.platformId);
+      if (!routeConfig) throw new Error('No route config is available');
+
+      // determine destination route provider
+      const routeTo = this.routerService.routeTo(routeConfig);
+      if (!routeTo) throw new Error('System cannot determine destination route');
+
+      // dispatch message task to provider
+      await this.eventService.publishOtpRequested(routeTo, {
+        id: messageId,
+        phoneNo,
+        platformId: message.platformId,
+        type: 'Template',
+        templateId: message.templateId,
+        templateLang: 'en',
+        templateParams: message.templateParams,
+        playerId: message.playerId,
+        deliverBy: routeTo,
+      });
+      return { messageId };
+    } catch (err) {
+      await this.eventService.publishLogCreated({
+        id: messageId,
+        platformId: message.platformId,
+        playerId: message.playerId,
+        deliveryStatus: 'Failed',
+        requestStatus: 'Failed',
+        type: 'Otp',
+      });
+      throw new Error('Message has failed', { cause: err });
+    }
   }
 
-  async acceptNotifRequest() {
-    // validate dto
-    // retrieve config
-    const routes = this.configManager.getRouteConfig('Notif', '50');
+  async acceptMktRequest(message: SendViberMkt): Promise<SendViberResponse> {
+    // generate a message id
+    const messageId = this.logService.generateId();
 
-    // selected config (routing)
-    // publish to topic
+    try {
+      // Get player phone number
+      const phoneNo = await this.playerService.getPhoneNumber(message.playerId);
+      if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
+
+      // retrieve available config
+      const routeConfig = await this.configManager.getRouteConfig('Mkt', message.platformId);
+      if (!routeConfig) throw new Error('No route config is available');
+
+      // determine destination route provider
+      const routeTo = this.routerService.routeTo(routeConfig);
+      if (!routeTo) throw new Error('System cannot determine destination route');
+
+      // dispatch message task to provider
+      await this.eventService.publishMktRequested(routeTo, {
+        id: messageId,
+        phoneNo,
+        platformId: message.platformId,
+        type: 'Content',
+        deliverBy: routeTo,
+        playerId: message.playerId,
+        campaignId: message.campaignId,
+        campaignSender: message.campaignSender,
+        templateContent: {
+          contentType: 'ImageButton',
+          buttonText: 'Click here',
+          imageUrl: 'https://',
+          buttonUrl: 'https://',
+        },
+      });
+      return { messageId };
+    } catch (err) {
+      await this.eventService.publishLogCreated({
+        id: messageId,
+        platformId: message.platformId,
+        playerId: message.playerId,
+        deliveryStatus: 'Failed',
+        requestStatus: 'Failed',
+        type: 'Mkt',
+      });
+      throw new Error('Message has failed', { cause: err });
+    }
   }
-
-  private async publishProcessedMessage() {}
 }
