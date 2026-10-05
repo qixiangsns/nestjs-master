@@ -137,12 +137,7 @@ export class ViberSenderService {
         playerId: message.playerId,
         campaignId: message.campaignId,
         campaignSender: message.campaignSender,
-        templateContent: {
-          contentType: 'ImageButton',
-          buttonText: 'Click here',
-          imageUrl: 'https://',
-          buttonUrl: 'https://',
-        },
+        templateContent: message.content,
       });
       return { messageId };
     } catch (err) {

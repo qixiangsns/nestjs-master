@@ -28,17 +28,90 @@ export const SendViberNotifSchema = z.object({
 export type SendViberNotif = z.output<typeof SendViberNotifSchema>;
 export class SendViberNotifDto extends createZodDto(SendViberNotifSchema) {}
 
-export const SendViberMktSchema = z.object({
+export const SendViberMktBaseSchema = z.object({
   platformId: z.string().trim(),
   playerId: z.string().trim(),
   campaignId: z.string().trim().optional(),
   campaignSender: z.string().trim().optional(),
-  contentType: z.enum(ViberContentType),
-  text: z.string().optional(),
-  imageUrl: z.url().optional(),
-  buttonText: z.string().optional(),
-  buttonUrl: z.url().optional(),
-  videoUrl: z.url().optional(),
+});
+
+export const SendViberMktSchema = SendViberMktBaseSchema.extend({
+  content: z.xor([
+    z
+      .object({
+        contentType: z.literal('TextOnly' satisfies ViberContentType),
+        text: z.string(),
+      })
+      .meta({ title: 'TextOnly' }),
+    z
+      .object({
+        contentType: z.literal('TextButton' satisfies ViberContentType),
+        text: z.string(),
+        buttonText: z.string(),
+        buttonUrl: z.url().optional(),
+      })
+      .meta({ title: 'TextButton' }),
+    z
+      .object({
+        contentType: z.literal('ImageOnly' satisfies ViberContentType),
+        imageUrl: z.url(),
+      })
+      .meta({ title: 'ImageOnly' }),
+    z
+      .object({
+        contentType: z.literal('ImageText' satisfies ViberContentType),
+        imageUrl: z.url(),
+        text: z.string(),
+      })
+      .meta({ title: 'ImageText' }),
+    z
+      .object({
+        contentType: z.literal('ImageButton' satisfies ViberContentType),
+        imageUrl: z.url(),
+        buttonText: z.string(),
+        buttonUrl: z.url().optional(),
+      })
+      .meta({ title: 'ImageButton' }),
+    z
+      .object({
+        contentType: z.literal('ImageButtonText' satisfies ViberContentType),
+        imageUrl: z.url(),
+        buttonText: z.string(),
+        buttonUrl: z.url().optional(),
+        text: z.string(),
+      })
+      .meta({ title: 'ImageButtonText' }),
+    z
+      .object({
+        contentType: z.literal('VideoOnly' satisfies ViberContentType),
+        videoUrl: z.url(),
+      })
+      .meta({ title: 'VideoOnly' }),
+    z
+      .object({
+        contentType: z.literal('VideoText' satisfies ViberContentType),
+        videoUrl: z.url(),
+        text: z.string(),
+      })
+      .meta({ title: 'VideoText' }),
+    z
+      .object({
+        contentType: z.literal('VideoButton' satisfies ViberContentType),
+        videoUrl: z.url(),
+        buttonText: z.string(),
+        buttonUrl: z.url().optional(),
+      })
+      .meta({ title: 'VideoButton' }),
+    z
+      .object({
+        contentType: z.literal('VideoButtonText' satisfies ViberContentType),
+        videoUrl: z.url(),
+        buttonText: z.string(),
+        buttonUrl: z.url().optional(),
+        text: z.string(),
+      })
+      .meta({ title: 'VideoButtonText' }),
+  ]),
 });
 
 export type SendViberMkt = z.output<typeof SendViberMktSchema>;
