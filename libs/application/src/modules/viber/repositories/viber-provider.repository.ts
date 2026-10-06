@@ -31,6 +31,10 @@ export class ViberProviderRepository {
     return docBeforeUpdate || null;
   }
 
+  async upsertProvider(provider: ViberProvider): Promise<void> {
+    await this.model.updateOne({ code: provider.code }, { $set: provider }, { upsert: true });
+  }
+
   async findProvider(code: ViberProviderCode): Promise<ViberProvider | null> {
     const provider = await this.model.findOne({
       code,
