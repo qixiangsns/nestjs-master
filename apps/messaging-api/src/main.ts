@@ -1,3 +1,4 @@
+import '@framework/trace';
 import { NestFactory } from '@nestjs/core';
 import { Logger, VersioningType, INestApplication } from '@nestjs/common';
 import { Logger as PinoLogger } from 'nestjs-pino';
@@ -8,7 +9,6 @@ import { API_ENV_TOKEN, ApiEnv } from './config';
 import { DEFAULT_OPTIONS } from '@framework/scalar';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { version } from '@package';
-import { otelSdk } from '@framework/trace';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiModule, {
@@ -20,9 +20,6 @@ async function bootstrap() {
   app.useLogger(app.get(PinoLogger));
   const logger = new Logger('Server');
   app.flushLogs();
-
-  // Open Telemetry
-  otelSdk.start();
 
   // API documentation
   app.enableVersioning({ type: VersioningType.URI });

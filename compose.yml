@@ -36,6 +36,13 @@ services:
     volumes:
       - clickhouse_data:/var/lib/clickhouse
 
+  jaeger:
+    image: jaegertracing/jaeger:2.22.0
+    ports:
+      - 16686:16686 # UI → http://localhost:16686
+      - 4317:4317 # OTLP gRPC (OTEL_ADDRESS)
+      - 4318:4318 # OTLP HTTP
+
 volumes:
   mongo_data:
   pulsar_data:
