@@ -13,12 +13,7 @@ export class ViberProviderRepository {
   ) {}
 
   async findProviders(): Promise<ViberProvider[]> {
-    const providers = await this.model.find().lean();
-
-    return providers.map((acc) => ({
-      ...acc,
-      id: acc._id.toString(),
-    }));
+    return this.model.find().lean();
   }
 
   async addProvider(provider: ViberProvider): Promise<void> {

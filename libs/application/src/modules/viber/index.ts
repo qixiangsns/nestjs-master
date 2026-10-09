@@ -1,3 +1,4 @@
 export * from './dtos';
 export * from './viber.module';
 export * from './services/viber-provider.service';
+export * from './services/viber-account.service';

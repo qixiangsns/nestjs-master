@@ -3,6 +3,7 @@ import { SmsController } from './controllers/sms/sms.controller';
 import { AuthController } from './controllers/auth/auth.controller';
 import { EmailController } from './controllers/email/email.controller';
 import { AdminsController } from './controllers/admins/admins.controller';
+import { ViberController } from './controllers/viber/viber.controller';
 import { SecretsModule } from '@framework/secret';
 import { ENV_TOKEN, EnvSchema } from './env';
 import { ApplicationModule } from '@application';
@@ -21,7 +22,7 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
       },
     ]),
   ],
-  controllers: [SmsController, AuthController, EmailController, AdminsController],
+  controllers: [SmsController, AuthController, EmailController, AdminsController, ViberController],
   providers: [
     {
       provide: APP_PIPE,

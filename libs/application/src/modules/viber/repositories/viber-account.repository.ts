@@ -7,7 +7,12 @@ import {
   ViberAccountApiKeySecret as ViberAccountApiKeySecretModel,
   type ViberAccount as ViberAccountModel,
 } from '../schemas/viber-account.schema';
-import { ViberAccount, ViberAccountApiKeySecret, ViberAccountApiToken } from '../models/viber-account.model';
+import {
+  ViberAccount,
+  ViberAccountApiKeySecret,
+  ViberAccountApiToken,
+  ViberAccountBase,
+} from '../models/viber-account.model';
 import { MONGO_CONN_NAME } from '@application/connnections';
 import { Except } from 'type-fest';
 import { Lean } from '@framework/mongoose';
@@ -31,6 +36,11 @@ export class ViberAccountRepository {
     return accounts.map((acc) => ({ ...acc, id: acc._id.toString() }));
   }
 
+  async findAccount(id: string): Promise<ViberAccount | null> {
+    const acc = await this.accountModel.findById(new Types.ObjectId(id)).lean<Lean<ViberAccountModel>>();
+    return acc ? { ...acc, id: acc._id.toString() } : null;
+  }
+
   async addApiKeySecretAcc(account: Except<ViberAccountApiKeySecret, 'id' | 'createdAt' | 'updatedAt'>) {
     const acc = new this.accountApiKeySecretModel(account);
     acc.type = 'ApiKeySecret';
@@ -40,6 +50,10 @@ export class ViberAccountRepository {
   async addApiTokenAcc(account: Except<ViberAccountApiToken, 'id' | 'createdAt' | 'updatedAt'>) {
     const acc = new this.accountApiTokenModel(account);
     acc.type = 'ApiToken';
-    acc.save();
+    await acc.save();
+  }
+
+  async updateAccount(id: string, account: Partial<Except<ViberAccountBase, 'id' | 'createdAt' | 'updatedAt'>>) {
+    await this.accountModel.updateOne({ _id: new Types.ObjectId(id) }, account);
   }
 }
