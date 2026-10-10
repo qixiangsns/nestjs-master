@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ViberEventPublisher } from './viber-event-publisher.service';
-import { ViberLogRepository } from '../repositories/viber-log.repository';
+import { ViberEventService } from './viber-event.service';
 import { ViberLogService } from './viber-log.service';
 
 @Injectable()
@@ -8,7 +7,7 @@ export class ViberEventHandler {
   protected logger = new Logger(ViberEventHandler.name);
 
   constructor(
-    private readonly eventService: ViberEventPublisher,
+    private readonly eventService: ViberEventService,
     private readonly logService: ViberLogService,
   ) {}
 

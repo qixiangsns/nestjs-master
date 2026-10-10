@@ -1,12 +1,17 @@
 import { PromotexterApi, PromotexterApix } from '@application/integrations/promotexter';
 import { ViberSender } from '../interfaces/viber-sender.port';
-import { ViberOtp, SendViberResult } from '../models/viber-message.model';
-import { ViberAccount } from '../models/viber-account.model';
+import {
+  SendViberResult,
+  ViberTemplateRequest,
+  ViberContentRequest,
+  ViberOtpRequest,
+} from '../models/viber-message.model';
+import { AccountDetailsRoutable } from '../models/viber-route-config.model';
 
 export class ViberSenderPromotexterApix implements ViberSender {
   private api: PromotexterApi;
 
-  constructor(private readonly account: ViberAccount) {
+  constructor(private readonly account: AccountDetailsRoutable) {
     this.api = new PromotexterApix({
       auth: {
         type: 'api_key',
@@ -17,7 +22,21 @@ export class ViberSenderPromotexterApix implements ViberSender {
     });
   }
 
-  async sendOtp(message: ViberOtp): Promise<SendViberResult> {
+  async sendContentMsg(message: ViberContentRequest): Promise<SendViberResult> {
+    return {
+      messageId: '1',
+      referenceId: '1',
+    };
+  }
+
+  async sendTemplateMsg(message: ViberTemplateRequest): Promise<SendViberResult> {
+    return {
+      messageId: '1',
+      referenceId: '1',
+    };
+  }
+
+  async sendOtp(message: ViberOtpRequest): Promise<SendViberResult> {
     return {
       messageId: '',
       referenceId: '',

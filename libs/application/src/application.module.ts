@@ -5,6 +5,7 @@ import { RedisConnection, MongoDbConnection, PulsarConnection } from './connnect
 import { LoggerModule } from 'nestjs-pino';
 import { getPinoOptions } from '@framework/logger/pino-logger.config';
 import { ViberModule } from './modules/viber';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 const MongoConnModules: DynamicModule[] = [MongoDbConnection()];
 const RedisConnModules: DynamicModule[] = [RedisConnection()];
@@ -48,6 +49,7 @@ const LoggerModules = [
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     ...SecretsModules,
     ...LoggerModules,
     ...MongoConnModules,

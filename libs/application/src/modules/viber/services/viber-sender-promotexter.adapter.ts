@@ -1,13 +1,17 @@
 import { PromotexterApix } from '@application/integrations/promotexter';
 import { ViberSender } from '../interfaces/viber-sender.port';
-import { SendViberResult } from '../models/viber-message.model';
-import { ViberAccount } from '../schemas/viber-account.schema';
-import { ViberOtp } from '../models/viber-message.model';
+import {
+  SendViberResult,
+  ViberContentRequest,
+  ViberOtpRequest,
+  ViberTemplateRequest,
+} from '../models/viber-message.model';
+import { AccountDetailsRoutable } from '../models/viber-route-config.model';
 
 export class ViberSenderPromotexter implements ViberSender {
   private api: PromotexterApix;
 
-  constructor(private readonly account: ViberAccount) {
+  constructor(private readonly account: AccountDetailsRoutable) {
     this.api = new PromotexterApix({
       auth: {
         type: 'api_key',
@@ -18,7 +22,20 @@ export class ViberSenderPromotexter implements ViberSender {
     });
   }
 
-  async sendOtp(message: ViberOtp): Promise<SendViberResult> {
+  async sendContentMsg(message: ViberContentRequest): Promise<SendViberResult> {
+    return {
+      messageId: '1',
+      referenceId: '1',
+    };
+  }
+
+  async sendTemplateMsg(message: ViberTemplateRequest): Promise<SendViberResult> {
+    return {
+      messageId: '1',
+      referenceId: '1',
+    };
+  }
+  async sendOtp(message: ViberOtpRequest): Promise<SendViberResult> {
     const result = await this.api.sendViberOtp({
       from: 'casino plus',
       to: '630339434343',

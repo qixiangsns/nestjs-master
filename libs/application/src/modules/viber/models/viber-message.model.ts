@@ -1,6 +1,7 @@
 import { Except, ExtractStrict } from 'type-fest';
 import { ViberLog } from './viber-log.model';
 import { ViberAccount } from './viber-account.model';
+import { RouteType } from './viber-route-config.model';
 
 export type ViberOtp = {
   messageId: string;
@@ -22,7 +23,7 @@ type ViberMessageType = (typeof ViberMessageType)[number];
  * Viber pre-approved template
  * Usage: transactional/notification message
  */
-export type ViberTemplateMessage = {
+export type ViberTemplateRequest = {
   type: ExtractStrict<ViberMessageType, 'Template'>;
   templateId: string;
   templateLang: string;
@@ -168,12 +169,12 @@ type ViberRequestBase = {
   id: string;
   platformId: string;
   phoneNo: string;
+  routeType: RouteType;
   playerId?: string;
   campaignId?: string;
   campaignSender?: string;
 };
 
-type ViberRequestType = ViberOtpRequest | ViberContentRequest | ViberTemplateMessage;
+type ViberRequestType = ViberOtpRequest | ViberContentRequest | ViberTemplateRequest;
 
-export type ViberRequest = ViberRequestBase &
-  ViberRequestType & { deliverBy: Except<ViberAccount, 'id' | 'createdAt' | 'updatedAt'> };
+export type ViberRequest = ViberRequestBase & ViberRequestType;

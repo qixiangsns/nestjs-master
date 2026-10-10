@@ -1,0 +1,289 @@
+import { Consumer, Client, Message } from 'pulsar-client';
+import { ViberRouteConfigManager } from './viber-route-config.manager';
+import { Logger, Inject, Injectable } from '@nestjs/common';
+import { PULSAR_CONN_TOKEN } from '@application/connnections';
+import { OnEvent } from '@nestjs/event-emitter';
+import { debounce } from 'perfect-debounce';
+import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
+import { type RouteAccountRoutable, RouteType } from '../models/viber-route-config.model';
+import pLimit, { LimitFunction } from 'p-limit';
+import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
+import { getViberRouteTopic } from '../events/viber-route.events';
+import { ViberProviderCode } from '../models/viber-provider.model';
+import { Pacer } from '@framework/utils/pacer.utils';
+import { ViberSenderFactory } from './viber-sender.factory';
+import { ViberSender } from '../interfaces/viber-sender.port';
+import { SendViberResult, ViberRequest } from '../models/viber-message.model';
+import { ViberEventService } from './viber-event.service';
+
+type BatchOptions = {
+  maxNumMessages: number;
+  timeoutMs: number;
+};
+const QueuePriority: RouteType[] = ['Otp', 'Notif', 'Mkt'] as const;
+
+type ConsumeBatch = { retryAfterMs: number; batchMessages: Message[] };
+
+@Injectable()
+export class ViberAccountConsumer {
+  private logger = new Logger(ViberAccountConsumer.name);
+  private concurrency: LimitFunction;
+  private rateLimiter: RateLimiterMemory;
+  private state: 'paused' | 'running' | 'connected';
+  private consumers: Map<RouteType, Consumer>;
+  private pacer: Pacer;
+  private sender: ViberSender;
+
+  constructor(
+    private readonly providerCode: ViberProviderCode,
+    private readonly account: RouteAccountRoutable,
+    private readonly pulsarClient: Client,
+    private readonly eventService: ViberEventService,
+  ) {
+    this.pacer = new Pacer({
+      maxDelayMs: 1000,
+      minDelayMs: 0,
+      initialBackoffMs: 100,
+      backoffFactor: 2,
+    });
+
+    this.concurrency = pLimit(50);
+
+    this.rateLimiter = new RateLimiterMemory({
+      points: 1000,
+      duration: 1,
+    });
+
+    this.sender = ViberSenderFactory.createSender(this.account.details);
+  }
+
+  private async consumeBatch(options: BatchOptions): Promise<ConsumeBatch> {
+    let priority = 0;
+
+    const lastPriority = QueuePriority.length - 1;
+    const peekTimeoutMs = 50;
+    const deadline = addMilliseconds(Date.now(), options.timeoutMs);
+    const batchMessages: Message[] = [];
+
+    // Max number messages consumed
+    while (batchMessages.length < options.maxNumMessages) {
+      const remainingMs = differenceInMilliseconds(deadline, Date.now());
+      // Timeout hit
+      if (remainingMs < 0) break;
+
+      try {
+        await this.rateLimiter.consume(this.account.id, 1);
+      } catch (err) {
+        if (err instanceof RateLimiterRes) {
+          return {
+            batchMessages,
+            retryAfterMs: err.msBeforeNext,
+          };
+        }
+      }
+
+      try {
+        const consumer = this.consumers.get(QueuePriority[priority]);
+        if (consumer && consumer.isConnected()) {
+          const message = await consumer.receive(peekTimeoutMs);
+          await consumer.acknowledge(message);
+          batchMessages.push(message);
+        }
+      } catch (error) {
+        // When queue is drained, priority moves to the lower ones
+        priority = priority === lastPriority ? 0 : priority + 1;
+      }
+    }
+
+    return {
+      retryAfterMs: 0,
+      batchMessages,
+    };
+  }
+
+  async subscribe() {
+    for (const priority of QueuePriority) {
+      const consumer = this.consumers.get(priority);
+
+      if (!consumer) {
+        // Subscribe to topic
+        const subscriber = await this.pulsarClient.subscribe({
+          subscription: 'sms',
+          subscriptionType: 'Shared',
+          topic: getViberRouteTopic(this.providerCode, priority, this.account.id),
+        });
+
+        this.consumers.set(priority, subscriber);
+      }
+    }
+
+    this.state = 'connected';
+  }
+
+  pause() {
+    this.state = 'paused';
+    this.logger.log('Consumer has been paused.');
+  }
+
+  isConnected() {
+    return this.consumers.size > 0;
+  }
+
+  async start() {
+    if (this.state === 'running' || !this.isConnected()) return;
+
+    this.state = 'running';
+    while (this.state !== 'running') {
+      let messages: Message[] = [];
+
+      const { batchMessages = messages, retryAfterMs } = await this.consumeBatch({
+        maxNumMessages: 100,
+        timeoutMs: 1000,
+      });
+
+      const isRateLimited = retryAfterMs > 0;
+      if (isRateLimited) {
+        this.pacer.throttle(retryAfterMs);
+      }
+
+      if (batchMessages.length > 0) {
+        if (!isRateLimited) this.pacer.rampUp();
+
+        // Prepare sending
+        const tasks = messages.map((message) => this.concurrency(() => this.sendMessage(message)));
+
+        // Send message concurrently
+        const results = await Promise.allSettled(tasks);
+
+        // Log sending result
+        const successResult = results.filter((res) => res.status === 'fulfilled');
+        const errorResult = results.filter((res) => res.status === 'rejected');
+        this.logger.log({ success: successResult.length, error: errorResult.length }, 'Send message results');
+      } else {
+        // Gracedully slow down consumption when requests are low
+        this.pacer.slowDown();
+      }
+
+      // Delay loop based on throttle/ramp up/slow down
+      await this.pacer.wait();
+    }
+  }
+
+  private async sendMessage(message: Message) {
+    const data: ViberRequest = JSON.parse(message.getData().toString());
+
+    let result: SendViberResult | null = null;
+
+    const log = {
+      id: data.id,
+      platformId: data.platformId,
+      playerId: data.playerId,
+      type: data.routeType,
+      campaignId: data.campaignId,
+      campaignSender: data.campaignSender,
+      providerCode: this.providerCode,
+    } as const;
+
+    try {
+      switch (data.type) {
+        case 'Otp':
+          result = await this.sender.sendOtp(data);
+          break;
+        case 'Content':
+          result = await this.sender.sendContentMsg(data);
+          break;
+        case 'Template':
+          result = await this.sender.sendTemplateMsg(data);
+          break;
+      }
+    } catch (error) {
+      await this.eventService.publishLogCreated({
+        ...log,
+        requestStatus: 'Failed',
+        deliveryStatus: 'Failed',
+      });
+    }
+
+    if (result && result.referenceId) {
+      await this.eventService.publishLogCreated({
+        ...log,
+        refId: result.referenceId,
+        requestStatus: 'Success',
+        deliveryStatus: 'Pending',
+      });
+    }
+  }
+}
+
+/**
+ * Factory function to dynamically create viber consumers with dependencies at runtime
+ *
+ * @example
+ * const manager = factory.createManager("Promotexter");
+ * await manager.subscribe()
+ * manager.start()
+ * manager.pause()
+ */
+@Injectable()
+export class ViberConsumerManagerFactory {
+  constructor(
+    @Inject(PULSAR_CONN_TOKEN.PRIMARY) private readonly pulsarClient: Client,
+    private readonly configManager: ViberRouteConfigManager,
+    private readonly eventService: ViberEventService,
+  ) {}
+
+  createManager(providerCode: ViberProviderCode) {
+    return new ViberConsumerManager(providerCode, this.pulsarClient, this.configManager, this.eventService);
+  }
+}
+
+/**
+ * Manages Viber message consumers for different accounts. It listens for configuration updates and adjusts the consumers accordingly.
+ *
+ * @example
+ * const manager = new ViberConsumerManager(client, configManager, eventService);
+ * await manager.subscribe();
+ * manager.start();
+ * manager.pause();
+ *
+ */
+export class ViberConsumerManager {
+  private accountConsumers: Map<string, ViberAccountConsumer> = new Map();
+  private logger = new Logger(ViberConsumerManager.name);
+
+  constructor(
+    private readonly providerCode: ViberProviderCode,
+    private readonly pulsarClient: Client,
+    private readonly configManager: ViberRouteConfigManager,
+    private readonly eventService: ViberEventService,
+  ) {
+    // Debounce event update to prevent rapid consecutive updates
+    // this.handleAccountsEnabled = debounce(this.handleAccountsEnabled.bind(this), CONFIG_UPDATE_DEBOUNCE_MS);
+  }
+
+  async subscribe() {
+    const accounts = this.configManager
+      .getRoutableAccounts()
+      .filter((account) => account.details.providerCode === this.providerCode);
+
+    for (const account of accounts) {
+      const consumer = new ViberAccountConsumer(this.providerCode, account, this.pulsarClient, this.eventService);
+      await consumer.subscribe();
+      this.accountConsumers.set(account.id, consumer);
+    }
+  }
+
+  async sync() {
+    this.pause();
+
+    this.start();
+  }
+
+  async start() {
+    for (const consumer of this.accountConsumers.values()) consumer.start();
+  }
+
+  async pause() {
+    for (const consumer of this.accountConsumers.values()) consumer.pause();
+  }
+}
