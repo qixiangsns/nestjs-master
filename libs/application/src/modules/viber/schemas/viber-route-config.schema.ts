@@ -20,7 +20,7 @@ export class RouteAccount {
 export const RouteAccountSchema = SchemaFactory.createForClass(RouteAccount);
 
 export enum RouteAccountVirtualField {
-  AccountDetails = 'accountDetails',
+  AccountDetails = 'details',
 }
 
 RouteAccountSchema.virtual(RouteAccountVirtualField.AccountDetails, {
