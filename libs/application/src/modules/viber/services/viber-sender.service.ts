@@ -1,27 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { ViberSenderFactory } from './viber-sender.factory';
-import { ViberOtp } from '../models/viber-message.model';
-import { ViberAccount } from '../models/viber-account.model';
 import { ViberRouteConfigManager } from './viber-route-config.manager';
-import { ViberRouterService } from './viber-router.service';
 import { PlayerService } from '@application/modules/player';
 import { SendViberMkt, SendViberResponse, SendViberOtp, SendViberNotif } from '../dtos';
 import { ViberLogService } from './viber-log.service';
-import { ViberEventPublisher } from './viber-event-publisher.service';
+import { ViberEventService } from './viber-event.service';
+import { Chance } from 'chance';
+import { RoutableViberRouteConfig } from '../models/viber-route-config.model';
+import { ViberDispatcherService } from './viber-dispatcher.service';
+
 @Injectable()
 export class ViberSenderService {
   constructor(
     private readonly configManager: ViberRouteConfigManager,
-    private readonly routerService: ViberRouterService,
     private readonly playerService: PlayerService,
     private readonly logService: ViberLogService,
-    private readonly eventService: ViberEventPublisher,
+    private readonly eventService: ViberEventService,
+    private readonly dispatcherService: ViberDispatcherService,
   ) {}
-
-  async sendViberOtp(message: ViberOtp, account: ViberAccount) {
-    const sender = ViberSenderFactory.createSender(account);
-    return sender.sendOtp(message);
-  }
 
   async acceptOtpRequest(message: SendViberOtp): Promise<SendViberResponse> {
     // generate a message id
@@ -32,36 +27,40 @@ export class ViberSenderService {
       const phoneNo = await this.playerService.getPhoneNumber(message.playerId);
       if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
 
-      // retrieve available config
+      // retrieve available config (including disabled routes)
       const routeConfig = await this.configManager.getRouteConfig('Otp', message.platformId);
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider
-      const routeTo = this.routerService.routeTo(routeConfig);
-      if (!routeTo) throw new Error('System cannot determine destination route');
+      const routeTo = this.determineRoute(routeConfig);
+      if (!routeTo) throw new Error('Viber route cannnot be determined');
 
-      // dispatch message task to provider
-      await this.eventService.publishOtpRequested(routeTo, {
-        id: messageId,
-        platformId: message.platformId,
-        playerId: message.playerId,
-        phoneNo,
-        type: 'Otp',
-        otp: message.otp,
-        otpValidityMinutes: message.otpValidityMinutes,
-        deliverBy: routeTo,
-        templateId: message.templateId,
-      });
+      // dispatch request to viber worker
+      await this.dispatcherService.dispatchOtp(
+        {
+          type: 'Otp',
+          routeType: 'Otp',
+          phoneNo,
+          id: messageId,
+          otp: message.otp,
+          otpValidityMinutes: message.otpValidityMinutes,
+          playerId: message.playerId,
+          platformId: message.platformId,
+          templateId: message.templateId,
+        },
+        routeTo,
+      );
+
       return { messageId };
     } catch (err) {
       await this.eventService.publishLogCreated({
+        type: 'Otp',
         id: messageId,
         platformId: message.platformId,
         playerId: message.playerId,
+        content: message.otp,
         deliveryStatus: 'Failed',
         requestStatus: 'Failed',
-        type: 'Otp',
-        content: message.otp,
       });
       throw new Error('Message has failed', { cause: err });
     }
@@ -81,30 +80,33 @@ export class ViberSenderService {
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider
-      const routeTo = this.routerService.routeTo(routeConfig);
+      const routeTo = this.determineRoute(routeConfig);
       if (!routeTo) throw new Error('System cannot determine destination route');
 
-      // dispatch message task to provider
-      await this.eventService.publishOtpRequested(routeTo, {
-        id: messageId,
-        phoneNo,
-        platformId: message.platformId,
-        type: 'Template',
-        templateId: message.templateId,
-        templateLang: 'en',
-        templateParams: message.templateParams,
-        playerId: message.playerId,
-        deliverBy: routeTo,
-      });
+      // dispatch request to viber worker
+      await this.dispatcherService.dispatchNotif(
+        {
+          type: 'Template',
+          routeType: 'Notif',
+          phoneNo,
+          id: messageId,
+          playerId: message.playerId,
+          platformId: message.platformId,
+          templateId: message.templateId,
+          templateLang: 'en',
+          templateParams: message.templateParams,
+        },
+        routeTo,
+      );
       return { messageId };
     } catch (err) {
       await this.eventService.publishLogCreated({
+        type: 'Otp',
         id: messageId,
         platformId: message.platformId,
         playerId: message.playerId,
         deliveryStatus: 'Failed',
         requestStatus: 'Failed',
-        type: 'Otp',
       });
       throw new Error('Message has failed', { cause: err });
     }
@@ -124,32 +126,52 @@ export class ViberSenderService {
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider
-      const routeTo = this.routerService.routeTo(routeConfig);
+      const routeTo = this.determineRoute(routeConfig);
       if (!routeTo) throw new Error('System cannot determine destination route');
 
-      // dispatch message task to provider
-      await this.eventService.publishMktRequested(routeTo, {
-        id: messageId,
-        phoneNo,
-        platformId: message.platformId,
-        type: 'Content',
-        deliverBy: routeTo,
-        playerId: message.playerId,
-        campaignId: message.campaignId,
-        campaignSender: message.campaignSender,
-        templateContent: message.content,
-      });
+      // dispatch request to provider worker
+      await this.dispatcherService.dispatchMkt(
+        {
+          type: 'Content',
+          routeType: 'Mkt',
+          phoneNo,
+          id: messageId,
+          playerId: message.playerId,
+          platformId: message.platformId,
+          templateContent: message.content,
+        },
+        routeTo,
+      );
       return { messageId };
     } catch (err) {
       await this.eventService.publishLogCreated({
+        type: 'Mkt',
         id: messageId,
         platformId: message.platformId,
         playerId: message.playerId,
+        campaignId: message.campaignId,
+        campaignSender: message.campaignSender,
         deliveryStatus: 'Failed',
         requestStatus: 'Failed',
-        type: 'Mkt',
       });
       throw new Error('Message has failed', { cause: err });
     }
+  }
+
+  /**
+   * Determine the routable account based on configured weights
+   */
+  private determineRoute(routeConfig: RoutableViberRouteConfig) {
+    const chance = new Chance();
+    const enabledAccounts = routeConfig.accounts.filter((acc) => acc.isEnabled);
+
+    if (enabledAccounts.length === 0) return null;
+
+    const selectedAccount = chance.weighted(
+      enabledAccounts,
+      enabledAccounts.map((acc) => acc.weight),
+    );
+
+    return selectedAccount;
   }
 }

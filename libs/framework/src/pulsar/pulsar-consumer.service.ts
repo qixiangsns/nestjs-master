@@ -42,24 +42,22 @@ export abstract class PulsarConsumer<T> implements OnModuleDestroy {
 
   private async receive(message: Message) {
     const ackMessage = () => this.consumer.acknowledge(message);
-    this.handleMessage(
-      JSON.parse(message.getData().toString()),
-      ackMessage,
-      message.getMessageId().toString(),
-    ).catch((err) => {
-      if (err instanceof ZodError) {
-        this.logger.error(
-          {
-            err: err.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join(''),
-          },
-          'Invalid event schema',
-        );
-      } else if (err instanceof Error) {
-        this.logger.error({ err }, 'Error handling message.');
-      } else {
-        this.logger.error('Error handling message.');
-      }
-    });
+    this.handleMessage(JSON.parse(message.getData().toString()), ackMessage, message.getMessageId().toString()).catch(
+      (err) => {
+        if (err instanceof ZodError) {
+          this.logger.error(
+            {
+              err: err.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join(''),
+            },
+            'Invalid event schema',
+          );
+        } else if (err instanceof Error) {
+          this.logger.error({ err }, 'Error handling message.');
+        } else {
+          this.logger.error('Error handling message.');
+        }
+      },
+    );
 
     try {
       await ackMessage();
@@ -68,9 +66,5 @@ export abstract class PulsarConsumer<T> implements OnModuleDestroy {
     }
   }
 
-  protected abstract handleMessage(
-    data: T,
-    ackMessage: () => Promise<null>,
-    messageId: string,
-  ): Promise<any>;
+  protected abstract handleMessage(data: T, ackMessage: () => Promise<null>, messageId: string): Promise<any>;
 }
