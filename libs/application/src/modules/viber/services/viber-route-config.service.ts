@@ -1,7 +1,13 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository';
 import { ViberAccountService } from './viber-account.service';
-import { CreateViberRouteConfig, GetViberRouteConfigRequest } from '../dtos/viber-config.dto';
+import {
+  CreateViberRouteConfig,
+  GetViberRouteConfigRequest,
+  PatchViberRouteConfig,
+  PatchViberRouteConfigChannel,
+  PatchViberRouteConfigStatus,
+} from '../dtos/viber-config.dto';
 
 @Injectable()
 export class ViberRouteConfigService {
@@ -27,16 +33,60 @@ export class ViberRouteConfigService {
       throw new ConflictException(`Route config for ${config.platformId} ${config.type} already exists`);
     }
 
-    const accounts = await this.accountService.findAccounts(config.accounts.map((acc) => acc.id));
+    await this.validateAccounts(
+      config.accounts.map((acc) => acc.id),
+      config.senderId,
+    );
 
-    if (accounts.length !== config.accounts.length) {
+    await this.routeConfigRepo.addConfig(config);
+  }
+
+  async updateConfig(id: string, config: PatchViberRouteConfig) {
+    await this.getConfigById(id);
+
+    await this.routeConfigRepo.updateConfig(id, config);
+  }
+
+  async updateChannel(id: string, config: PatchViberRouteConfigChannel) {
+    const existing = await this.getConfigById(id);
+
+    await this.validateAccounts(
+      config.accounts.map((acc) => acc.id),
+      existing.senderId,
+    );
+
+    await this.routeConfigRepo.updateConfig(id, config);
+  }
+
+  async updateStatus(id: string, { accountId, isEnabled }: PatchViberRouteConfigStatus) {
+    await this.getConfigById(id);
+
+    const updated = await this.routeConfigRepo.updateAccountStatus(id, accountId, isEnabled);
+
+    if (!updated) {
+      throw new NotFoundException('Account is not in this route config');
+    }
+  }
+
+  private async getConfigById(id: string) {
+    const config = await this.routeConfigRepo.findConfigById(id);
+
+    if (!config) {
+      throw new NotFoundException('Viber route config not found');
+    }
+
+    return config;
+  }
+
+  private async validateAccounts(accountIds: string[], senderId: string) {
+    const accounts = await this.accountService.findAccounts(accountIds);
+
+    if (accounts.length !== accountIds.length) {
       throw new BadRequestException('One or more accounts do not exist');
     }
 
-    if (accounts.some((acc) => !acc.senderIds.includes(config.senderId))) {
-      throw new BadRequestException(`All accounts must support sender id ${config.senderId}`);
+    if (accounts.some((acc) => !acc.senderIds.includes(senderId))) {
+      throw new BadRequestException(`All accounts must support sender id ${senderId}`);
     }
-
-    await this.routeConfigRepo.addConfig(config);
   }
 }

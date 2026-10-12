@@ -9,6 +9,9 @@ import {
   GetViberRouteConfigRequestSchema,
   GetViberRouteConfigResponseSchema,
   PatchViberAccountSchema,
+  PatchViberRouteConfigChannelSchema,
+  PatchViberRouteConfigSchema,
+  PatchViberRouteConfigStatusSchema,
 } from '@application/modules/viber';
 
 export class GetViberProviderListResponse extends createZodDto(GetViberProviderListResponseSchema) {}
@@ -20,3 +23,6 @@ export class GetViberLogListResponse extends createZodDto(GetViberLogListRespons
 export class GetViberRouteConfigRequest extends createZodDto(GetViberRouteConfigRequestSchema) {}
 export class GetViberRouteConfigResponse extends createZodDto(GetViberRouteConfigResponseSchema) {}
 export class CreateViberRouteConfigRequest extends createZodDto(CreateViberRouteConfigSchema) {}
+export class PatchViberRouteConfigRequest extends createZodDto(PatchViberRouteConfigSchema) {}
+export class PatchViberRouteConfigChannelRequest extends createZodDto(PatchViberRouteConfigChannelSchema) {}
+export class PatchViberRouteConfigStatusRequest extends createZodDto(PatchViberRouteConfigStatusSchema) {}
