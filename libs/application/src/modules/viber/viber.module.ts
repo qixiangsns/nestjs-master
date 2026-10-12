@@ -11,13 +11,21 @@ import { ViberLogService } from './services/viber-log.service';
 import { ViberConsumerManagerFactory } from './services/viber-consumer.service';
 import { ViberRouteConfigManager } from './services/viber-route-config.manager';
 import { ViberEventService } from './services/viber-event.service';
+import { ViberRouteConfigService } from './services/viber-route-config.service';
 
 const Repositories = [ViberAccountRepository, ViberRouteConfigRepository, ViberProviderRepository, ViberLogRepository];
-const Services = [ViberAccountService, ViberProviderService, ViberLogService, ViberConsumerManagerFactory];
+const Services = [
+  ViberAccountService,
+  ViberProviderService,
+  ViberLogService,
+  ViberRouteConfigService,
+  ViberConsumerManagerFactory,
+];
 const Providers = [
   ViberAccountService,
   ViberProviderService,
   ViberLogService,
+  ViberRouteConfigService,
   ViberConsumerManagerFactory,
   ViberRouteConfigManager,
   ViberEventService,

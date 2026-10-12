@@ -3,13 +3,20 @@ import { IsObjectIdPipe } from '@nestjs/mongoose';
 import { ApiErrorResponse } from '@framework/swagger';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
-import { ViberAccountService, ViberLogService, ViberProviderService } from '@application/modules/viber';
+import {
+  ViberAccountService,
+  ViberLogService,
+  ViberProviderService,
+  ViberRouteConfigService,
+} from '@application/modules/viber';
 import {
   CreateViberAccountRequest,
   GetViberAccountListResponse,
   GetViberLogListRequest,
   GetViberLogListResponse,
   GetViberProviderListResponse,
+  GetViberRouteConfigRequest,
+  GetViberRouteConfigResponse,
   PatchViberAccountRequest,
 } from './viber.dto';
 
@@ -21,6 +28,7 @@ export class ViberController {
     private readonly viberProviderService: ViberProviderService,
     private readonly viberAccountService: ViberAccountService,
     private readonly viberLogService: ViberLogService,
+    private readonly viberRouteConfigService: ViberRouteConfigService,
   ) {}
 
   @Get('providers')
@@ -88,5 +96,15 @@ export class ViberController {
         updatedAt: log.updatedAt?.toISOString(),
       })),
     };
+  }
+
+  @Get('route-config')
+  @ApiOperation({
+    summary: 'Get viber route config',
+    description: 'Retrieve the route config of a platform and route type. Account credentials are never returned.',
+  })
+  @ZodResponse({ type: GetViberRouteConfigResponse, status: HttpStatus.OK })
+  async getViberRouteConfig(@Query() query: GetViberRouteConfigRequest): Promise<GetViberRouteConfigResponse> {
+    return this.viberRouteConfigService.getConfig(query);
   }
 }
