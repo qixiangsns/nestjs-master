@@ -4,13 +4,14 @@ import { PromotexterError } from './promotexter.error';
 import {
   ClientOptions,
   SendViberResponse,
-  SendViberOtpRequest,
   PromotexterErrorResponse,
   GenerateTokenRequest,
   GenerateTokenResponse,
   SendSmsRequest,
   SendSmsResponse,
   AccountBalance,
+  SendViberTemplateRequest,
+  SendViberRichMsgRequest,
 } from './promotexter.types';
 
 export class PromotexterBase {
@@ -29,9 +30,9 @@ export class PromotexterBase {
     });
   }
 
-  private generateClientToken(privateKey: string, accountId: string) {
-    const token = jwt.sign({}, privateKey, {
-      issuer: accountId,
+  private generateClientToken(apiSecret: string, apiKey: string) {
+    const token = jwt.sign({}, apiSecret, {
+      issuer: apiKey,
       algorithm: 'RS512',
       expiresIn: '1m',
     });
@@ -39,24 +40,42 @@ export class PromotexterBase {
     return token;
   }
 
-  async generateApiToken(privateKey: string, accountId: string, expiresInSeconds: number = 3600) {
-    const clientToken = this.generateClientToken(privateKey, accountId);
+  async generateApiToken(apiSecret: string, apiKey: string, expiresInSeconds: number = 3600) {
+    const clientToken = this.generateClientToken(apiSecret, apiKey);
 
     const body: GenerateTokenRequest = {
       expiresInSeconds,
     };
 
-    const response = await this.accountClient.post<GenerateTokenResponse>('/generate-token', body, {
-      headers: { Authorization: `Bearer ${clientToken}` },
-    });
+    try {
+      const response = await this.accountClient.post<GenerateTokenResponse>('/generate-token', body, {
+        headers: { Authorization: `Bearer ${clientToken}` },
+      });
 
-    const { data: apiToken, status } = response.data;
+      const { data: token, status } = response.data;
 
-    if (status === 'ok') {
-      return apiToken;
+      if (status === 'ok' && token) {
+        return token;
+      }
+
+      throw new Error(`${PromotexterBase.name} failed to obtained bearer token.`);
+    } catch (error) {
+      throw new Error(`${PromotexterBase.name} failed to generate bearer token. ${error?.message}`);
     }
+  }
 
-    return false;
+  private async getBearerToken() {
+    if (this.options.auth.type === 'bearer_token') {
+      const storedToken = await this.options.auth.getToken();
+      if (storedToken) return storedToken;
+
+      const newToken = await this.generateApiToken(this.options.auth.apiSecret, this.options.auth.apiKey);
+      if (newToken) {
+        await this.options.auth.saveToken(newToken);
+      }
+      return newToken;
+    }
+    throw new Error('Current authentication method does not support generating bearer token');
   }
 
   private async request<T = unknown>(endpoint: string, method: Method, body?: Record<string, unknown>): Promise<T> {
@@ -65,7 +84,8 @@ export class PromotexterBase {
     const requestQuery = {};
 
     if (this.options.auth.type === 'bearer_token') {
-      requestHeaders['Authorization'] = `Bearer ${this.options.auth.token}`;
+      const bearerToken = await this.getBearerToken();
+      requestHeaders['Authorization'] = `Bearer ${bearerToken}`;
     }
 
     if (this.options.auth.type === 'api_key') {
@@ -113,8 +133,16 @@ export class PromotexterBase {
     return this.request<AccountBalance>('/account/balance', 'GET');
   }
 
-  protected async sendViberOtpMsg(endpoint: string, payload: SendViberOtpRequest) {
-    return this.request<SendViberResponse>(endpoint, 'POST', payload);
+  protected async sendViberOtpMsg(endpoint: string, payload: SendViberTemplateRequest) {
+    return this.request<SendViberResponse>(endpoint, 'POST', { ...payload });
+  }
+
+  protected async sendTemplateMsg(endpoint: string, payload: SendViberTemplateRequest) {
+    return this.request<SendViberResponse>(endpoint, 'POST', { ...payload });
+  }
+
+  protected async sendRichMsg(endpoint: string, payload: SendViberRichMsgRequest) {
+    return this.request<SendViberResponse>(endpoint, 'POST', { ...payload });
   }
 
   protected async sendSmsMsg(endpoint: string, payload: SendSmsRequest) {

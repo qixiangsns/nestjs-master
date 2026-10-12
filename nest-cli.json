@@ -100,6 +100,15 @@
         "tsConfigPath": "apps/sms-router/tsconfig.app.json"
       }
     },
+    "viber-consumer-promotexter": {
+      "type": "application",
+      "root": "apps/viber-consumer-promotexter",
+      "entryFile": "main",
+      "sourceRoot": "apps/viber-consumer-promotexter/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/viber-consumer-promotexter/tsconfig.app.json"
+      }
+    },
     "worker": {
       "type": "application",
       "root": "apps/worker",

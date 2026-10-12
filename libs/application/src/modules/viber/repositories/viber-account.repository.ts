@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import {
   ViberAccountBase as ViberAccountBaseModel,
   ViberAccountApiToken as ViberAccountApiTokenModel,
@@ -11,6 +11,7 @@ import { ViberAccount, ViberAccountApiKeySecret, ViberAccountApiToken } from '..
 import { MONGO_CONN_NAME } from '@application/connnections';
 import { Except } from 'type-fest';
 import { Lean } from '@framework/mongoose';
+import { ViberProviderCode } from '../models/viber-provider.model';
 
 @Injectable()
 export class ViberAccountRepository {
@@ -31,6 +32,11 @@ export class ViberAccountRepository {
     return accounts.map((acc) => ({ ...acc, id: acc._id.toString() }));
   }
 
+  async findEnabledProviderAccounts(code: ViberProviderCode): Promise<ViberAccount[]> {
+    const accounts = await this.accountModel.find({ code, isEnabled: true }).lean<Lean<ViberAccountModel>[]>();
+    return accounts.map((acc) => ({ ...acc, id: acc._id.toString() }));
+  }
+
   async addApiKeySecretAcc(account: Except<ViberAccountApiKeySecret, 'id' | 'createdAt' | 'updatedAt'>) {
     const acc = new this.accountApiKeySecretModel(account);
     acc.type = 'ApiKeySecret';
@@ -41,5 +47,11 @@ export class ViberAccountRepository {
     const acc = new this.accountApiTokenModel(account);
     acc.type = 'ApiToken';
     acc.save();
+  }
+
+  async updateStatus(id: string, isEnabled: boolean) {
+    await this.accountModel.updateOne(new Types.ObjectId(id), {
+      isEnabled,
+    });
   }
 }

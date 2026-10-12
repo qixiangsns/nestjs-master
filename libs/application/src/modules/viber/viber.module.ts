@@ -9,8 +9,14 @@ import { ViberRouteConfigManager } from './services/viber-route-config.manager';
 import { ViberEventService } from './services/viber-event.service';
 
 const Repositories = [ViberAccountRepository, ViberRouteConfigRepository];
-const Services = [ViberAccountService, ViberConsumerManagerFactory];
-const Providers = [ViberAccountService, ViberConsumerManagerFactory, ViberRouteConfigManager, ViberEventService];
+const Services = [ViberAccountService, ViberConsumerManagerFactory, ViberAccountService];
+const Providers = [
+  ViberAccountService,
+  ViberConsumerManagerFactory,
+  ViberRouteConfigManager,
+  ViberEventService,
+  ViberAccountService,
+];
 
 @Module({
   imports: [MongoSchemaModule, PlayerModule],

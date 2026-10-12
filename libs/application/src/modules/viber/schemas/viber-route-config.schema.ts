@@ -1,14 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { RouteStrategy, RouteType } from '../models/viber-route-config.model';
 import { ViberAccountBase } from './viber-account.schema';
 
 export type ViberRouteConfigDocument = HydratedDocument<ViberRouteConfig>;
-
 @Schema({ _id: false })
 export class RouteAccount {
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: ViberAccountBase.name })
-  id: mongoose.Schema.Types.ObjectId;
+  id: mongoose.Types.ObjectId;
 
   @Prop({ type: Boolean, required: true })
   isEnabled: boolean;

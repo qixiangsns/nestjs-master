@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import {
   ViberRouteConfig as ViberRouteConfigModel,
   RouteAccount as RouteAccountModel,
@@ -8,6 +8,7 @@ import {
 } from '../schemas/viber-route-config.schema';
 import {
   ViberAccountBase as ViberAccountBaseModel,
+  ViberAccountBaseSchema,
   ViberAccount as ViberAccountModel,
 } from '../schemas/viber-account.schema';
 import { MONGO_CONN_NAME } from '@application/connnections';
@@ -28,6 +29,9 @@ export class ViberRouteConfigRepository {
   constructor(
     @InjectModel(ViberRouteConfigModel.name, MONGO_CONN_NAME.PRIMARY)
     private configModel: Model<ViberRouteConfigModel>,
+
+    @InjectModel(ViberAccountBaseModel.name, MONGO_CONN_NAME.PRIMARY)
+    private accountModel: Model<ViberAccountBaseModel>,
   ) {}
 
   async addConfig(routeConfig: Except<ViberRouteConfig, 'id'>): Promise<string> {
@@ -39,6 +43,16 @@ export class ViberRouteConfigRepository {
   async updateConfig(id: string, routeConfig: Except<ViberRouteConfig, 'id'>) {
     const configId = new Types.ObjectId(id);
     await this.configModel.updateOne(configId, routeConfig);
+  }
+
+  async isAccountEnabled(accountId: string) {
+    const configs = await this.configModel
+      .find({ 'accounts.id': new Types.ObjectId(accountId) })
+      .select('accounts')
+      .lean<{ accounts: ViberRouteConfig['accounts'] }[]>();
+
+    const isEnabled = configs.some((config) => config.accounts.some((acc) => acc.isEnabled));
+    return isEnabled;
   }
 
   async findRoutableConfig(routeType: RouteType, platformId: string): Promise<RoutableViberRouteConfig | null> {
