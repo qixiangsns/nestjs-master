@@ -25,4 +25,7 @@ export interface ViberLog {
   updatedAt?: Date;
 }
 
-export type ViberLogFilterDto = Pick<ViberLog, 'type' | 'requestStatus' | 'deliveryStatus' | 'campaignId'>;
+export type ViberLogFilterDto = Partial<Pick<ViberLog, 'type' | 'requestStatus' | 'deliveryStatus' | 'campaignId'>> & {
+  startTime: Date;
+  endTime: Date;
+};

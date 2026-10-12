@@ -1,12 +1,14 @@
-import { Body, Controller, Get, HttpStatus, Injectable, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Injectable, Param, Patch, Post, Query } from '@nestjs/common';
 import { IsObjectIdPipe } from '@nestjs/mongoose';
 import { ApiErrorResponse } from '@framework/swagger';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
-import { ViberAccountService, ViberProviderService } from '@application/modules/viber';
+import { ViberAccountService, ViberLogService, ViberProviderService } from '@application/modules/viber';
 import {
   CreateViberAccountRequest,
   GetViberAccountListResponse,
+  GetViberLogListRequest,
+  GetViberLogListResponse,
   GetViberProviderListResponse,
   PatchViberAccountRequest,
 } from './viber.dto';
@@ -18,6 +20,7 @@ export class ViberController {
   constructor(
     private readonly viberProviderService: ViberProviderService,
     private readonly viberAccountService: ViberAccountService,
+    private readonly viberLogService: ViberLogService,
   ) {}
 
   @Get('providers')
@@ -66,5 +69,24 @@ export class ViberController {
     @Body() body: PatchViberAccountRequest,
   ): Promise<void> {
     await this.viberAccountService.updateAccount(id, body);
+  }
+
+  @Get('logs')
+  @ApiOperation({
+    summary: 'Get viber log list',
+    description: 'Retrieve viber message logs within a time range, newest first. Message content is not returned.',
+  })
+  @ZodResponse({ type: GetViberLogListResponse, status: HttpStatus.OK })
+  async getViberLogList(@Query() query: GetViberLogListRequest): Promise<GetViberLogListResponse> {
+    const { items, ...pagination } = await this.viberLogService.findLogs(query);
+
+    return {
+      ...pagination,
+      items: items.map((log) => ({
+        ...log,
+        createdAt: log.createdAt?.toISOString(),
+        updatedAt: log.updatedAt?.toISOString(),
+      })),
+    };
   }
 }

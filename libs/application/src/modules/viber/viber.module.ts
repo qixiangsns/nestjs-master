@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { MongoSchemaModule } from './schemas';
 import { ViberAccountRepository } from './repositories/viber-account.repository';
 import { ViberAccountService } from './services/viber-account.service';
@@ -7,10 +6,12 @@ import { ViberRouteConfigRepository } from './repositories/viber-route-config.re
 import { PlayerModule } from '@application/modules/player';
 import { ViberProviderRepository } from './repositories/viber-provider.repository';
 import { ViberProviderService } from './services/viber-provider.service';
+import { ViberLogRepository } from './repositories/viber-log.repository';
+import { ViberLogService } from './services/viber-log.service';
 
-const Repositories = [ViberAccountRepository, ViberRouteConfigRepository, ViberProviderRepository];
-const Services = [ViberAccountService, ViberProviderService];
-const Providers = [ViberAccountService, ViberProviderService];
+const Repositories = [ViberAccountRepository, ViberRouteConfigRepository, ViberProviderRepository, ViberLogRepository];
+const Services = [ViberAccountService, ViberProviderService, ViberLogService];
+const Providers = [ViberAccountService, ViberProviderService, ViberLogService];
 
 @Module({
   imports: [MongoSchemaModule, PlayerModule],
