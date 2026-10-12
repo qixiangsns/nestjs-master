@@ -22,6 +22,10 @@ export class ViberProviderService {
     this.logger.log({ code: provider.code }, 'Provider saved');
   }
 
+  async findProvider(code: ViberProviderCode) {
+    return this.providerRepo.findProvider(code);
+  }
+
   async getAllProviders() {
     const providers = await this.providerRepo.findProviders();
     return providers;

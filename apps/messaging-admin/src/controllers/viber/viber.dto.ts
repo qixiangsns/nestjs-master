@@ -1,6 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import {
   CreateViberAccountSchema,
+  CreateViberRouteConfigSchema,
   GetViberAccountListResponseSchema,
   GetViberLogListRequestSchema,
   GetViberLogListResponseSchema,
@@ -18,3 +19,4 @@ export class GetViberLogListRequest extends createZodDto(GetViberLogListRequestS
 export class GetViberLogListResponse extends createZodDto(GetViberLogListResponseSchema) {}
 export class GetViberRouteConfigRequest extends createZodDto(GetViberRouteConfigRequestSchema) {}
 export class GetViberRouteConfigResponse extends createZodDto(GetViberRouteConfigResponseSchema) {}
+export class CreateViberRouteConfigRequest extends createZodDto(CreateViberRouteConfigSchema) {}

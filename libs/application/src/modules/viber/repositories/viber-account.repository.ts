@@ -41,6 +41,10 @@ export class ViberAccountRepository {
     return acc ? { ...acc, id: acc._id.toString() } : null;
   }
 
+  async findAccounts(ids: string[]) {
+    return this.accountModel.find({ _id: { $in: ids.map((id) => new Types.ObjectId(id)) } }).lean();
+  }
+
   async addApiKeySecretAcc(account: Except<ViberAccountApiKeySecret, 'id' | 'createdAt' | 'updatedAt'>) {
     const acc = new this.accountApiKeySecretModel(account);
     acc.type = 'ApiKeySecret';

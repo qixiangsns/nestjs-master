@@ -11,6 +11,7 @@ import {
 } from '@application/modules/viber';
 import {
   CreateViberAccountRequest,
+  CreateViberRouteConfigRequest,
   GetViberAccountListResponse,
   GetViberLogListRequest,
   GetViberLogListResponse,
@@ -106,5 +107,15 @@ export class ViberController {
   @ZodResponse({ type: GetViberRouteConfigResponse, status: HttpStatus.OK })
   async getViberRouteConfig(@Query() query: GetViberRouteConfigRequest): Promise<GetViberRouteConfigResponse> {
     return this.viberRouteConfigService.getConfig(query);
+  }
+
+  @Post('route-config')
+  @ApiOperation({
+    summary: 'Create viber route config',
+    description:
+      'Create the route config of a platform and route type. All accounts must exist and support the route sender id.',
+  })
+  async createViberRouteConfig(@Body() body: CreateViberRouteConfigRequest): Promise<void> {
+    await this.viberRouteConfigService.addConfig(body);
   }
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidObjectId } from 'mongoose';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { RouteStrategy, RouteType } from '../models/viber-route-config.model';
 
@@ -34,3 +35,22 @@ export const GetViberRouteConfigResponseSchema = z
     title: 'ViberRouteConfig',
     description: 'A viber route config with its account summaries, without credentials',
   });
+
+export const CreateViberRouteConfigSchema = z.object({
+  type: z.enum(RouteType),
+  platformId: z.string().trim().min(1),
+  senderId: z.string().trim().min(1),
+  strategy: z.enum(RouteStrategy),
+  accounts: z
+    .array(
+      z.object({
+        id: z.string().refine(isValidObjectId, 'Invalid account id'),
+        isEnabled: z.boolean(),
+        weight: z.number().int().min(1),
+      }),
+    )
+    .min(1)
+    .refine((accounts) => new Set(accounts.map((acc) => acc.id)).size === accounts.length, 'Duplicate account id'),
+});
+
+export type CreateViberRouteConfig = z.output<typeof CreateViberRouteConfigSchema>;

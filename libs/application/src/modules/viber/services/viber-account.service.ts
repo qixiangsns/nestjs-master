@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ViberAccountRepository } from '../repositories/viber-account.repository';
-import { ViberProviderRepository } from '../repositories/viber-provider.repository';
+import { ViberProviderService } from './viber-provider.service';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { ProviderTransportMethod } from '../models/viber-account.model';
 import { CreateViberAccount, PatchViberAccount } from '../dtos/viber-account.dto';
@@ -9,11 +9,15 @@ import { CreateViberAccount, PatchViberAccount } from '../dtos/viber-account.dto
 export class ViberAccountService {
   constructor(
     private readonly accountRepo: ViberAccountRepository,
-    private readonly providerRepo: ViberProviderRepository,
+    private readonly providerService: ViberProviderService,
   ) {}
 
   async getAllAccounts() {
     return this.accountRepo.getAllAccount();
+  }
+
+  async findAccounts(ids: string[]) {
+    return this.accountRepo.findAccounts(ids);
   }
 
   async addAccount({ credentials, ...account }: CreateViberAccount) {
@@ -41,7 +45,7 @@ export class ViberAccountService {
   }
 
   private async validateProviderUrl(providerCode: ViberProviderCode, url: string) {
-    const provider = await this.providerRepo.findProvider(providerCode);
+    const provider = await this.providerService.findProvider(providerCode);
 
     if (!provider) {
       throw new BadRequestException(`Provider ${providerCode} is not configured`);
