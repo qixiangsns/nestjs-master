@@ -17,6 +17,8 @@ import {
   ViberPromotexterClientFactory,
   ViberSenderFactory,
 } from './services/viber-sender.factory';
+import { ViberSenderService } from './services/viber-sender.service';
+import { ViberDispatcherService } from './services/viber-dispatcher.service';
 
 const Repositories = [ViberAccountRepository, ViberRouteConfigRepository, ViberProviderRepository, ViberLogRepository];
 const Services = [
@@ -25,6 +27,7 @@ const Services = [
   ViberLogService,
   ViberRouteConfigService,
   ViberConsumerManagerFactory,
+  ViberSenderService,
 ];
 const Providers = [
   ViberAccountService,
@@ -37,6 +40,8 @@ const Providers = [
   ViberSenderFactory,
   ViberPromotexterClientFactory,
   ViberAccountTokenStore,
+  ViberSenderService,
+  ViberDispatcherService,
 ];
 
 @Module({
