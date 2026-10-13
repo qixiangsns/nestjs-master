@@ -33,7 +33,7 @@ export class ViberAccountConsumer {
   private rateLimiter: RateLimiterMemory;
   private state: 'paused' | 'running' | 'connected';
   private isProcessing: boolean;
-  private consumers: Map<RouteType, Consumer>;
+  private consumers: Map<RouteType, Consumer> = new Map();
   private pacer: Pacer;
 
   constructor(
@@ -88,6 +88,7 @@ export class ViberAccountConsumer {
         if (consumer && consumer.isConnected()) {
           const message = await consumer.receive(peekTimeoutMs);
           await consumer.acknowledge(message);
+
           batchMessages.push(message);
         }
       } catch (error) {
@@ -161,9 +162,7 @@ export class ViberAccountConsumer {
       }
       this.isProcessing = true;
 
-      let messages: Message[] = [];
-
-      const { batchMessages = messages, retryAfterMs } = await this.consumeBatch({
+      const { batchMessages, retryAfterMs } = await this.consumeBatch({
         maxNumMessages: 100,
         timeoutMs: 1000,
       });
@@ -177,7 +176,7 @@ export class ViberAccountConsumer {
         if (!isRateLimited) this.pacer.rampUp();
 
         // Prepare sending
-        const tasks = messages.map((message) => this.concurrency(() => this.sendMessage(message)));
+        const tasks = batchMessages.map((message) => this.concurrency(() => this.sendMessage(message)));
 
         // Send message concurrently
         const results = await Promise.allSettled(tasks);
@@ -198,7 +197,6 @@ export class ViberAccountConsumer {
 
   private async sendMessage(message: Message) {
     const data: ViberRequest = JSON.parse(message.getData().toString());
-
     let result: SendViberResult | null = null;
 
     const log = {
