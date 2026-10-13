@@ -1,30 +1,107 @@
-import { Injectable } from '@nestjs/common';
-import { RouteAccount, RouteType, ViberRouteConfig } from '../models/viber-route-config.model';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository';
 import { ViberAccountRepository } from '../repositories/viber-account.repository';
+import { ViberAccountService } from './viber-account.service';
+import {
+  CreateViberRouteConfig,
+  GetViberRouteConfigRequest,
+  PatchViberRouteConfig,
+  PatchViberRouteConfigChannel,
+  PatchViberRouteConfigStatus,
+} from '../dtos/viber-config.dto';
 
 @Injectable()
 export class ViberRouteConfigService {
   constructor(
-    private readonly configRepo: ViberRouteConfigRepository,
+    private readonly routeConfigRepo: ViberRouteConfigRepository,
     private readonly accountRepo: ViberAccountRepository,
+    private readonly accountService: ViberAccountService,
   ) {}
 
-  async updateConfig(id: string, config: ViberRouteConfig) {
-    await this.configRepo.updateConfig(id, config);
-    await this.syncAccountsStatus(config.accounts);
+  async getConfig({ platformId, routeType }: GetViberRouteConfigRequest) {
+    const config = await this.routeConfigRepo.findConfig(routeType, platformId);
+
+    if (!config) {
+      throw new NotFoundException('Viber route config not found');
+    }
+
+    return config;
+  }
+
+  async addConfig(config: CreateViberRouteConfig) {
+    const existing = await this.routeConfigRepo.findConfig(config.type, config.platformId);
+
+    if (existing) {
+      throw new ConflictException(`Route config for ${config.platformId} ${config.type} already exists`);
+    }
+
+    await this.validateAccounts(
+      config.accounts.map((acc) => acc.id),
+      config.senderId,
+    );
+
+    await this.routeConfigRepo.addConfig(config);
+  }
+
+  async updateConfig(id: string, config: PatchViberRouteConfig) {
+    await this.getConfigById(id);
+
+    await this.routeConfigRepo.updateConfig(id, config);
+  }
+
+  async updateChannel(id: string, config: PatchViberRouteConfigChannel) {
+    const existing = await this.getConfigById(id);
+
+    await this.validateAccounts(
+      config.accounts.map((acc) => acc.id),
+      existing.senderId,
+    );
+
+    await this.routeConfigRepo.updateConfig(id, config);
+    await this.syncAccountsStatus([...existing.accounts, ...config.accounts].map((acc) => acc.id.toString()));
+  }
+
+  async updateStatus(id: string, { accountId, isEnabled }: PatchViberRouteConfigStatus) {
+    const existing = await this.getConfigById(id);
+
+    const updated = await this.routeConfigRepo.updateAccountStatus(id, accountId, isEnabled);
+
+    if (!updated) {
+      throw new NotFoundException('Account is not in this route config');
+    }
+
+    await this.syncAccountsStatus(existing.accounts.map((acc) => acc.id.toString()));
+  }
+
+  private async getConfigById(id: string) {
+    const config = await this.routeConfigRepo.findConfigById(id);
+
+    if (!config) {
+      throw new NotFoundException('Viber route config not found');
+    }
+
+    return config;
+  }
+
+  private async validateAccounts(accountIds: string[], senderId: string) {
+    const accounts = await this.accountService.findAccounts(accountIds);
+
+    if (accounts.length !== accountIds.length) {
+      throw new BadRequestException('One or more accounts do not exist');
+    }
+
+    if (accounts.some((acc) => !acc.senderIds.includes(senderId))) {
+      throw new BadRequestException(`All accounts must support sender id ${senderId}`);
+    }
   }
 
   /**
    * Check if account is configured for all the routes and update its enabled status
    */
-  private async syncAccountsStatus(accounts: RouteAccount[]) {
-    const accountIds = new Set(accounts.map((acc) => acc.id));
-
-    // sync account status
-    for (const account of accounts) {
-      const isEnabled = await this.configRepo.isAccountEnabled(account.id);
-      await this.accountRepo.updateStatus(account.id, isEnabled);
+  private async syncAccountsStatus(accountIds: string[]) {
+    for (const accountId of new Set(accountIds)) {
+      const isEnabled = await this.routeConfigRepo.isAccountEnabled(accountId);
+      await this.accountRepo.updateStatus(accountId, isEnabled);
     }
   }
 }

@@ -1,14 +1,12 @@
+import '@framework/trace';
 import { NestFactory } from '@nestjs/core';
 import { Logger, VersioningType, INestApplication } from '@nestjs/common';
 import { Logger as PinoLogger } from 'nestjs-pino';
-import { cleanupOpenApiDoc } from 'nestjs-zod';
 import { ApiModule } from './messaging-api.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { API_ENV_TOKEN, ApiEnv } from './config';
 import { DEFAULT_OPTIONS } from '@framework/scalar';
+import { buildOpenApiDocument } from './openapi';
 import { apiReference } from '@scalar/nestjs-api-reference';
-import { version } from '@package';
-import { otelSdk } from '@framework/trace';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiModule, {
@@ -21,9 +19,6 @@ async function bootstrap() {
   const logger = new Logger('Server');
   app.flushLogs();
 
-  // Open Telemetry
-  otelSdk.start();
-
   // API documentation
   app.enableVersioning({ type: VersioningType.URI });
   setupApiDocumentation(app);
@@ -35,22 +30,9 @@ async function bootstrap() {
 }
 
 function setupApiDocumentation(app: INestApplication) {
-  const openApiDoc = SwaggerModule.createDocument(
-    app,
-    new DocumentBuilder()
-      .setTitle('Messaging API')
-      .setDescription('Documentation for Messaging API')
-      .setVersion(version)
-      .build(),
-  );
+  const document = buildOpenApiDocument(app);
 
-  app.use(
-    '/api',
-    apiReference({
-      content: cleanupOpenApiDoc(openApiDoc),
-      ...DEFAULT_OPTIONS,
-    }),
-  );
+  app.use('/api', apiReference({ content: document, ...DEFAULT_OPTIONS }));
 }
 
 bootstrap();

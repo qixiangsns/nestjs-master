@@ -17,6 +17,15 @@ export class ViberProviderService {
     await this.providerRepo.addProvider(provider);
   }
 
+  async saveProvider(provider: ViberProvider) {
+    await this.providerRepo.upsertProvider(provider);
+    this.logger.log({ code: provider.code }, 'Provider saved');
+  }
+
+  async findProvider(code: ViberProviderCode) {
+    return this.providerRepo.findProvider(code);
+  }
+
   async getAllProviders() {
     const providers = await this.providerRepo.findProviders();
     return providers;

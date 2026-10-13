@@ -1,3 +1,4 @@
+import '@framework/trace';
 import { NestFactory } from '@nestjs/core';
 import { Logger, VersioningType } from '@nestjs/common';
 import { MessagingAdminModule } from './messaging-admin.module';
@@ -8,7 +9,6 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { DocumentBuilder } from '@nestjs/swagger';
 import { DEFAULT_OPTIONS } from '@framework/scalar';
 import { version } from '@package';
-import { otelSdk } from '@framework/trace';
 import { cleanupOpenApiDoc } from 'nestjs-zod';
 import { apiReference } from '@scalar/nestjs-api-reference';
 
@@ -22,9 +22,6 @@ async function bootstrap() {
   app.useLogger(app.get(PinoLogger));
   const logger = new Logger('Server');
   app.flushLogs();
-
-  // Open Telemetry
-  otelSdk.start();
 
   // API documentation
   app.enableVersioning({ type: VersioningType.URI });

@@ -4,6 +4,7 @@ import { ViberAccount, ViberAccountSender } from '../models/viber-account.model'
 import { ViberSenderPromotexterApix } from './viber-sender-promotexter-apix.adapter';
 import { ViberSenderPromotexter } from './viber-sender-promotexter.adapter';
 import { AccountDetailsRoutable } from '../models/viber-route-config.model';
+import { ViberSenderMockProvider } from './viber-sender-mock-provider.adapter';
 import { Inject, Injectable } from '@nestjs/common';
 import { ViberAccountRepository } from '../repositories/viber-account.repository';
 import { PromotexterApi, PromotexterApix } from '@application/integrations/promotexter';
@@ -157,6 +158,8 @@ export class ViberSenderFactory {
       case 'PromotexterApix':
         const promotexterApixClient = await this.promotexterClientFactory.getClient(account.id);
         return new ViberSenderPromotexterApix(promotexterApixClient);
+      case 'MockProvider':
+        return new ViberSenderMockProvider();
       default:
         throw new Error(`${ViberSenderFactory.name} failed to create viber sender: ${account.providerCode}`);
     }

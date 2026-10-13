@@ -3,8 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, QueryFilter } from 'mongoose';
 import { ViberLog as ViberLogModel } from '../schemas/viber-log.schema';
 import { MONGO_CONN_NAME } from '@application/connnections';
-import { Except } from 'type-fest';
-import { DeliveryStatus, ViberLogFilterDto, ViberLog } from '../models/viber-log.model';
+import { ViberLogFilterDto, ViberLog } from '../models/viber-log.model';
 
 @Injectable()
 export class ViberLogRepository {
@@ -14,8 +13,11 @@ export class ViberLogRepository {
     private logModel: Model<ViberLogModel>,
   ) {}
 
-  async findLogs(filterDto: Partial<ViberLogFilterDto>): Promise<Except<ViberLog, 'phoneNo'>[]> {
-    let filter: QueryFilter<ViberLogModel> = {};
+  async findLogs(filterDto: ViberLogFilterDto, page: number, pageSize: number) {
+    const filter: QueryFilter<ViberLogModel> = {
+      createdAt: { $gte: filterDto.startTime, $lte: filterDto.endTime },
+    };
+
     if (filterDto.campaignId) {
       filter.campaignId = { $eq: filterDto.campaignId };
     }
@@ -32,8 +34,23 @@ export class ViberLogRepository {
       filter.type = { $eq: filterDto.type };
     }
 
-    const logs = await this.logModel.find(filter).lean();
-    return logs.map((log) => ({ ...log, id: log._id.toString() }));
+    const [logs, total] = await Promise.all([
+      this.logModel
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * pageSize)
+        .limit(pageSize)
+        .lean(),
+      this.logModel.countDocuments(filter),
+    ]);
+
+    return {
+      items: logs.map((log) => ({ ...log, id: log._id.toString() })),
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+    };
   }
 
   async updateByReferenceId(referenceId: string, log: Partial<ViberLog>) {
