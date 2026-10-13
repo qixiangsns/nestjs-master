@@ -2,13 +2,14 @@ import { Body, Controller, HttpStatus, Injectable, Post } from '@nestjs/common';
 import { ApiErrorResponse } from '@framework/swagger';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
+import { ViberSenderService } from '@application/modules/viber';
 import { SendViberMktDto, SendViberNotifDto, SendViberOtpDto, SendViberResponseDto } from './viber.dto';
 
 @Injectable()
 @Controller({ version: '1', path: 'viber' })
 @ApiErrorResponse()
 export class ViberController {
-  constructor() {}
+  constructor(private readonly viberSenderService: ViberSenderService) {}
 
   @Post('/otp')
   @ApiOperation({
@@ -17,9 +18,7 @@ export class ViberController {
   })
   @ZodResponse({ type: SendViberResponseDto, status: HttpStatus.ACCEPTED })
   async sendOtp(@Body() body: SendViberOtpDto) {
-    return {
-      messageId: '',
-    };
+    return this.viberSenderService.acceptOtpRequest(body);
   }
 
   @Post('/notification')

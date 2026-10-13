@@ -47,7 +47,7 @@ export class ViberAccountRepository {
   }
 
   async findEnabledAccountsByProvider(code: ViberProviderCode): Promise<ViberAccount[]> {
-    const accounts = await this.accountModel.find({ code, isEnabled: true }).lean<Lean<ViberAccountModel>[]>();
+    const accounts = await this.accountModel.find({ providerCode: code, isEnabled: true }).lean<Lean<ViberAccountModel>[]>();
     return accounts.map((acc) => ({ ...acc, id: acc._id.toString() }));
   }
 
@@ -68,7 +68,7 @@ export class ViberAccountRepository {
   }
 
   async updateStatus(id: string, isEnabled: boolean) {
-    await this.accountModel.updateOne(new Types.ObjectId(id), {
+    await this.accountModel.updateOne({ _id: new Types.ObjectId(id)}, {
       isEnabled,
     });
   }
