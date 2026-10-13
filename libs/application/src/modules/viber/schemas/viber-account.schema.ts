@@ -66,5 +66,24 @@ export class ViberAccountApiKeySecret implements ViberAccountBase {
   updatedAt: Date;
 }
 
+@Schema()
+export class ViberAccountBearerToken implements ViberAccountBase {
+  type: 'BearerToken';
+
+  @Prop({ type: String })
+  apiKey: string;
+
+  @Prop({ type: String })
+  apiSecret: string;
+
+  name: string;
+  providerCode: ViberProviderCode;
+  url: string;
+  senderIds: string[];
+  isEnabled: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export const ViberAccountApiKeySecretSchema = SchemaFactory.createForClass(ViberAccountApiKeySecret);
-export type ViberAccount = ViberAccountApiKeySecret | ViberAccountApiToken;
+export type ViberAccount = ViberAccountApiKeySecret | ViberAccountApiToken | ViberAccountBearerToken;

@@ -32,7 +32,7 @@ export class ViberAccountRepository {
     return accounts.map((acc) => ({ ...acc, id: acc._id.toString() }));
   }
 
-  async findEnabledProviderAccounts(code: ViberProviderCode): Promise<ViberAccount[]> {
+  async findEnabledAccountsByProvider(code: ViberProviderCode): Promise<ViberAccount[]> {
     const accounts = await this.accountModel.find({ code, isEnabled: true }).lean<Lean<ViberAccountModel>[]>();
     return accounts.map((acc) => ({ ...acc, id: acc._id.toString() }));
   }

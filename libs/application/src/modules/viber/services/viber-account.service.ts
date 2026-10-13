@@ -6,7 +6,7 @@ import { ViberAccountRepository } from '../repositories/viber-account.repository
 export class ViberAccountService {
   constructor(private readonly accountRepo: ViberAccountRepository) {}
 
-  async getEnabledProviderAccounts(code: ViberProviderCode) {
-    return this.accountRepo.findEnabledProviderAccounts(code);
+  async findEnabledAccountsByProvider(code: ViberProviderCode) {
+    return this.accountRepo.findEnabledAccountsByProvider(code);
   }
 }
