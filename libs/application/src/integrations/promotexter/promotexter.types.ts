@@ -69,7 +69,7 @@ export interface SendViberRequestBase {
 export interface SendViberTemplateRequest extends SendViberRequestBase {
   templateId: string;
   templateParams: Record<string, unknown>;
-  templateLanguage: 'en';
+  templateLang?: string;
 }
 
 export type SendViberResponse = {
@@ -85,8 +85,8 @@ export type SendViberResponse = {
 export interface SendViberRichMsgRequest extends SendViberRequestBase {
   text?: string;
   image?: string; // image url
-  caption?: string; // image caption
-  url?: string; // button url
+  caption?: string; // button label (required with url)
+  url?: string; // button url (required with caption)
   video?: string; // video url
   thumbnail?: string; // video image thumbnail
 }

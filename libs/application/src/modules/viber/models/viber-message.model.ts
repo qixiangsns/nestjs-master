@@ -20,10 +20,24 @@ const ViberMessageType = ['Otp', 'Template', 'Content'] as const;
 type ViberMessageType = (typeof ViberMessageType)[number];
 
 /**
+ * Viber request payload
+ */
+export type ViberRequestBase = {
+  id: string;
+  platformId: string;
+  phoneNo: string;
+  senderId: string;
+  routeType: RouteType;
+  playerId?: string;
+  campaignId?: string;
+  campaignSender?: string;
+};
+
+/**
  * Viber pre-approved template
  * Usage: transactional/notification message
  */
-export type ViberTemplateRequest = {
+export type ViberTemplateRequest = ViberRequestBase & {
   type: ExtractStrict<ViberMessageType, 'Template'>;
   templateId: string;
   templateLang: string;
@@ -136,7 +150,7 @@ export type ViberContentVideoButtonText = {
   text: string;
 };
 
-export type ViberContentRequest = {
+export type ViberContentRequest = ViberRequestBase & {
   type: ExtractStrict<ViberMessageType, 'Content'>;
   templateContent:
     | ViberContentTextOnly
@@ -155,26 +169,11 @@ export type ViberContentRequest = {
  * Viber OTP message
  * Usage: Login/Register OTP
  */
-export type ViberOtpRequest = {
+export type ViberOtpRequest = ViberRequestBase & {
   type: ExtractStrict<ViberMessageType, 'Otp'>;
   templateId: string;
   otp: string;
   otpValidityMinutes: number;
 };
 
-/**
- * Viber request payload
- */
-type ViberRequestBase = {
-  id: string;
-  platformId: string;
-  phoneNo: string;
-  routeType: RouteType;
-  playerId?: string;
-  campaignId?: string;
-  campaignSender?: string;
-};
-
-type ViberRequestType = ViberOtpRequest | ViberContentRequest | ViberTemplateRequest;
-
-export type ViberRequest = ViberRequestBase & ViberRequestType;
+export type ViberRequest = ViberOtpRequest | ViberContentRequest | ViberTemplateRequest;

@@ -1,4 +1,4 @@
-import { PromotexterApi } from '@application/integrations/promotexter';
+import { PromotexterApi, SendViberRichMsgRequest, SendViberResponse } from '@application/integrations/promotexter';
 import { ViberSender } from '../interfaces/viber-sender.port';
 import {
   SendViberResult,
@@ -6,41 +6,90 @@ import {
   ViberOtpRequest,
   ViberTemplateRequest,
 } from '../models/viber-message.model';
-import { ViberAccountSender } from '../models/viber-account.model';
-
 export class ViberSenderPromotexter implements ViberSender {
   constructor(private readonly api: PromotexterApi) {}
 
-  async sendContentMsg(message: ViberContentRequest): Promise<SendViberResult> {
+  async sendOtp(message: ViberOtpRequest): Promise<SendViberResult> {
+    const result = await this.api.sendViberOtp({
+      from: message.senderId,
+      to: message.phoneNo,
+      referenceId: message.id,
+      templateId: message.templateId,
+      templateParams: { pin: message.otp },
+      ttl: message.otpValidityMinutes * 60, // seconds
+    });
+
     return {
-      messageId: '1',
-      referenceId: '1',
+      messageId: message.id,
+      referenceId: result.transactionId,
     };
   }
 
   async sendTemplateMsg(message: ViberTemplateRequest): Promise<SendViberResult> {
-    return {
-      messageId: '1',
-      referenceId: '1',
-    };
-  }
-  async sendOtp(message: ViberOtpRequest): Promise<SendViberResult> {
-    const result = await this.api.sendViberOtp({
-      from: 'casino plus',
-      to: '630339434343',
-      templateId: '332323232',
-      referenceId: 'wqw2',
-      ttl: 5,
-      templateParams: {},
-      templateLanguage: 'en',
-      dlrCallbackConfig: {
-        url: '32',
-      },
+    const result = await this.api.sendTemplate({
+      from: message.senderId,
+      to: message.phoneNo,
+      referenceId: message.id,
+      templateId: message.templateId,
+      templateParams: message.templateParams,
+      templateLang: message.templateLang,
     });
 
     return {
+      messageId: message.id,
       referenceId: result.transactionId,
-      messageId: '1',
     };
+  }
+
+  async sendContentMsg(message: ViberContentRequest): Promise<SendViberResult> {
+    const result = await this.api.sendRichMessage({
+      from: message.senderId,
+      to: message.phoneNo,
+      referenceId: message.id,
+      ...this.toRichContent(message.templateContent),
+    });
+
+    return {
+      messageId: message.id,
+      referenceId: result.transactionId,
+    };
+  }
+
+  /**
+   * Map platform content components to Promotexter rich message fields
+   */
+  private toRichContent(content: ViberContentRequest['templateContent']): Partial<SendViberRichMsgRequest> {
+    switch (content.contentType) {
+      case 'TextOnly':
+        return { text: content.text };
+      case 'TextButton':
+        return { text: content.text, url: content.buttonUrl, caption: content.buttonText };
+      case 'ImageOnly':
+        return { image: content.imageUrl };
+      case 'ImageText':
+        return { image: content.imageUrl, text: content.text };
+      case 'ImageButton':
+        return { image: content.imageUrl, url: content.buttonUrl, caption: content.buttonText };
+      case 'ImageButtonText':
+        return {
+          image: content.imageUrl,
+          text: content.text,
+          url: content.buttonUrl,
+          caption: content.buttonText,
+        };
+      case 'VideoOnly':
+        return { video: content.videoUrl };
+      case 'VideoText':
+        return { video: content.videoUrl, text: content.text };
+      case 'VideoButton':
+        return { video: content.videoUrl, url: content.buttonUrl, caption: content.buttonText };
+      case 'VideoButtonText':
+        return {
+          video: content.videoUrl,
+          url: content.buttonUrl,
+          caption: content.buttonText,
+          text: content.text,
+        };
+    }
   }
 }
