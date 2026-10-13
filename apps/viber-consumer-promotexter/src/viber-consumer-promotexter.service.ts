@@ -1,4 +1,4 @@
-import { CACHE_TOKEN, REDIS_SUBSCRIBER_TOKEN } from '@application/connnections';
+import { REDIS_TOKEN, REDIS_SUBSCRIBER_TOKEN } from '@application/connnections';
 import { ViberProviderCode } from '@application/modules/viber/models/viber-provider.model';
 import { type RouteAccountRoutable } from '@application/modules/viber/models/viber-route-config.model';
 import { ViberAccountService } from '@application/modules/viber/services/viber-account.service';
