@@ -116,7 +116,7 @@ export class ViberPromotexterApixClientFactory {
     let client: PromotexterApix;
     switch (account.type) {
       case 'BearerToken':
-        client = new PromotexterApi({
+        client = new PromotexterApix({
           auth: {
             type: 'bearer_token',
             apiKey: account.apiKey,
@@ -140,7 +140,7 @@ export class ViberPromotexterApixClientFactory {
         });
         break;
       default:
-        throw new Error(`${PromotexterApi.name} does not support the following auth method: ${account.type}`);
+        throw new Error(`${PromotexterApix.name} does not support the following auth method: ${account.type}`);
     }
 
     return client;
@@ -149,15 +149,21 @@ export class ViberPromotexterApixClientFactory {
 
 @Injectable()
 export class ViberSenderFactory {
-  constructor(private readonly promotexterClientFactory: ViberPromotexterClientFactory) {}
+  constructor(
+    private readonly promotexterClientFactory: ViberPromotexterClientFactory,
+    private readonly promotexterApixClientFactory: ViberPromotexterApixClientFactory,
+  ) {}
+
   async createSender(account: ViberAccountSender): Promise<ViberSender> {
     switch (account.providerCode) {
-      case 'Promotexter':
+      case 'Promotexter': {
         const promotexterClient = await this.promotexterClientFactory.getClient(account.id);
         return new ViberSenderPromotexter(promotexterClient);
-      case 'PromotexterApix':
-        const promotexterApixClient = await this.promotexterClientFactory.getClient(account.id);
+      }
+      case 'PromotexterApix': {
+        const promotexterApixClient = await this.promotexterApixClientFactory.getClient(account.id);
         return new ViberSenderPromotexterApix(promotexterApixClient);
+      }
       case 'MockProvider':
         return new ViberSenderMockProvider();
       default:

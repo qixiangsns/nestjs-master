@@ -14,6 +14,7 @@ import { ViberEventService } from './services/viber-event.service';
 import { ViberRouteConfigService } from './services/viber-route-config.service';
 import {
   ViberAccountTokenStore,
+  ViberPromotexterApixClientFactory,
   ViberPromotexterClientFactory,
   ViberSenderFactory,
 } from './services/viber-sender.factory';
@@ -36,6 +37,7 @@ const Providers = [
   ViberEventService,
   ViberSenderFactory,
   ViberPromotexterClientFactory,
+  ViberPromotexterApixClientFactory,
   ViberAccountTokenStore,
 ];
 
