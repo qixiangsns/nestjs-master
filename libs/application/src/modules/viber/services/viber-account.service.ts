@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { ViberAccountRepository } from '../repositories/viber-account.repository';
 import { ViberProviderService } from './viber-provider.service';
 import { ViberProviderCode } from '../models/viber-provider.model';
-import { ProviderTransportMethod } from '../models/viber-account.model';
+import { ProviderTransportMethod, ViberAccount } from '../models/viber-account.model';
 import { CreateViberAccount, PatchViberAccount } from '../dtos/viber-account.dto';
 
 @Injectable()
@@ -22,6 +22,10 @@ export class ViberAccountService {
 
   async findEnabledAccountsByProvider(code: ViberProviderCode) {
     return this.accountRepo.findEnabledAccountsByProvider(code);
+  }
+
+  async findAccount(id: string): Promise<ViberAccount | null> {
+    return this.accountRepo.findAccount(id);
   }
 
   async addAccount({ credentials, ...account }: CreateViberAccount) {

@@ -7,38 +7,10 @@ import {
   ViberOtpRequest,
 } from '../models/viber-message.model';
 import { AccountDetailsRoutable } from '../models/viber-route-config.model';
+import { ViberAccountSender } from '../models/viber-account.model';
 
 export class ViberSenderPromotexterApix implements ViberSender {
-  private api: PromotexterApix;
-
-  constructor(private readonly account: AccountDetailsRoutable) {
-    switch (account.type) {
-      case 'BearerToken':
-        this.api = new PromotexterApix({
-          auth: {
-            type: 'bearer_token',
-            apiKey: account.apiKey,
-            apiSecret: account.apiSecret,
-            saveToken: async (token) => {},
-            getToken: async () => '',
-          },
-          baseUrl: account.url,
-        });
-        break;
-      case 'ApiKeySecret':
-        this.api = new PromotexterApix({
-          auth: {
-            type: 'api_key',
-            apiKey: account.apiKey,
-            apiSecret: account.apiSecret,
-          },
-          baseUrl: account.url,
-        });
-        break;
-      default:
-        throw new Error(`${PromotexterApix.name} does not support the following auth method: ${account.type}`);
-    }
-  }
+  constructor(private readonly api: PromotexterApix) {}
 
   async sendContentMsg(message: ViberContentRequest): Promise<SendViberResult> {
     throw new Error(`${PromotexterApix.name} does not support sending viber rich content message`);

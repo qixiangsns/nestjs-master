@@ -40,7 +40,7 @@ export class PromotexterBase {
     return token;
   }
 
-  async generateApiToken(apiSecret: string, apiKey: string, expiresInSeconds: number = 3600) {
+  async generateBearerToken(apiSecret: string, apiKey: string, expiresInSeconds: number = 3600) {
     const clientToken = this.generateClientToken(apiSecret, apiKey);
 
     const body: GenerateTokenRequest = {
@@ -66,12 +66,12 @@ export class PromotexterBase {
 
   private async getBearerToken() {
     if (this.options.auth.type === 'bearer_token') {
-      const storedToken = await this.options.auth.getToken();
+      const storedToken = await this.options.auth.tokenStore.get();
       if (storedToken) return storedToken;
 
-      const newToken = await this.generateApiToken(this.options.auth.apiSecret, this.options.auth.apiKey);
+      const newToken = await this.generateBearerToken(this.options.auth.apiSecret, this.options.auth.apiKey);
       if (newToken) {
-        await this.options.auth.saveToken(newToken);
+        await this.options.auth.tokenStore.save(newToken);
       }
       return newToken;
     }
