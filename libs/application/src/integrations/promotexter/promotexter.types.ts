@@ -1,6 +1,10 @@
 import { PromotexterErrorCode } from './promotexter.constant';
 import { RawAxiosHeaders } from 'axios';
 
+interface TokenStore {
+  get: () => Promise<string | null>;
+  save: (token: string) => Promise<void>;
+}
 /**
  * Promotexter Auth Options
  */
@@ -8,8 +12,7 @@ export type AuthConfigBearerToken = {
   type: 'bearer_token';
   apiKey: string;
   apiSecret: string;
-  getToken: () => Promise<string | null>;
-  saveToken: (token: string) => Promise<void>;
+  tokenStore: TokenStore;
 };
 
 export type AuthConfigApiKey = {

@@ -1,4 +1,4 @@
-import { ExtractStrict } from 'type-fest';
+import { Except, ExtractStrict } from 'type-fest';
 import { ViberProviderCode } from './viber-provider.model';
 
 export const AccountType = ['ApiToken', 'ApiKeySecret', 'BearerToken'] as const;
@@ -48,3 +48,8 @@ export interface ViberAccountBearerToken extends ViberAccountBase {
 }
 
 export type ViberAccount = ViberAccountApiToken | ViberAccountApiKeySecret | ViberAccountBearerToken;
+
+/**
+ * Viber account required information to support sending API
+ */
+export type ViberAccountSender = Except<ViberAccount, 'createdAt' | 'updatedAt' | 'name' | 'isEnabled'>;

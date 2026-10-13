@@ -43,6 +43,12 @@ export class ViberAccountRepository {
     await acc.save();
   }
 
+  async findAccount(id: string): Promise<ViberAccount | null> {
+    const account = await this.accountModel.findOne({ _id: new Types.ObjectId(id) }).lean<Lean<ViberAccountModel>>();
+    if (!account) return null;
+    return { ...account, id: account._id.toString() };
+  }
+
   async addApiTokenAcc(account: Except<ViberAccountApiToken, 'id' | 'createdAt' | 'updatedAt'>) {
     const acc = new this.accountApiTokenModel(account);
     acc.type = 'ApiToken';

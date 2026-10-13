@@ -5,18 +5,18 @@ import { PULSAR_CONN_TOKEN } from '@application/connnections';
 import { OnEvent } from '@nestjs/event-emitter';
 import { debounce } from 'perfect-debounce';
 import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
-import { type RouteAccountRoutable, RouteType } from '../models/viber-route-config.model';
+import { RouteType } from '../models/viber-route-config.model';
 import pLimit, { LimitFunction } from 'p-limit';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import { getViberRouteTopic } from '../events/viber-route.events';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { Pacer } from '@framework/utils/pacer.utils';
 import { ViberSenderFactory } from './viber-sender.factory';
-import { ViberSender } from '../interfaces/viber-sender.port';
+import { type ViberSender } from '../interfaces/viber-sender.port';
 import { SendViberResult, ViberRequest } from '../models/viber-message.model';
 import { ViberEventService } from './viber-event.service';
 import waitFor, { TimeoutError } from 'p-wait-for';
-import { ViberAccount } from '../models/viber-account.model';
+import { type ViberAccountSender } from '../models/viber-account.model';
 
 type BatchOptions = {
   maxNumMessages: number;
@@ -35,13 +35,13 @@ export class ViberAccountConsumer {
   private isProcessing: boolean;
   private consumers: Map<RouteType, Consumer>;
   private pacer: Pacer;
-  private sender: ViberSender;
 
   constructor(
     private readonly providerCode: ViberProviderCode,
-    private readonly account: RouteAccountRoutable,
+    private readonly account: ViberAccountSender,
     private readonly pulsarClient: Client,
     private readonly eventService: ViberEventService,
+    private readonly sender: ViberSender,
   ) {
     this.pacer = new Pacer({
       maxDelayMs: 1000,
@@ -56,8 +56,6 @@ export class ViberAccountConsumer {
       points: 1000,
       duration: 1,
     });
-
-    this.sender = ViberSenderFactory.createSender(this.account.details);
   }
 
   private async consumeBatch(options: BatchOptions): Promise<ConsumeBatch> {
@@ -257,12 +255,12 @@ export class ViberAccountConsumer {
 export class ViberConsumerManagerFactory {
   constructor(
     @Inject(PULSAR_CONN_TOKEN.PRIMARY) private readonly pulsarClient: Client,
-    private readonly configManager: ViberRouteConfigManager,
     private readonly eventService: ViberEventService,
+    private readonly senderFactory: ViberSenderFactory,
   ) {}
 
   createManager(providerCode: ViberProviderCode) {
-    return new ViberConsumerManager(providerCode, this.pulsarClient, this.configManager, this.eventService);
+    return new ViberConsumerManager(providerCode, this.pulsarClient, this.eventService, this.senderFactory);
   }
 }
 
@@ -283,12 +281,12 @@ export class ViberConsumerManager {
   constructor(
     private readonly providerCode: ViberProviderCode,
     private readonly pulsarClient: Client,
-    private readonly configManager: ViberRouteConfigManager,
     private readonly eventService: ViberEventService,
+    private readonly senderFactory: ViberSenderFactory,
   ) {}
 
-  async subscribe(accounts: RouteAccountRoutable[]) {
-    const enabledAccounts = accounts.filter((acc) => acc.details.providerCode === this.providerCode && acc.isEnabled);
+  async subscribe(accounts: ViberAccountSender[]) {
+    const enabledAccounts = accounts.filter((acc) => acc.providerCode === this.providerCode);
 
     if (enabledAccounts.length === 0) {
       this.logger.log('No accounts available now');
@@ -297,22 +295,28 @@ export class ViberConsumerManager {
     for (const account of enabledAccounts) await this.addConsumer(account);
   }
 
-  async addConsumer(account: RouteAccountRoutable) {
-    if (account.details.providerCode !== this.providerCode) return false;
-    if (this.accountConsumers.has(account.id)) return false;
+  async addConsumer(account: ViberAccountSender) {
+    if (account.providerCode !== this.providerCode) {
+      throw new Error(
+        `${ViberConsumerManager.name} failed to add consumer due to provider incompatibility ${account.providerCode}`,
+      );
+    }
 
-    const consumer = new ViberAccountConsumer(this.providerCode, account, this.pulsarClient, this.eventService);
+    if (this.accountConsumers.has(account.id)) return;
+
+    const sender = await this.senderFactory.createSender(account);
+    const consumer = new ViberAccountConsumer(this.providerCode, account, this.pulsarClient, this.eventService, sender);
     await consumer.subscribe();
     this.accountConsumers.set(account.id, consumer);
     consumer.start();
   }
 
-  async removeConsumer(account: RouteAccountRoutable) {
-    if (account.details.providerCode !== this.providerCode) return false;
+  async removeConsumer(account: ViberAccountSender) {
+    if (account.providerCode !== this.providerCode) return false;
     if (this.accountConsumers.has(account.id)) return false;
     const consumer = this.accountConsumers.get(account.id);
     if (consumer) {
-      await consumer.pause(30_000); // 30 seconds to
+      await consumer.pause(30_000); // 30 seconds
       await consumer.unsubscribe();
     }
   }

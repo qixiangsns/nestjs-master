@@ -7,6 +7,7 @@ import {
 } from './promotexter.types';
 
 export class PromotexterApi extends PromotexterBase {
+  static TOKEN_EXPIRATION_MS = 60 * 60 * 1000;
   constructor(options: ClientOptions) {
     super(options);
   }

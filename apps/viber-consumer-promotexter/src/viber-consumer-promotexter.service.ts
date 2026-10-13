@@ -1,6 +1,5 @@
-import { REDIS_TOKEN, REDIS_SUBSCRIBER_TOKEN } from '@application/connnections';
+import { REDIS_SUBSCRIBER_TOKEN } from '@application/connnections';
 import { ViberProviderCode } from '@application/modules/viber/models/viber-provider.model';
-import { type RouteAccountRoutable } from '@application/modules/viber/models/viber-route-config.model';
 import { ViberAccountService } from '@application/modules/viber/services/viber-account.service';
 import {
   ViberConsumerManagerFactory,
@@ -10,6 +9,7 @@ import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import pLimit from 'p-limit';
 import { Redis } from 'ioredis';
 import { ViberAccountTopic } from '@application/modules/viber/events/viber-account.events';
+import { ViberAccountSender } from '@application/modules/viber/models/viber-account.model';
 
 @Injectable()
 export class ViberConsumerPromotexterService implements OnModuleInit {
@@ -32,7 +32,7 @@ export class ViberConsumerPromotexterService implements OnModuleInit {
   }
 
   private handleAccountUpdated(channel: string, message: string) {
-    const account: RouteAccountRoutable = JSON.parse(message);
+    const account: ViberAccountSender = JSON.parse(message);
     switch (channel) {
       case ViberAccountTopic.AccountEnabled:
         this.limit(() => this.manager.addConsumer(account));
@@ -47,7 +47,7 @@ export class ViberConsumerPromotexterService implements OnModuleInit {
     const accounts = await this.accountService.findEnabledAccountsByProvider(this.provideCode);
 
     for (const account of accounts) {
-      await this.manager.addConsumer({ id: account.id, isEnabled: true, weight: 1, details: account });
+      await this.manager.addConsumer(account);
     }
   }
 }
