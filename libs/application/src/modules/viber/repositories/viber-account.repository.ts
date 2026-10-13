@@ -16,6 +16,7 @@ import {
 import { MONGO_CONN_NAME } from '@application/connnections';
 import { Except } from 'type-fest';
 import { Lean } from '@framework/mongoose';
+import { ViberProviderCode } from '../models/viber-provider.model';
 
 @Injectable()
 export class ViberAccountRepository {
@@ -45,6 +46,11 @@ export class ViberAccountRepository {
     return this.accountModel.find({ _id: { $in: ids.map((id) => new Types.ObjectId(id)) } }).lean();
   }
 
+  async findEnabledAccountsByProvider(code: ViberProviderCode): Promise<ViberAccount[]> {
+    const accounts = await this.accountModel.find({ code, isEnabled: true }).lean<Lean<ViberAccountModel>[]>();
+    return accounts.map((acc) => ({ ...acc, id: acc._id.toString() }));
+  }
+
   async addApiKeySecretAcc(account: Except<ViberAccountApiKeySecret, 'id' | 'createdAt' | 'updatedAt'>) {
     const acc = new this.accountApiKeySecretModel(account);
     acc.type = 'ApiKeySecret';
@@ -59,5 +65,11 @@ export class ViberAccountRepository {
 
   async updateAccount(id: string, account: Partial<Except<ViberAccountBase, 'id' | 'createdAt' | 'updatedAt'>>) {
     await this.accountModel.updateOne({ _id: new Types.ObjectId(id) }, account);
+  }
+
+  async updateStatus(id: string, isEnabled: boolean) {
+    await this.accountModel.updateOne(new Types.ObjectId(id), {
+      isEnabled,
+    });
   }
 }

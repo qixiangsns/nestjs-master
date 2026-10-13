@@ -8,6 +8,7 @@ import {
 } from '../schemas/viber-route-config.schema';
 import {
   ViberAccountBase as ViberAccountBaseModel,
+  ViberAccountBaseSchema,
   ViberAccount as ViberAccountModel,
 } from '../schemas/viber-account.schema';
 import { MONGO_CONN_NAME } from '@application/connnections';
@@ -28,6 +29,9 @@ export class ViberRouteConfigRepository {
   constructor(
     @InjectModel(ViberRouteConfigModel.name, MONGO_CONN_NAME.PRIMARY)
     private configModel: Model<ViberRouteConfigModel>,
+
+    @InjectModel(ViberAccountBaseModel.name, MONGO_CONN_NAME.PRIMARY)
+    private accountModel: Model<ViberAccountBaseModel>,
   ) {}
 
   async addConfig(routeConfig: Except<ViberRouteConfig, 'id'>): Promise<string> {
@@ -50,6 +54,16 @@ export class ViberRouteConfigRepository {
     const result = await this.configModel.updateOne(filter, { $set: { 'accounts.$.isEnabled': isEnabled } });
 
     return result.matchedCount > 0;
+  }
+
+  async isAccountEnabled(accountId: string) {
+    const configs = await this.configModel
+      .find({ 'accounts.id': new Types.ObjectId(accountId) })
+      .select('accounts')
+      .lean<{ accounts: ViberRouteConfig['accounts'] }[]>();
+
+    const isEnabled = configs.some((config) => config.accounts.some((acc) => acc.isEnabled));
+    return isEnabled;
   }
 
   async findRoutableConfig(routeType: RouteType, platformId: string): Promise<RoutableViberRouteConfig | null> {

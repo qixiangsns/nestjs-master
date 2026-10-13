@@ -1,4 +1,4 @@
-import { PromotexterApix } from '@application/integrations/promotexter';
+import { PromotexterApi } from '@application/integrations/promotexter';
 import { ViberSender } from '../interfaces/viber-sender.port';
 import {
   SendViberResult,
@@ -9,17 +9,35 @@ import {
 import { AccountDetailsRoutable } from '../models/viber-route-config.model';
 
 export class ViberSenderPromotexter implements ViberSender {
-  private api: PromotexterApix;
+  private api: PromotexterApi;
 
   constructor(private readonly account: AccountDetailsRoutable) {
-    this.api = new PromotexterApix({
-      auth: {
-        type: 'api_key',
-        apiKey: 'xxx',
-        apiSecret: 'xxxx',
-      },
-      baseUrl: 'https://apix.promotexter.com',
-    });
+    switch (account.type) {
+      case 'BearerToken':
+        this.api = new PromotexterApi({
+          auth: {
+            type: 'bearer_token',
+            apiKey: account.apiKey,
+            apiSecret: account.apiSecret,
+            getToken: async () => '1',
+            saveToken: async () => {},
+          },
+          baseUrl: account.url,
+        });
+        break;
+      case 'ApiKeySecret':
+        this.api = new PromotexterApi({
+          auth: {
+            type: 'api_key',
+            apiKey: account.apiKey,
+            apiSecret: account.apiSecret,
+          },
+          baseUrl: account.url,
+        });
+        break;
+      default:
+        throw new Error(`${PromotexterApi.name} does not support the following auth method: ${account.type}`);
+    }
   }
 
   async sendContentMsg(message: ViberContentRequest): Promise<SendViberResult> {

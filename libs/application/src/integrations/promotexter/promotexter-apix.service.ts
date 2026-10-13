@@ -1,12 +1,12 @@
 import { PromotexterBase } from './promotexter-base.service';
-import { type ClientOptions, SendViberOtpRequest, SendSmsRequest } from './promotexter.types';
+import { type ClientOptions, SendViberTemplateRequest, SendSmsRequest, SendViberResponse } from './promotexter.types';
 
 export class PromotexterApix extends PromotexterBase {
   constructor(options: ClientOptions) {
     super(options);
   }
 
-  async sendViberOtp(payload: SendViberOtpRequest) {
+  async sendViberOtp(payload: SendViberTemplateRequest) {
     return super.sendViberOtpMsg('/viber-otp/v1', payload);
   }
 

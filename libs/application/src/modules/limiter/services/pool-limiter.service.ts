@@ -1,4 +1,4 @@
-import { CACHE_TOKEN } from '@application/connnections';
+import { REDIS_TOKEN } from '@application/connnections';
 import { Inject, Injectable } from '@nestjs/common';
 import { RateLimiterRedis, RateLimiterMemory } from 'rate-limiter-flexible';
 import { Redis } from 'ioredis';
@@ -7,7 +7,7 @@ import { Redis } from 'ioredis';
 export class PoolLimiter {
   private rateLimiter: RateLimiterRedis;
 
-  constructor(@Inject(CACHE_TOKEN.PRIMARY) private readonly redis: Redis) {
+  constructor(@Inject(REDIS_TOKEN.PRIMARY) private readonly redis: Redis) {
     this.rateLimiter = new RateLimiterRedis({
       duration: 1,
       points: 100,

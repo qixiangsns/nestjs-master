@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository';
+import { ViberAccountRepository } from '../repositories/viber-account.repository';
 import { ViberAccountService } from './viber-account.service';
 import {
   CreateViberRouteConfig,
@@ -13,6 +14,7 @@ import {
 export class ViberRouteConfigService {
   constructor(
     private readonly routeConfigRepo: ViberRouteConfigRepository,
+    private readonly accountRepo: ViberAccountRepository,
     private readonly accountService: ViberAccountService,
   ) {}
 
@@ -56,16 +58,19 @@ export class ViberRouteConfigService {
     );
 
     await this.routeConfigRepo.updateConfig(id, config);
+    await this.syncAccountsStatus([...existing.accounts, ...config.accounts].map((acc) => acc.id.toString()));
   }
 
   async updateStatus(id: string, { accountId, isEnabled }: PatchViberRouteConfigStatus) {
-    await this.getConfigById(id);
+    const existing = await this.getConfigById(id);
 
     const updated = await this.routeConfigRepo.updateAccountStatus(id, accountId, isEnabled);
 
     if (!updated) {
       throw new NotFoundException('Account is not in this route config');
     }
+
+    await this.syncAccountsStatus(existing.accounts.map((acc) => acc.id.toString()));
   }
 
   private async getConfigById(id: string) {
@@ -87,6 +92,16 @@ export class ViberRouteConfigService {
 
     if (accounts.some((acc) => !acc.senderIds.includes(senderId))) {
       throw new BadRequestException(`All accounts must support sender id ${senderId}`);
+    }
+  }
+
+  /**
+   * Check if account is configured for all the routes and update its enabled status
+   */
+  private async syncAccountsStatus(accountIds: string[]) {
+    for (const accountId of new Set(accountIds)) {
+      const isEnabled = await this.routeConfigRepo.isAccountEnabled(accountId);
+      await this.accountRepo.updateStatus(accountId, isEnabled);
     }
   }
 }

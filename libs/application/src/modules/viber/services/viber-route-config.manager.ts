@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { CACHE_TOKEN } from '@application/connnections';
+import { REDIS_TOKEN } from '@application/connnections';
 import { Injectable, Inject, OnModuleDestroy, Logger } from '@nestjs/common';
 import { RoutableViberRouteConfig, RouteAccountRoutable, RouteType } from '../models/viber-route-config.model';
 import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository';
@@ -33,7 +33,7 @@ export class ViberRouteConfigManager implements OnModuleDestroy {
   private configMap: ConfigMap = new Map();
 
   constructor(
-    @Inject(CACHE_TOKEN.PRIMARY) private readonly redis: Redis,
+    @Inject(REDIS_TOKEN.PRIMARY) private readonly redis: Redis,
     private readonly routeConfigRepo: ViberRouteConfigRepository,
     private readonly eventEmitter: EventEmitter2,
   ) {

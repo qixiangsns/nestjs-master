@@ -20,6 +20,10 @@ export class ViberAccountService {
     return this.accountRepo.findAccounts(ids);
   }
 
+  async findEnabledAccountsByProvider(code: ViberProviderCode) {
+    return this.accountRepo.findEnabledAccountsByProvider(code);
+  }
+
   async addAccount({ credentials, ...account }: CreateViberAccount) {
     if (!ProviderTransportMethod[account.providerCode].includes(credentials.type)) {
       throw new BadRequestException(`${account.providerCode} does not support ${credentials.type} accounts`);
@@ -28,10 +32,10 @@ export class ViberAccountService {
     await this.validateProviderUrl(account.providerCode, account.url);
 
     if (credentials.type === 'ApiToken') {
-      return this.accountRepo.addApiTokenAcc({ ...account, ...credentials });
+      return this.accountRepo.addApiTokenAcc({ ...account, ...credentials, isEnabled: false });
     }
 
-    return this.accountRepo.addApiKeySecretAcc({ ...account, ...credentials });
+    return this.accountRepo.addApiKeySecretAcc({ ...account, ...credentials, isEnabled: false });
   }
 
   async updateAccount(id: string, account: PatchViberAccount) {

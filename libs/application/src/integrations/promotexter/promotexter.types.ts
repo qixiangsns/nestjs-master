@@ -6,9 +6,10 @@ import { RawAxiosHeaders } from 'axios';
  */
 export type AuthConfigBearerToken = {
   type: 'bearer_token';
-  accountId: string;
-  privateKey: string;
-  token: string;
+  apiKey: string;
+  apiSecret: string;
+  getToken: () => Promise<string | null>;
+  saveToken: (token: string) => Promise<void>;
 };
 
 export type AuthConfigApiKey = {
@@ -35,42 +36,57 @@ export type ClientOptions = {
  */
 export type GenerateTokenResponse = {
   status: 'ok';
-  data: 'string';
+  data: string;
 };
 
 export type GenerateTokenRequest = {
   expiresInSeconds: number;
 };
 
-/**
- * Send Viber Verification Message
- * https://promotexter-api.redocly.app/api/viber-verification-messages/sendviberverification
- */
-export type SendViberOtpRequest = {
+export interface SendViberRequestBase {
   from: string;
   to: string;
-  templateId: string;
-  templateParams: Record<string, unknown>;
-  templateLanguage: 'en';
   targetDevice?: 'all' | 'primary';
-  ttl: number;
-  dlrCallbackConfig: {
+  ttl?: number;
+  dlrCallbackConfig?: {
     url: string;
     headers?: RawAxiosHeaders;
     body?: Record<string, unknown>;
   };
-  referenceId: string;
-};
+  dlrCallback?: string;
+  referenceId?: string;
+  sms_from?: string;
+  sms_text?: string;
+}
+/**
+ * Send Viber Verification Message
+ * https://promotexter-api.redocly.app/api/viber-verification-messages/sendviberverification
+ */
+
+export interface SendViberTemplateRequest extends SendViberRequestBase {
+  templateId: string;
+  templateParams: Record<string, unknown>;
+  templateLanguage: 'en';
+}
 
 export type SendViberResponse = {
   transactionId: string;
-  referenceId: string;
+  requestId: string;
 };
 
-export type SendViberOtpWithSmsFallbackRequest = SendViberOtpRequest & {
-  sms_from: string;
-  sms_text: string;
-};
+/**
+ * Send Viber Verification Message
+ * https://promotexter-api.redocly.app/api/viber-verification-messages/sendviberverification
+ */
+
+export interface SendViberRichMsgRequest extends SendViberRequestBase {
+  text?: string;
+  image?: string; // image url
+  caption?: string; // image caption
+  url?: string; // button url
+  video?: string; // video url
+  thumbnail?: string; // video image thumbnail
+}
 
 /**
  * Send SMS message

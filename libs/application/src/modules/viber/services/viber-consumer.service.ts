@@ -15,6 +15,8 @@ import { ViberSenderFactory } from './viber-sender.factory';
 import { ViberSender } from '../interfaces/viber-sender.port';
 import { SendViberResult, ViberRequest } from '../models/viber-message.model';
 import { ViberEventService } from './viber-event.service';
+import waitFor, { TimeoutError } from 'p-wait-for';
+import { ViberAccount } from '../models/viber-account.model';
 
 type BatchOptions = {
   maxNumMessages: number;
@@ -30,6 +32,7 @@ export class ViberAccountConsumer {
   private concurrency: LimitFunction;
   private rateLimiter: RateLimiterMemory;
   private state: 'paused' | 'running' | 'connected';
+  private isProcessing: boolean;
   private consumers: Map<RouteType, Consumer>;
   private pacer: Pacer;
   private sender: ViberSender;
@@ -120,9 +123,31 @@ export class ViberAccountConsumer {
     this.state = 'connected';
   }
 
-  pause() {
+  async unsubscribe() {
+    for (const priority of QueuePriority) {
+      const consumer = this.consumers.get(priority);
+
+      if (consumer && consumer.isConnected()) {
+        await consumer.unsubscribe();
+      }
+    }
+  }
+
+  async pause(timeoutMs: number = 10_000) {
     this.state = 'paused';
-    this.logger.log('Consumer has been paused.');
+
+    try {
+      await waitFor(() => this.isProcessing === false, {
+        interval: 500,
+        timeout: timeoutMs,
+      });
+
+      return true;
+    } catch (err) {
+      if (err instanceof TimeoutError) {
+        return false;
+      }
+    }
   }
 
   isConnected() {
@@ -130,10 +155,14 @@ export class ViberAccountConsumer {
   }
 
   async start() {
-    if (this.state === 'running' || !this.isConnected()) return;
-
     this.state = 'running';
-    while (this.state !== 'running') {
+    while (true) {
+      if (this.state !== 'running') {
+        this.isProcessing = false;
+        break;
+      }
+      this.isProcessing = true;
+
       let messages: Message[] = [];
 
       const { batchMessages = messages, retryAfterMs } = await this.consumeBatch({
@@ -256,34 +285,43 @@ export class ViberConsumerManager {
     private readonly pulsarClient: Client,
     private readonly configManager: ViberRouteConfigManager,
     private readonly eventService: ViberEventService,
-  ) {
-    // Debounce event update to prevent rapid consecutive updates
-    // this.handleAccountsEnabled = debounce(this.handleAccountsEnabled.bind(this), CONFIG_UPDATE_DEBOUNCE_MS);
+  ) {}
+
+  async subscribe(accounts: RouteAccountRoutable[]) {
+    const enabledAccounts = accounts.filter((acc) => acc.details.providerCode === this.providerCode && acc.isEnabled);
+
+    if (enabledAccounts.length === 0) {
+      this.logger.log('No accounts available now');
+    }
+
+    for (const account of enabledAccounts) await this.addConsumer(account);
   }
 
-  async subscribe() {
-    const accounts = this.configManager
-      .getRoutableAccounts()
-      .filter((account) => account.details.providerCode === this.providerCode);
+  async addConsumer(account: RouteAccountRoutable) {
+    if (account.details.providerCode !== this.providerCode) return false;
+    if (this.accountConsumers.has(account.id)) return false;
 
-    for (const account of accounts) {
-      const consumer = new ViberAccountConsumer(this.providerCode, account, this.pulsarClient, this.eventService);
-      await consumer.subscribe();
-      this.accountConsumers.set(account.id, consumer);
+    const consumer = new ViberAccountConsumer(this.providerCode, account, this.pulsarClient, this.eventService);
+    await consumer.subscribe();
+    this.accountConsumers.set(account.id, consumer);
+    consumer.start();
+  }
+
+  async removeConsumer(account: RouteAccountRoutable) {
+    if (account.details.providerCode !== this.providerCode) return false;
+    if (this.accountConsumers.has(account.id)) return false;
+    const consumer = this.accountConsumers.get(account.id);
+    if (consumer) {
+      await consumer.pause(30_000); // 30 seconds to
+      await consumer.unsubscribe();
     }
   }
 
-  async sync() {
-    this.pause();
-
-    this.start();
-  }
-
-  async start() {
+  async startConsuming() {
     for (const consumer of this.accountConsumers.values()) consumer.start();
   }
 
-  async pause() {
-    for (const consumer of this.accountConsumers.values()) consumer.pause();
+  async pauseConsuming() {
+    for (const consumer of this.accountConsumers.values()) await consumer.pause();
   }
 }
