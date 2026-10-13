@@ -11,6 +11,9 @@ export const ViberRouteTopicPrefix = {
   'PromotexterApix.Mkt': 'viber.mkt.promotexter-apix',
   'PromotexterApix.Otp': 'viber.otp.promotexter-apix',
   'PromotexterApix.Notif': 'viber.notif.promotexter-apix',
+  'MockProvider.Mkt': 'viber.mkt.mock-provider',
+  'MockProvider.Otp': 'viber.otp.mock-provider',
+  'MockProvider.Notif': 'viber.notif.mock-provider',
 } as const satisfies Record<`${ViberProviderCode}.${RouteType}`, `viber.${Lowercase<RouteType>}.${string}`>;
 
 export type ViberRouteTopicPrefix = keyof typeof ViberRouteTopicPrefix;

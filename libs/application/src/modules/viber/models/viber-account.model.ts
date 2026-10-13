@@ -8,6 +8,7 @@ export const ProviderTransportMethod: Record<ViberProviderCode, AccountType[]> =
   Infobip: ['ApiToken'],
   Promotexter: ['ApiToken'],
   PromotexterApix: ['ApiKeySecret', 'ApiToken'],
+  MockProvider: ['ApiToken'],
 } as const;
 
 export interface ViberAccountBase {

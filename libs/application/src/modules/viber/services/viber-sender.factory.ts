@@ -4,6 +4,7 @@ import { ViberAccount } from '../models/viber-account.model';
 import { ViberSenderPromotexterApix } from './viber-sender-promotexter-apix.adapter';
 import { ViberSenderPromotexter } from './viber-sender-promotexter.adapter';
 import { AccountDetailsRoutable } from '../models/viber-route-config.model';
+import { ViberSenderMockProvider } from './viber-sender-mock-provider.adapter';
 
 export class ViberSenderFactory {
   static createSender(account: AccountDetailsRoutable): ViberSender {
@@ -12,6 +13,8 @@ export class ViberSenderFactory {
         return new ViberSenderPromotexter(account);
       case 'PromotexterApix':
         return new ViberSenderPromotexterApix(account);
+      case 'MockProvider':
+        return new ViberSenderMockProvider(account);
       default:
         throw new Error(`Invalid Viber Provider: ${account.providerCode}`);
     }
