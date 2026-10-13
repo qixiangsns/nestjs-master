@@ -44,7 +44,7 @@ export class ViberConsumerPromotexterService implements OnModuleInit {
   }
 
   async onModuleInit() {
-    const accounts = await this.accountService.getEnabledProviderAccounts(this.provideCode);
+    const accounts = await this.accountService.findEnabledAccountsByProvider(this.provideCode);
 
     for (const account of accounts) {
       await this.manager.addConsumer({ id: account.id, isEnabled: true, weight: 1, details: account });
