@@ -3,7 +3,7 @@ import { ViberConsumerPromotexterService } from './viber-consumer-promotexter.se
 import { ApplicationModule } from '@application';
 import { RedisSubscriberConnection } from '@application/connnections';
 import { SecretsModule } from '@framework/secret';
-import { CONSUMER_ENV_TOKEN, ConsumerEnvSchema } from './config';
+import { CONSUMER_ENV_TOKEN, ConsumerEnvSchema } from './env';
 
 @Module({
   imports: [

@@ -2,7 +2,7 @@ import '@framework/trace';
 import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
 import { ViberConsumerPromotexterModule } from './viber-consumer-promotexter.module';
-import { CONSUMER_ENV_TOKEN, ConsumerEnv } from './config';
+import { CONSUMER_ENV_TOKEN, ConsumerEnv } from './env';
 import { Logger as PinoLogger } from 'nestjs-pino';
 
 async function bootstrap() {
