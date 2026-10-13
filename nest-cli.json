@@ -55,6 +55,15 @@
         "tsConfigPath": "libs/framework/tsconfig.lib.json"
       }
     },
+    "log-consumer": {
+      "type": "application",
+      "root": "apps/log-consumer",
+      "entryFile": "main",
+      "sourceRoot": "apps/log-consumer/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/log-consumer/tsconfig.app.json"
+      }
+    },
     "messaging-admin": {
       "type": "application",
       "root": "apps/messaging-admin",

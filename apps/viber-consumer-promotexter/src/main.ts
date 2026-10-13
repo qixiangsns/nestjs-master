@@ -1,8 +1,21 @@
+import '@framework/trace';
 import { NestFactory } from '@nestjs/core';
+import { Logger } from '@nestjs/common';
 import { ViberConsumerPromotexterModule } from './viber-consumer-promotexter.module';
+import { CONSUMER_ENV_TOKEN, ConsumerEnv } from './config';
+import { Logger as PinoLogger } from 'nestjs-pino';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ViberConsumerPromotexterModule);
-  await app.listen(process.env.port ?? 3000);
+  const app = await NestFactory.create(ViberConsumerPromotexterModule, {
+    bufferLogs: true,
+  });
+
+  const env = app.get<ConsumerEnv>(CONSUMER_ENV_TOKEN);
+  app.useLogger(app.get(PinoLogger));
+  const logger = new Logger('Server');
+  app.flushLogs();
+
+  await app.listen(env.PORT);
+  logger.log(`Viber Promotexter consumer is running on port ${env.PORT}`);
 }
 bootstrap();

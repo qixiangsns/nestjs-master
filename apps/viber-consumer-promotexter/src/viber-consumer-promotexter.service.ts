@@ -5,14 +5,14 @@ import {
   ViberConsumerManagerFactory,
   ViberConsumerManager,
 } from '@application/modules/viber/services/viber-consumer.service';
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit, OnApplicationShutdown } from '@nestjs/common';
 import pLimit from 'p-limit';
 import { Redis } from 'ioredis';
 import { ViberAccountTopic } from '@application/modules/viber/events/viber-account.events';
 import { ViberAccountSender } from '@application/modules/viber/models/viber-account.model';
 
 @Injectable()
-export class ViberConsumerPromotexterService implements OnModuleInit {
+export class ViberConsumerPromotexterService implements OnModuleInit, OnApplicationShutdown {
   private logger: Logger = new Logger(ViberConsumerPromotexterService.name);
   private manager: ViberConsumerManager;
   private limit = pLimit(1);
@@ -33,6 +33,8 @@ export class ViberConsumerPromotexterService implements OnModuleInit {
 
   private handleAccountUpdated(channel: string, message: string) {
     const account: ViberAccountSender = JSON.parse(message);
+    this.logger.log(`Received viber account update: ${channel}`);
+
     switch (channel) {
       case ViberAccountTopic.AccountEnabled:
         this.limit(() => this.manager.addConsumer(account));
@@ -50,4 +52,6 @@ export class ViberConsumerPromotexterService implements OnModuleInit {
       await this.manager.addConsumer(account);
     }
   }
+
+  async onApplicationShutdown() {}
 }

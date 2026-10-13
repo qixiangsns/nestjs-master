@@ -285,16 +285,6 @@ export class ViberConsumerManager {
     private readonly senderFactory: ViberSenderFactory,
   ) {}
 
-  async subscribe(accounts: ViberAccountSender[]) {
-    const enabledAccounts = accounts.filter((acc) => acc.providerCode === this.providerCode);
-
-    if (enabledAccounts.length === 0) {
-      this.logger.log('No accounts available now');
-    }
-
-    for (const account of enabledAccounts) await this.addConsumer(account);
-  }
-
   async addConsumer(account: ViberAccountSender) {
     if (account.providerCode !== this.providerCode) {
       throw new Error(
@@ -319,13 +309,5 @@ export class ViberConsumerManager {
       await consumer.pause(30_000); // 30 seconds
       await consumer.unsubscribe();
     }
-  }
-
-  async startConsuming() {
-    for (const consumer of this.accountConsumers.values()) consumer.start();
-  }
-
-  async pauseConsuming() {
-    for (const consumer of this.accountConsumers.values()) await consumer.pause();
   }
 }
