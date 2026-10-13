@@ -19,9 +19,7 @@ import {
   GetViberRouteConfigRequest,
   GetViberRouteConfigResponse,
   PatchViberAccountRequest,
-  PatchViberRouteConfigChannelRequest,
   PatchViberRouteConfigRequest,
-  PatchViberRouteConfigStatusRequest,
 } from './viber.dto';
 
 @Injectable()
@@ -125,36 +123,13 @@ export class ViberController {
   @Patch(':id/route-config')
   @ApiOperation({
     summary: 'Patch viber route config',
-    description: 'Update the route strategy. Use the channel and status endpoints to change accounts.',
+    description:
+      'Update the route sender id, strategy and accounts. All accounts must exist and support the sender id. Platform and route type cannot change.',
   })
   async patchViberRouteConfig(
     @Param('id', IsObjectIdPipe) id: string,
     @Body() body: PatchViberRouteConfigRequest,
   ): Promise<void> {
     await this.viberRouteConfigService.updateConfig(id, body);
-  }
-
-  @Patch('route-config/:id/channel')
-  @ApiOperation({
-    summary: 'Patch viber route config channel',
-    description: 'Replace the route accounts. All accounts must exist and support the route sender id.',
-  })
-  async patchViberRouteConfigChannel(
-    @Param('id', IsObjectIdPipe) id: string,
-    @Body() body: PatchViberRouteConfigChannelRequest,
-  ): Promise<void> {
-    await this.viberRouteConfigService.updateChannel(id, body);
-  }
-
-  @Patch('route-config/:id/status')
-  @ApiOperation({
-    summary: 'Patch viber route config account status',
-    description: 'Enable or disable one account in the route.',
-  })
-  async patchViberRouteConfigStatus(
-    @Param('id', IsObjectIdPipe) id: string,
-    @Body() body: PatchViberRouteConfigStatusRequest,
-  ): Promise<void> {
-    await this.viberRouteConfigService.updateStatus(id, body);
   }
 }

@@ -56,19 +56,9 @@ export const CreateViberRouteConfigSchema = z.object({
 export type CreateViberRouteConfig = z.output<typeof CreateViberRouteConfigSchema>;
 
 export const PatchViberRouteConfigSchema = CreateViberRouteConfigSchema.pick({
+  senderId: true,
   strategy: true,
-});
-
-export type PatchViberRouteConfig = z.output<typeof PatchViberRouteConfigSchema>;
-
-export const PatchViberRouteConfigChannelSchema = CreateViberRouteConfigSchema.pick({
   accounts: true,
 });
 
-export type PatchViberRouteConfigChannel = z.output<typeof PatchViberRouteConfigChannelSchema>;
-export const PatchViberRouteConfigStatusSchema = z.object({
-  accountId: z.string().refine(isValidObjectId, 'Invalid account id'),
-  isEnabled: z.boolean(),
-});
-
-export type PatchViberRouteConfigStatus = z.output<typeof PatchViberRouteConfigStatusSchema>;
+export type PatchViberRouteConfig = z.output<typeof PatchViberRouteConfigSchema>;

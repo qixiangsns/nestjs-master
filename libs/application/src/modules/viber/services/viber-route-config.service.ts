@@ -2,13 +2,7 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository';
 import { ViberAccountRepository } from '../repositories/viber-account.repository';
 import { ViberAccountService } from './viber-account.service';
-import {
-  CreateViberRouteConfig,
-  GetViberRouteConfigRequest,
-  PatchViberRouteConfig,
-  PatchViberRouteConfigChannel,
-  PatchViberRouteConfigStatus,
-} from '../dtos/viber-config.dto';
+import { CreateViberRouteConfig, GetViberRouteConfigRequest, PatchViberRouteConfig } from '../dtos/viber-config.dto';
 
 @Injectable()
 export class ViberRouteConfigService {
@@ -44,33 +38,15 @@ export class ViberRouteConfigService {
   }
 
   async updateConfig(id: string, config: PatchViberRouteConfig) {
-    await this.getConfigById(id);
-
-    await this.routeConfigRepo.updateConfig(id, config);
-  }
-
-  async updateChannel(id: string, config: PatchViberRouteConfigChannel) {
     const existing = await this.getConfigById(id);
 
     await this.validateAccounts(
       config.accounts.map((acc) => acc.id),
-      existing.senderId,
+      config.senderId,
     );
 
     await this.routeConfigRepo.updateConfig(id, config);
-    await this.syncAccountsStatus([...existing.accounts, ...config.accounts].map((acc) => acc.id.toString()));
-  }
-
-  async updateStatus(id: string, { accountId, isEnabled }: PatchViberRouteConfigStatus) {
-    const existing = await this.getConfigById(id);
-
-    const updated = await this.routeConfigRepo.updateAccountStatus(id, accountId, isEnabled);
-
-    if (!updated) {
-      throw new NotFoundException('Account is not in this route config');
-    }
-
-    await this.syncAccountsStatus(existing.accounts.map((acc) => acc.id.toString()));
+    await this.syncAccountsStatus([...existing.accounts, ...config.accounts].map((acc) => acc.id));
   }
 
   private async getConfigById(id: string) {

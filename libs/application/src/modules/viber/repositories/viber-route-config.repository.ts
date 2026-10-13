@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, QueryFilter, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import {
   ViberRouteConfig as ViberRouteConfigModel,
   RouteAccount as RouteAccountModel,
@@ -40,20 +40,20 @@ export class ViberRouteConfigRepository {
     return result.id;
   }
 
-  async findConfigById(id: string) {
-    return this.configModel.findById(new Types.ObjectId(id)).lean();
+  async findConfigById(id: string): Promise<ViberRouteConfig | null> {
+    const config = await this.configModel.findById(new Types.ObjectId(id)).lean();
+
+    if (!config) return null;
+
+    return {
+      ...config,
+      id: config._id.toString(),
+      accounts: config.accounts.map((acc) => ({ ...acc, id: acc.id.toString() })),
+    };
   }
 
   async updateConfig(id: string, routeConfig: Partial<Except<ViberRouteConfig, 'id'>>) {
     await this.configModel.updateOne({ _id: new Types.ObjectId(id) }, routeConfig);
-  }
-
-  async updateAccountStatus(id: string, accountId: string, isEnabled: boolean) {
-    const filter = { _id: new Types.ObjectId(id), 'accounts.id': accountId } as QueryFilter<ViberRouteConfigModel>;
-
-    const result = await this.configModel.updateOne(filter, { $set: { 'accounts.$.isEnabled': isEnabled } });
-
-    return result.matchedCount > 0;
   }
 
   async isAccountEnabled(accountId: string) {

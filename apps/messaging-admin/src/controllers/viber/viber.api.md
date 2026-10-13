@@ -21,6 +21,3 @@ POST /viber/send
 GET /viber/route-config?platformId=<platformId>&routeType=<routeType>
 POST /viber/route-config
 PATCH /viber/:id/route-config
-
-PATCH /viber/route-config/:id/status
-PATCH /viber/route-config/:id/channel
