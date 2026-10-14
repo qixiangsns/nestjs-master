@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ViberRouteConfigManager } from './viber-route-config.manager';
+import { ViberRouteConfigCache } from './viber-route-config.cache';
 import { PlayerService } from '@application/modules/player';
 import { SendViberMkt, SendViberResponse, SendViberOtp, SendViberNotif } from '../dtos';
 import { ViberLogService } from './viber-log.service';
@@ -11,7 +11,7 @@ import { ViberDispatcherService } from './viber-dispatcher.service';
 @Injectable()
 export class ViberSenderService {
   constructor(
-    private readonly configManager: ViberRouteConfigManager,
+    private readonly routeConfigCache: ViberRouteConfigCache,
     private readonly playerService: PlayerService,
     private readonly logService: ViberLogService,
     private readonly eventService: ViberEventService,
@@ -28,7 +28,7 @@ export class ViberSenderService {
       if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
 
       // retrieve available config (including disabled routes)
-      const routeConfig = await this.configManager.getRouteConfig('Otp', message.platformId);
+      const routeConfig = await this.routeConfigCache.get('Otp', message.platformId);
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider
@@ -77,7 +77,7 @@ export class ViberSenderService {
       if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
 
       // retrieve available config
-      const routeConfig = await this.configManager.getRouteConfig('Notif', message.platformId);
+      const routeConfig = await this.routeConfigCache.get('Notif', message.platformId);
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider
@@ -124,7 +124,7 @@ export class ViberSenderService {
       if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
 
       // retrieve available config
-      const routeConfig = await this.configManager.getRouteConfig('Mkt', message.platformId);
+      const routeConfig = await this.routeConfigCache.get('Mkt', message.platformId);
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider

@@ -1,5 +1,4 @@
 import { Consumer, Client, Message } from 'pulsar-client';
-import { ViberRouteConfigManager } from './viber-route-config.manager';
 import { Logger, Inject, Injectable } from '@nestjs/common';
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
 import { OnEvent } from '@nestjs/event-emitter';

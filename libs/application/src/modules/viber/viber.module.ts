@@ -9,7 +9,7 @@ import { ViberProviderService } from './services/viber-provider.service';
 import { ViberLogRepository } from './repositories/viber-log.repository';
 import { ViberLogService } from './services/viber-log.service';
 import { ViberConsumerManagerFactory } from './services/viber-consumer.service';
-import { ViberRouteConfigManager } from './services/viber-route-config.manager';
+import { ViberRouteConfigCache } from './services/viber-route-config.cache';
 import { ViberEventService } from './services/viber-event.service';
 import { ViberRouteConfigService } from './services/viber-route-config.service';
 import {
@@ -36,7 +36,7 @@ const Providers = [
   ViberLogService,
   ViberRouteConfigService,
   ViberConsumerManagerFactory,
-  ViberRouteConfigManager,
+  ViberRouteConfigCache,
   ViberEventService,
   ViberSenderFactory,
   ViberPromotexterClientFactory,
