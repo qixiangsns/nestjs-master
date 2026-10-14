@@ -1,31 +1,31 @@
-import { Consumer, Client, Message } from 'pulsar-client';
-import { Logger, Inject, Injectable } from '@nestjs/common';
-import { PULSAR_CONN_TOKEN } from '@application/connnections';
-import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
-import { RouteType } from '../models/viber-route-config.model';
+import { Injectable, Logger } from '@nestjs/common';
 import pLimit, { LimitFunction } from 'p-limit';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
-import { getViberRouteTopic } from '../queues/viber-request.queues';
-import { ViberProviderCode } from '../models/viber-provider.model';
+import { RouteType } from '../models/viber-route-config.model';
+import { Consumer } from 'pulsar-client';
 import { Pacer } from '@framework/utils/pacer.utils';
-import { ViberSenderFactory } from './viber-sender.factory';
-import { type ViberSender } from '../interfaces/viber-sender.port';
-import { SendViberResult, ViberRequest } from '../models/viber-message.model';
-import { ViberEventPublisher } from './viber-event.publisher';
-import waitFor, { TimeoutError } from 'p-wait-for';
+import { ViberProviderCode } from '../models/viber-provider.model';
 import { type ViberAccountSender } from '../models/viber-account.model';
+import { Client, Message } from 'pulsar-client';
+import { ViberEventPublisher } from './viber-event.publisher';
+import { type ViberSender } from '../interfaces/viber-sender.port';
+import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
+import { getViberRouteTopic } from '../queues/viber-request.queues';
+import waitFor, { TimeoutError } from 'p-wait-for';
+import { ViberRequest } from '../models/viber-message.model';
+import { SendViberResult } from '../models/viber-message.model';
 
 type BatchOptions = {
   maxNumMessages: number;
   timeoutMs: number;
 };
-const QueuePriority: RouteType[] = ['Otp', 'Notif', 'Mkt'] as const;
 
-type ConsumeBatch = { retryAfterMs: number; batchMessages: Message[] };
+const RoutePriority: RouteType[] = ['Otp', 'Notif', 'Mkt'] as const;
+type BatchResult = { retryAfterMs: number; batchMessages: Message[] };
 
 @Injectable()
-export class ViberAccountConsumer {
-  private logger = new Logger(ViberAccountConsumer.name);
+export class ViberAccountWorker {
+  private logger = new Logger(ViberAccountWorker.name);
   private concurrency: LimitFunction;
   private rateLimiter: RateLimiterMemory;
   private state: 'paused' | 'running' | 'connected';
@@ -55,10 +55,10 @@ export class ViberAccountConsumer {
     });
   }
 
-  private async consumeBatch(options: BatchOptions): Promise<ConsumeBatch> {
+  private async consumeBatch(options: BatchOptions): Promise<BatchResult> {
     let priority = 0;
 
-    const lastPriority = QueuePriority.length - 1;
+    const lastPriority = RoutePriority.length - 1;
     const peekTimeoutMs = 50;
     const deadline = addMilliseconds(Date.now(), options.timeoutMs);
     const batchMessages: Message[] = [];
@@ -81,7 +81,7 @@ export class ViberAccountConsumer {
       }
 
       try {
-        const consumer = this.consumers.get(QueuePriority[priority]);
+        const consumer = this.consumers.get(RoutePriority[priority]);
         if (consumer && consumer.isConnected()) {
           const message = await consumer.receive(peekTimeoutMs);
           await consumer.acknowledge(message);
@@ -101,7 +101,7 @@ export class ViberAccountConsumer {
   }
 
   async subscribe() {
-    for (const priority of QueuePriority) {
+    for (const priority of RoutePriority) {
       const consumer = this.consumers.get(priority);
 
       if (!consumer) {
@@ -120,7 +120,7 @@ export class ViberAccountConsumer {
   }
 
   async unsubscribe() {
-    for (const priority of QueuePriority) {
+    for (const priority of RoutePriority) {
       const consumer = this.consumers.get(priority);
 
       if (consumer && consumer.isConnected()) {
@@ -236,88 +236,6 @@ export class ViberAccountConsumer {
         requestStatus: 'Success',
         deliveryStatus: 'Pending',
       });
-    }
-  }
-}
-
-/**
- * Factory function to dynamically create viber consumers with dependencies at runtime
- *
- * @example
- * const manager = factory.createManager("Promotexter");
- * await manager.subscribe()
- * manager.start()
- * manager.pause()
- */
-@Injectable()
-export class ViberConsumerManagerFactory {
-  constructor(
-    @Inject(PULSAR_CONN_TOKEN.PRIMARY) private readonly pulsarClient: Client,
-    private readonly eventPublisher: ViberEventPublisher,
-    private readonly senderFactory: ViberSenderFactory,
-  ) {}
-
-  createManager(providerCode: ViberProviderCode) {
-    return new ViberConsumerManager(providerCode, this.pulsarClient, this.eventPublisher, this.senderFactory);
-  }
-}
-
-/**
- * Manages Viber message consumers for different accounts. It listens for configuration updates and adjusts the consumers accordingly.
- *
- * @example
- * const manager = new ViberConsumerManager(client, configManager, eventPublisher);
- * await manager.subscribe();
- * manager.start();
- * manager.pause();
- *
- */
-export class ViberConsumerManager {
-  private accountConsumers: Map<string, ViberAccountConsumer> = new Map();
-  private logger = new Logger(ViberConsumerManager.name);
-
-  constructor(
-    private readonly providerCode: ViberProviderCode,
-    private readonly pulsarClient: Client,
-    private readonly eventPublisher: ViberEventPublisher,
-    private readonly senderFactory: ViberSenderFactory,
-  ) {}
-
-  async addConsumer(account: ViberAccountSender) {
-    if (account.providerCode !== this.providerCode) {
-      throw new Error(
-        `${ViberConsumerManager.name} failed to add consumer due to provider incompatibility ${account.providerCode}`,
-      );
-    }
-
-    if (this.accountConsumers.has(account.id)) return;
-
-    const sender = await this.senderFactory.createSender(account);
-    const consumer = new ViberAccountConsumer(
-      this.providerCode,
-      account,
-      this.pulsarClient,
-      this.eventPublisher,
-      sender,
-    );
-    await consumer.subscribe();
-    this.accountConsumers.set(account.id, consumer);
-    consumer.start();
-  }
-
-  async removeConsumer(accountId: string) {
-    if (!this.accountConsumers.has(accountId)) return;
-    const consumer = this.accountConsumers.get(accountId);
-    if (consumer) {
-      await consumer.pause(30_000); // 30 seconds
-      await consumer.unsubscribe();
-    }
-  }
-
-  async stopConsumers() {
-    for (const consumer of this.accountConsumers.values()) {
-      await consumer.pause(30_000); // 30 seconds
-      await consumer.unsubscribe();
     }
   }
 }
