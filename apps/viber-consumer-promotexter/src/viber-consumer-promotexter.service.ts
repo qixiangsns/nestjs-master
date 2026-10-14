@@ -49,11 +49,7 @@ export class ViberConsumerPromotexterService implements OnModuleInit, OnApplicat
     await this.limit(async () => {
       this.logger.log({ signal }, 'Received viber account disabled signal');
       try {
-        const account = await this.accountService.findAccount(signal.accountId);
-        if (!account) {
-          throw new Error(`Account cannot be found`);
-        }
-        await this.manager.removeConsumer(account);
+        await this.manager.removeConsumer(signal.accountId);
       } catch (error: unknown) {
         this.logger.error({ error, signal }, 'Failed to remove viber account consumer');
       }
