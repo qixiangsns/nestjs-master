@@ -16,7 +16,7 @@ export class ViberConsumerPromotexterService implements OnModuleInit {
   private logger: Logger = new Logger(ViberConsumerPromotexterService.name);
   private manager: ViberConsumerManager;
   private limit = pLimit(1);
-  private readonly provideCode: ViberProviderCode = 'MockProvider';
+  private readonly provideCode: ViberProviderCode = 'Promotexter';
 
   constructor(
     private readonly managerFactory: ViberConsumerManagerFactory,
