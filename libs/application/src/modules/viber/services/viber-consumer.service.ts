@@ -1,19 +1,17 @@
 import { Consumer, Client, Message } from 'pulsar-client';
 import { Logger, Inject, Injectable } from '@nestjs/common';
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
-import { OnEvent } from '@nestjs/event-emitter';
-import { debounce } from 'perfect-debounce';
 import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
 import { RouteType } from '../models/viber-route-config.model';
 import pLimit, { LimitFunction } from 'p-limit';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
-import { getViberRouteTopic } from '../events/viber-route.events';
+import { getViberRouteTopic } from '../queues/viber-request.queues';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { Pacer } from '@framework/utils/pacer.utils';
 import { ViberSenderFactory } from './viber-sender.factory';
 import { type ViberSender } from '../interfaces/viber-sender.port';
 import { SendViberResult, ViberRequest } from '../models/viber-message.model';
-import { ViberEventService } from './viber-event.service';
+import { ViberEventPublisher } from './viber-event.publisher';
 import waitFor, { TimeoutError } from 'p-wait-for';
 import { type ViberAccountSender } from '../models/viber-account.model';
 
@@ -39,11 +37,11 @@ export class ViberAccountConsumer {
     private readonly providerCode: ViberProviderCode,
     private readonly account: ViberAccountSender,
     private readonly pulsarClient: Client,
-    private readonly eventService: ViberEventService,
+    private readonly eventPublisher: ViberEventPublisher,
     private readonly sender: ViberSender,
   ) {
     this.pacer = new Pacer({
-      maxDelayMs: 1000,
+      maxDelayMs: 2000,
       minDelayMs: 0,
       initialBackoffMs: 100,
       backoffFactor: 2,
@@ -131,6 +129,9 @@ export class ViberAccountConsumer {
     }
   }
 
+  /**
+   * Pause consumption without unsubscribing from consumer
+   */
   async pause(timeoutMs: number = 10_000) {
     this.state = 'paused';
 
@@ -221,7 +222,7 @@ export class ViberAccountConsumer {
           break;
       }
     } catch (error) {
-      await this.eventService.publishLogCreated({
+      await this.eventPublisher.publishLogCreated({
         ...log,
         requestStatus: 'Failed',
         deliveryStatus: 'Failed',
@@ -229,7 +230,7 @@ export class ViberAccountConsumer {
     }
 
     if (result && result.referenceId) {
-      await this.eventService.publishLogCreated({
+      await this.eventPublisher.publishLogCreated({
         ...log,
         refId: result.referenceId,
         requestStatus: 'Success',
@@ -252,12 +253,12 @@ export class ViberAccountConsumer {
 export class ViberConsumerManagerFactory {
   constructor(
     @Inject(PULSAR_CONN_TOKEN.PRIMARY) private readonly pulsarClient: Client,
-    private readonly eventService: ViberEventService,
+    private readonly eventPublisher: ViberEventPublisher,
     private readonly senderFactory: ViberSenderFactory,
   ) {}
 
   createManager(providerCode: ViberProviderCode) {
-    return new ViberConsumerManager(providerCode, this.pulsarClient, this.eventService, this.senderFactory);
+    return new ViberConsumerManager(providerCode, this.pulsarClient, this.eventPublisher, this.senderFactory);
   }
 }
 
@@ -265,7 +266,7 @@ export class ViberConsumerManagerFactory {
  * Manages Viber message consumers for different accounts. It listens for configuration updates and adjusts the consumers accordingly.
  *
  * @example
- * const manager = new ViberConsumerManager(client, configManager, eventService);
+ * const manager = new ViberConsumerManager(client, configManager, eventPublisher);
  * await manager.subscribe();
  * manager.start();
  * manager.pause();
@@ -278,7 +279,7 @@ export class ViberConsumerManager {
   constructor(
     private readonly providerCode: ViberProviderCode,
     private readonly pulsarClient: Client,
-    private readonly eventService: ViberEventService,
+    private readonly eventPublisher: ViberEventPublisher,
     private readonly senderFactory: ViberSenderFactory,
   ) {}
 
@@ -292,17 +293,29 @@ export class ViberConsumerManager {
     if (this.accountConsumers.has(account.id)) return;
 
     const sender = await this.senderFactory.createSender(account);
-    const consumer = new ViberAccountConsumer(this.providerCode, account, this.pulsarClient, this.eventService, sender);
+    const consumer = new ViberAccountConsumer(
+      this.providerCode,
+      account,
+      this.pulsarClient,
+      this.eventPublisher,
+      sender,
+    );
     await consumer.subscribe();
     this.accountConsumers.set(account.id, consumer);
     consumer.start();
   }
 
-  async removeConsumer(account: ViberAccountSender) {
-    if (account.providerCode !== this.providerCode) return false;
-    if (this.accountConsumers.has(account.id)) return false;
-    const consumer = this.accountConsumers.get(account.id);
+  async removeConsumer(accountId: string) {
+    if (!this.accountConsumers.has(accountId)) return;
+    const consumer = this.accountConsumers.get(accountId);
     if (consumer) {
+      await consumer.pause(30_000); // 30 seconds
+      await consumer.unsubscribe();
+    }
+  }
+
+  async stopConsumers() {
+    for (const consumer of this.accountConsumers.values()) {
       await consumer.pause(30_000); // 30 seconds
       await consumer.unsubscribe();
     }

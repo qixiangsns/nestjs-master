@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ViberConsumerPromotexterService } from './viber-consumer-promotexter.service';
 import { ApplicationModule } from '@application';
-import { RedisSubscriberConnection } from '@application/connnections';
 import { SecretsModule } from '@framework/secret';
 import { CONSUMER_ENV_TOKEN, ConsumerEnvSchema } from './env';
 
@@ -16,7 +15,6 @@ import { CONSUMER_ENV_TOKEN, ConsumerEnvSchema } from './env';
       },
     ]),
     ApplicationModule,
-    RedisSubscriberConnection(),
   ],
   controllers: [],
   providers: [ViberConsumerPromotexterService],

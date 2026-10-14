@@ -1,9 +1,9 @@
-import Redis from 'ioredis';
-import { REDIS_TOKEN } from '@application/connnections';
-import { Injectable, Inject, OnModuleDestroy, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
+import pLimit from 'p-limit';
 import { RoutableViberRouteConfig, RouteType } from '../models/viber-route-config.model';
 import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository';
-import { ViberRouteConfigTopic, ViberRouteUpdatedPayload } from '../events/viber-route-config.event';
+import { ViberRouteConfigSignal, type ViberRouteUpdatedSignal } from '../signals/viber-route-config.signals';
 
 type RouteConfigMap = Map<RouteType, RoutableViberRouteConfig>;
 /**
@@ -25,28 +25,25 @@ type ConfigMap = Map<string, RouteConfigMap>;
 
 @Injectable()
 /**
- * @description Read-through in-memory cache of route configs, invalidated in real-time via redis pub/sub
+ * @description Read-through in-memory cache of route configs, invalidated in real-time via signals relayed by ViberSignalBroadcaster
  */
-export class ViberRouteConfigCache implements OnModuleDestroy {
+export class ViberRouteConfigCache {
   private logger = new Logger(ViberRouteConfigCache.name);
   private configMap: ConfigMap = new Map();
-  // a subscribed redis connection can only run pub/sub commands, so use a dedicated one
-  private readonly subscriber: Redis;
+  // process route updated signals one at a time so they are applied in arrival order
+  private limit = pLimit(1);
 
-  constructor(
-    @Inject(REDIS_TOKEN.PRIMARY) redis: Redis,
-    private readonly routeConfigRepo: ViberRouteConfigRepository,
-  ) {
-    this.subscriber = redis.duplicate();
-    this.subscriber.subscribe(ViberRouteConfigTopic.RouteUpdated);
-    this.subscriber.on('message', (channel, message) => this.handleConfigUpdate(channel, message));
-  }
+  constructor(private readonly routeConfigRepo: ViberRouteConfigRepository) {}
 
-  private async handleConfigUpdate(channel: string, message: string) {
-    if (channel === ViberRouteConfigTopic.RouteUpdated) {
-      const config: ViberRouteUpdatedPayload = JSON.parse(message);
-      await this.refresh(config.type, config.platformId);
-    }
+  @OnEvent(ViberRouteConfigSignal.RouteUpdated)
+  async handleRouteUpdated(signal: ViberRouteUpdatedSignal) {
+    await this.limit(async () => {
+      try {
+        await this.refresh(signal.type, signal.platformId);
+      } catch (error: unknown) {
+        this.logger.error({ error, signal }, 'Failed to refresh viber route config');
+      }
+    });
   }
 
   /**
@@ -73,9 +70,5 @@ export class ViberRouteConfigCache implements OnModuleDestroy {
     }
     this.configMap.set(platformId, platformConfig);
     return config ?? null;
-  }
-
-  async onModuleDestroy() {
-    await this.subscriber.unsubscribe(ViberRouteConfigTopic.RouteUpdated);
   }
 }

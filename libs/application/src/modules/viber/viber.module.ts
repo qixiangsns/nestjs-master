@@ -10,7 +10,7 @@ import { ViberLogRepository } from './repositories/viber-log.repository';
 import { ViberLogService } from './services/viber-log.service';
 import { ViberConsumerManagerFactory } from './services/viber-consumer.service';
 import { ViberRouteConfigCache } from './services/viber-route-config.cache';
-import { ViberEventService } from './services/viber-event.service';
+import { ViberEventPublisher } from './services/viber-event.publisher';
 import { ViberRouteConfigService } from './services/viber-route-config.service';
 import {
   ViberAccountTokenStore,
@@ -19,7 +19,8 @@ import {
   ViberSenderFactory,
 } from './services/viber-sender.factory';
 import { ViberSenderService } from './services/viber-sender.service';
-import { ViberDispatcherService } from './services/viber-dispatcher.service';
+import { ViberQueueDispatcher } from './services/viber-queue.dispatcher';
+import { ViberSignalBroadcaster } from './services/viber-signal.broadcaster';
 
 const Repositories = [ViberAccountRepository, ViberRouteConfigRepository, ViberProviderRepository, ViberLogRepository];
 const Services = [
@@ -37,13 +38,14 @@ const Providers = [
   ViberRouteConfigService,
   ViberConsumerManagerFactory,
   ViberRouteConfigCache,
-  ViberEventService,
+  ViberEventPublisher,
   ViberSenderFactory,
   ViberPromotexterClientFactory,
   ViberPromotexterApixClientFactory,
   ViberAccountTokenStore,
   ViberSenderService,
-  ViberDispatcherService,
+  ViberQueueDispatcher,
+  ViberSignalBroadcaster,
 ];
 
 @Module({
