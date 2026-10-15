@@ -1,11 +1,14 @@
 import { PulsarProducerService, Client } from '@framework/pulsar';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
-import { ViberDeliveryUpdatedEvent, ViberLogCreatedEvent, ViberLogTopic } from './viber-log.events';
+import { ViberDeliveryUpdatedQueue, ViberLogCreatedQueue, ViberLogTopic } from './viber-log.queues';
 
 @Injectable()
-export class ViberEventPublisher extends PulsarProducerService {
-  protected logger = new Logger(ViberEventPublisher.name);
+/**
+ * Dispatch log to consumers for persistence
+ */
+export class ViberLogDispatcher extends PulsarProducerService {
+  protected logger = new Logger(ViberLogDispatcher.name);
 
   constructor(@Inject(PULSAR_CONN_TOKEN.PRIMARY) client: Client) {
     super(client, {
@@ -17,10 +20,10 @@ export class ViberEventPublisher extends PulsarProducerService {
       },
     });
   }
-  async publishLogCreated(payload: ViberLogCreatedEvent): Promise<void> {
+  async dispatchLogCreated(payload: ViberLogCreatedQueue): Promise<void> {
     await this.produce(ViberLogTopic.LogCreated, payload);
   }
-  async publishDeliveryUpdated(payload: ViberDeliveryUpdatedEvent): Promise<void> {
+  async dispatchDeliveryUpdated(payload: ViberDeliveryUpdatedQueue): Promise<void> {
     await this.produce(ViberLogTopic.DeliveryUpdated, payload);
   }
 }

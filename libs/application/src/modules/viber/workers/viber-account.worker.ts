@@ -7,10 +7,10 @@ import { Pacer } from '@framework/utils/pacer.utils';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { type ViberAccountSender } from '../models/viber-account.model';
 import { Client, Message } from 'pulsar-client';
-import { ViberEventPublisher } from '../events/viber-event.publisher';
+import { ViberLogDispatcher } from '../queues/viber-log.dispatcher';
 import { type ViberSender } from '../ports/viber-sender.port';
 import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
-import { getViberRouteTopic } from '../queues/viber-request.queues';
+import { getViberRouteTopic } from '../queues/viber-message.queues';
 import waitFor, { TimeoutError } from 'p-wait-for';
 import { ViberRequest } from '../models/viber-message.model';
 import { SendViberResult } from '../models/viber-message.model';
@@ -37,7 +37,7 @@ export class ViberAccountWorker {
     private readonly providerCode: ViberProviderCode,
     private readonly account: ViberAccountSender,
     private readonly pulsarClient: Client,
-    private readonly eventPublisher: ViberEventPublisher,
+    private readonly logDispatcher: ViberLogDispatcher,
     private readonly sender: ViberSender,
   ) {
     this.pacer = new Pacer({
@@ -222,7 +222,7 @@ export class ViberAccountWorker {
           break;
       }
     } catch (error) {
-      await this.eventPublisher.publishLogCreated({
+      await this.logDispatcher.dispatchLogCreated({
         ...log,
         requestStatus: 'Failed',
         deliveryStatus: 'Failed',
@@ -230,7 +230,7 @@ export class ViberAccountWorker {
     }
 
     if (result && result.referenceId) {
-      await this.eventPublisher.publishLogCreated({
+      await this.logDispatcher.dispatchLogCreated({
         ...log,
         refId: result.referenceId,
         requestStatus: 'Success',

@@ -21,7 +21,7 @@ export * from './services/viber-route-config.service';
 export * from './services/viber-sender.service';
 
 // Messaging contracts (topic/channel names + payloads); producers stay internal
-export * from './events/viber-log.events';
+export * from './queues/viber-log.queues';
 export * from './signals/viber-account.signals';
 export * from './signals/viber-route-config.signals';
 

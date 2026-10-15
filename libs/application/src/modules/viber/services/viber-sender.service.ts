@@ -3,10 +3,10 @@ import { ViberRouteConfigCache } from '../caches/viber-route-config.cache';
 import { PlayerService } from '@application/modules/player';
 import { SendViberMkt, SendViberResponse, SendViberOtp, SendViberNotif } from '../dtos';
 import { ViberLogService } from './viber-log.service';
-import { ViberEventPublisher } from '../events/viber-event.publisher';
+import { ViberLogDispatcher } from '../queues/viber-log.dispatcher';
 import { Chance } from 'chance';
 import { RoutableViberRouteConfig } from '../models/viber-route-config.model';
-import { ViberQueueDispatcher } from '../queues/viber-queue.dispatcher';
+import { ViberMessageDispatcher } from '../queues/viber-message.dispatcher';
 
 @Injectable()
 export class ViberSenderService {
@@ -14,8 +14,8 @@ export class ViberSenderService {
     private readonly routeConfigCache: ViberRouteConfigCache,
     private readonly playerService: PlayerService,
     private readonly logService: ViberLogService,
-    private readonly eventPublisher: ViberEventPublisher,
-    private readonly queueDispatcher: ViberQueueDispatcher,
+    private readonly logDispatcher: ViberLogDispatcher,
+    private readonly messageDispatcher: ViberMessageDispatcher,
   ) {}
 
   async acceptOtpRequest(message: SendViberOtp): Promise<SendViberResponse> {
@@ -36,7 +36,7 @@ export class ViberSenderService {
       if (!routeTo) throw new Error('Viber route cannnot be determined');
 
       // dispatch request to viber worker
-      await this.queueDispatcher.dispatchOtp(
+      await this.messageDispatcher.dispatchOtp(
         {
           type: 'Otp',
           routeType: 'Otp',
@@ -54,7 +54,7 @@ export class ViberSenderService {
 
       return { messageId };
     } catch (err) {
-      await this.eventPublisher.publishLogCreated({
+      await this.logDispatcher.dispatchLogCreated({
         type: 'Otp',
         id: messageId,
         platformId: message.platformId,
@@ -85,7 +85,7 @@ export class ViberSenderService {
       if (!routeTo) throw new Error('System cannot determine destination route');
 
       // dispatch request to viber worker
-      await this.queueDispatcher.dispatchNotif(
+      await this.messageDispatcher.dispatchNotif(
         {
           type: 'Template',
           routeType: 'Notif',
@@ -102,7 +102,7 @@ export class ViberSenderService {
       );
       return { messageId };
     } catch (err) {
-      await this.eventPublisher.publishLogCreated({
+      await this.logDispatcher.dispatchLogCreated({
         type: 'Otp',
         id: messageId,
         platformId: message.platformId,
@@ -132,7 +132,7 @@ export class ViberSenderService {
       if (!routeTo) throw new Error('System cannot determine destination route');
 
       // dispatch request to provider worker
-      await this.queueDispatcher.dispatchMkt(
+      await this.messageDispatcher.dispatchMkt(
         {
           type: 'Content',
           routeType: 'Mkt',
@@ -147,7 +147,7 @@ export class ViberSenderService {
       );
       return { messageId };
     } catch (err) {
-      await this.eventPublisher.publishLogCreated({
+      await this.logDispatcher.dispatchLogCreated({
         type: 'Mkt',
         id: messageId,
         platformId: message.platformId,
