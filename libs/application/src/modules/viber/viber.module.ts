@@ -8,19 +8,17 @@ import { ViberProviderRepository } from './repositories/viber-provider.repositor
 import { ViberProviderService } from './services/viber-provider.service';
 import { ViberLogRepository } from './repositories/viber-log.repository';
 import { ViberLogService } from './services/viber-log.service';
-import { ViberRouteConfigCache } from './services/viber-route-config.cache';
-import { ViberEventPublisher } from './services/viber-event.publisher';
+import { ViberRouteConfigCache } from './caches/viber-route-config.cache';
+import { ViberEventPublisher } from './events/viber-event.publisher';
 import { ViberRouteConfigService } from './services/viber-route-config.service';
-import {
-  ViberAccountTokenStore,
-  ViberPromotexterApixClientFactory,
-  ViberPromotexterClientFactory,
-  ViberSenderFactory,
-} from './services/viber-sender.factory';
+import { ViberSenderFactory } from './adapters/viber-sender.factory';
+import { ViberAccountTokenCache } from './caches/viber-account-token.cache';
+import { ViberPromotexterClientFactory } from './adapters/promotexter/viber-promotexter-client.factory';
+import { ViberPromotexterApixClientFactory } from './adapters/promotexter-apix/viber-promotexter-apix-client.factory';
 import { ViberSenderService } from './services/viber-sender.service';
-import { ViberQueueDispatcher } from './services/viber-queue.dispatcher';
-import { ViberSignalBroadcaster } from './services/viber-signal.broadcaster';
-import { ViberWorkerManagerFactory } from './services/viber-worker-manager.factory';
+import { ViberQueueDispatcher } from './queues/viber-queue.dispatcher';
+import { ViberSignalBroadcaster } from './signals/viber-signal.broadcaster';
+import { ViberWorkerManagerFactory } from './workers/viber-worker-manager.factory';
 
 const Repositories = [ViberAccountRepository, ViberRouteConfigRepository, ViberProviderRepository, ViberLogRepository];
 const Services = [
@@ -41,7 +39,7 @@ const Providers = [
   ViberSenderFactory,
   ViberPromotexterClientFactory,
   ViberPromotexterApixClientFactory,
-  ViberAccountTokenStore,
+  ViberAccountTokenCache,
   ViberSenderService,
   ViberQueueDispatcher,
   ViberSignalBroadcaster,

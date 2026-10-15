@@ -1,7 +1,7 @@
 import { ViberProviderCode } from '@application/modules/viber/models/viber-provider.model';
 import { ViberAccountService } from '@application/modules/viber/services/viber-account.service';
-import { ViberWorkerManager } from '@application/modules/viber/services/viber-worker.manager';
-import { ViberWorkerManagerFactory } from '@application/modules/viber/services/viber-worker-manager.factory';
+import { ViberWorkerManager } from '@application/modules/viber/workers/viber-worker.manager';
+import { ViberWorkerManagerFactory } from '@application/modules/viber/workers/viber-worker-manager.factory';
 import { Injectable, Logger, OnModuleInit, OnApplicationShutdown } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import pLimit from 'p-limit';

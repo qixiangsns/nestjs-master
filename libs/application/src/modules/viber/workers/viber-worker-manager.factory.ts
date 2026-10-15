@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
-import { ViberEventPublisher } from './viber-event.publisher';
-import { ViberSenderFactory } from './viber-sender.factory';
+import { ViberEventPublisher } from '../events/viber-event.publisher';
+import { ViberSenderFactory } from '../adapters/viber-sender.factory';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { Client } from 'pulsar-client';
 import { ViberWorkerManager } from './viber-worker.manager';

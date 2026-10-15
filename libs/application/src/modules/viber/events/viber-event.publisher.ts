@@ -1,7 +1,7 @@
 import { PulsarProducerService, Client } from '@framework/pulsar';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
-import { ViberDeliveryUpdatedEvent, ViberLogCreatedEvent, ViberLogTopic } from '../events/viber-log.events';
+import { ViberDeliveryUpdatedEvent, ViberLogCreatedEvent, ViberLogTopic } from './viber-log.events';
 
 @Injectable()
 export class ViberEventPublisher extends PulsarProducerService {

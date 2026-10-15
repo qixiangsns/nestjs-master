@@ -2,8 +2,8 @@ import Redis from 'ioredis';
 import { REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connnections';
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { AccountDisabledSignal, AccountEnabledSignal, ViberAccountSignal } from '../signals/viber-account.signals';
-import { ViberRouteConfigSignal, ViberRouteUpdatedSignal } from '../signals/viber-route-config.signals';
+import { AccountDisabledSignal, AccountEnabledSignal, ViberAccountSignal } from './viber-account.signals';
+import { ViberRouteConfigSignal, ViberRouteUpdatedSignal } from './viber-route-config.signals';
 
 const ViberSignalChannels: string[] = [
   ViberAccountSignal.AccountDisabled,

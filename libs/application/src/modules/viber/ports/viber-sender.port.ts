@@ -1,5 +1,4 @@
 import {
-  ViberOtp,
   SendViberResult,
   ViberTemplateRequest,
   ViberContentRequest,
