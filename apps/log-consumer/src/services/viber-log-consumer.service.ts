@@ -1,10 +1,8 @@
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
-import { ViberLogTopic } from '@application/modules/viber/events/viber-log.events';
 import { Inject, Injectable, OnModuleInit, OnApplicationShutdown, Logger } from '@nestjs/common';
 import { Client, Consumer, ConsumerConfig, Message } from 'pulsar-client';
 import PQueue from 'p-queue';
-import { ViberLogService } from '@application/modules/viber';
-import { ViberLog } from '@application/modules/viber/models/viber-log.model';
+import { ViberLogService, ViberLogTopic, type ViberLog } from '@application/modules/viber';
 
 @Injectable()
 export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutdown {
