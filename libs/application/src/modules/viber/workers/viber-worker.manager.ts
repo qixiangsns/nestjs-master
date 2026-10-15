@@ -2,8 +2,8 @@ import { ViberAccountWorker } from './viber-account.worker';
 import { Logger } from '@nestjs/common';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { Client } from 'pulsar-client';
-import { ViberEventPublisher } from './viber-event.publisher';
-import { ViberSenderFactory } from './viber-sender.factory';
+import { ViberEventPublisher } from '../events/viber-event.publisher';
+import { ViberSenderFactory } from '../adapters/viber-sender.factory';
 import { ViberAccountSender } from '../models/viber-account.model';
 
 export class ViberWorkerManager {

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ViberRouteConfigCache } from './viber-route-config.cache';
+import { ViberRouteConfigCache } from '../caches/viber-route-config.cache';
 import { PlayerService } from '@application/modules/player';
 import { SendViberMkt, SendViberResponse, SendViberOtp, SendViberNotif } from '../dtos';
 import { ViberLogService } from './viber-log.service';
-import { ViberEventPublisher } from './viber-event.publisher';
+import { ViberEventPublisher } from '../events/viber-event.publisher';
 import { Chance } from 'chance';
 import { RoutableViberRouteConfig } from '../models/viber-route-config.model';
-import { ViberQueueDispatcher } from './viber-queue.dispatcher';
+import { ViberQueueDispatcher } from '../queues/viber-queue.dispatcher';
 
 @Injectable()
 export class ViberSenderService {

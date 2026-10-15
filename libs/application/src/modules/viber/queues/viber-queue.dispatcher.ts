@@ -3,7 +3,7 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
 import { Client } from 'pulsar-client';
 import { ViberRequest } from '../models/viber-message.model';
-import { getViberRouteTopic } from '../queues/viber-request.queues';
+import { getViberRouteTopic } from './viber-request.queues';
 import { RouteAccountRoutable } from '../models/viber-route-config.model';
 
 /**

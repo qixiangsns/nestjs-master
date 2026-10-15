@@ -1,11 +1,11 @@
 import { PromotexterApix } from '@application/integrations/promotexter';
-import { ViberSender } from '../interfaces/viber-sender.port';
+import { ViberSender } from '../../ports/viber-sender.port';
 import {
   SendViberResult,
   ViberTemplateRequest,
   ViberContentRequest,
   ViberOtpRequest,
-} from '../models/viber-message.model';
+} from '../../models/viber-message.model';
 
 export class ViberSenderPromotexterApix implements ViberSender {
   constructor(private readonly api: PromotexterApix) {}

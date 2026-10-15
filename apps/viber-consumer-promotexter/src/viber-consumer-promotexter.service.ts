@@ -1,15 +1,15 @@
-import { ViberProviderCode } from '@application/modules/viber/models/viber-provider.model';
-import { ViberAccountService } from '@application/modules/viber/services/viber-account.service';
-import { ViberWorkerManager } from '@application/modules/viber/services/viber-worker.manager';
-import { ViberWorkerManagerFactory } from '@application/modules/viber/services/viber-worker-manager.factory';
+import {
+  ViberAccountService,
+  ViberAccountSignal,
+  ViberWorkerManagerFactory,
+  type AccountDisabledSignal,
+  type AccountEnabledSignal,
+  type ViberProviderCode,
+  type ViberWorkerManager,
+} from '@application/modules/viber';
 import { Injectable, Logger, OnModuleInit, OnApplicationShutdown } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import pLimit from 'p-limit';
-import {
-  ViberAccountSignal,
-  type AccountDisabledSignal,
-  type AccountEnabledSignal,
-} from '@application/modules/viber/signals/viber-account.signals';
 
 @Injectable()
 export class ViberConsumerPromotexterService implements OnModuleInit, OnApplicationShutdown {

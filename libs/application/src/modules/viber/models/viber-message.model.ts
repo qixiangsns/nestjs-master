@@ -1,15 +1,5 @@
-import { Except, ExtractStrict } from 'type-fest';
-import { ViberLog } from './viber-log.model';
-import { ViberAccount } from './viber-account.model';
+import { ExtractStrict } from 'type-fest';
 import { RouteType } from './viber-route-config.model';
-
-export type ViberOtp = {
-  messageId: string;
-  otp: string;
-  ttl: number;
-  templateId: string;
-  senderId: string;
-};
 
 export type SendViberResult = {
   referenceId: string;
