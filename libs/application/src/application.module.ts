@@ -1,14 +1,14 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { SecretsModule } from '@framework/secret';
 import { SecretSchema, SECRET_TOKEN, EnvSchema, Env, ENV_TOKEN } from './config';
-import { RedisConnection, MongoDbConnection, PulsarConnection } from './connnections';
+import { RedisConnection, MongoDbConnection, PulsarConnection, RedisSubscriberConnection } from './connnections';
 import { LoggerModule } from 'nestjs-pino';
 import { getPinoOptions } from '@framework/logger/pino-logger.config';
 import { ViberModule } from './modules/viber';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 const MongoConnModules: DynamicModule[] = [MongoDbConnection()];
-const RedisConnModules: DynamicModule[] = [RedisConnection()];
+const RedisConnModules: DynamicModule[] = [RedisConnection(), RedisSubscriberConnection()];
 const PulsarConnModules: DynamicModule[] = [PulsarConnection()];
 const FeatureModules = [ViberModule];
 

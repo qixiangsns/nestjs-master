@@ -5,9 +5,9 @@ export const ViberLogTopic = {
   LogCreated: 'viber.log.created',
 } as const satisfies Record<string, `viber.${string}`>;
 
-export type ViberDeliveryUpdatedPayload = {
+export type ViberDeliveryUpdatedEvent = {
   referenceId: string;
   status: DeliveryStatus;
 };
 
-export type ViberLogCreatedPayload = ViberLog;
+export type ViberLogCreatedEvent = ViberLog;

@@ -11,6 +11,7 @@ export const SecretSchema = z.object({
   CLICKHOUSE_URL: z.url(), // https[s]://[username]:[password]@[host]:[port]
   EXTERNAL_SMS_MISSION_URL: z.url(),
   PLAYER_GRPC_URL: z.url(),
+  DLR_WEBHOOK_URL: z.url(),
 });
 
 export type Secret = z.infer<typeof SecretSchema>;

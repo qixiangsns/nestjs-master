@@ -6,8 +6,6 @@ import {
   ViberContentRequest,
   ViberOtpRequest,
 } from '../models/viber-message.model';
-import { AccountDetailsRoutable } from '../models/viber-route-config.model';
-import { ViberAccountSender } from '../models/viber-account.model';
 
 export class ViberSenderPromotexterApix implements ViberSender {
   constructor(private readonly api: PromotexterApix) {}
@@ -21,9 +19,18 @@ export class ViberSenderPromotexterApix implements ViberSender {
   }
 
   async sendOtp(message: ViberOtpRequest): Promise<SendViberResult> {
+    const result = await this.api.sendViberOtp({
+      from: message.senderId,
+      to: message.phoneNo,
+      referenceId: message.id,
+      templateId: message.templateId,
+      templateParams: { pin: message.otp },
+      ttl: message.otpValidityMinutes * 60, // seconds
+    });
+
     return {
-      messageId: '',
-      referenceId: '',
+      messageId: message.id,
+      referenceId: result.transactionId,
     };
   }
 }

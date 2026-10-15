@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { ViberRouteConfigManager } from './viber-route-config.manager';
+import { ViberRouteConfigCache } from './viber-route-config.cache';
 import { PlayerService } from '@application/modules/player';
 import { SendViberMkt, SendViberResponse, SendViberOtp, SendViberNotif } from '../dtos';
 import { ViberLogService } from './viber-log.service';
-import { ViberEventService } from './viber-event.service';
+import { ViberEventPublisher } from './viber-event.publisher';
 import { Chance } from 'chance';
 import { RoutableViberRouteConfig } from '../models/viber-route-config.model';
-import { ViberDispatcherService } from './viber-dispatcher.service';
+import { ViberQueueDispatcher } from './viber-queue.dispatcher';
 
 @Injectable()
 export class ViberSenderService {
   constructor(
-    private readonly configManager: ViberRouteConfigManager,
+    private readonly routeConfigCache: ViberRouteConfigCache,
     private readonly playerService: PlayerService,
     private readonly logService: ViberLogService,
-    private readonly eventService: ViberEventService,
-    private readonly dispatcherService: ViberDispatcherService,
+    private readonly eventPublisher: ViberEventPublisher,
+    private readonly queueDispatcher: ViberQueueDispatcher,
   ) {}
 
   async acceptOtpRequest(message: SendViberOtp): Promise<SendViberResponse> {
@@ -28,7 +28,7 @@ export class ViberSenderService {
       if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
 
       // retrieve available config (including disabled routes)
-      const routeConfig = await this.configManager.getRouteConfig('Otp', message.platformId);
+      const routeConfig = await this.routeConfigCache.get('Otp', message.platformId);
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider
@@ -36,11 +36,12 @@ export class ViberSenderService {
       if (!routeTo) throw new Error('Viber route cannnot be determined');
 
       // dispatch request to viber worker
-      await this.dispatcherService.dispatchOtp(
+      await this.queueDispatcher.dispatchOtp(
         {
           type: 'Otp',
           routeType: 'Otp',
           phoneNo,
+          senderId: routeConfig.senderId,
           id: messageId,
           otp: message.otp,
           otpValidityMinutes: message.otpValidityMinutes,
@@ -53,7 +54,7 @@ export class ViberSenderService {
 
       return { messageId };
     } catch (err) {
-      await this.eventService.publishLogCreated({
+      await this.eventPublisher.publishLogCreated({
         type: 'Otp',
         id: messageId,
         platformId: message.platformId,
@@ -76,7 +77,7 @@ export class ViberSenderService {
       if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
 
       // retrieve available config
-      const routeConfig = await this.configManager.getRouteConfig('Notif', message.platformId);
+      const routeConfig = await this.routeConfigCache.get('Notif', message.platformId);
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider
@@ -84,11 +85,12 @@ export class ViberSenderService {
       if (!routeTo) throw new Error('System cannot determine destination route');
 
       // dispatch request to viber worker
-      await this.dispatcherService.dispatchNotif(
+      await this.queueDispatcher.dispatchNotif(
         {
           type: 'Template',
           routeType: 'Notif',
           phoneNo,
+          senderId: routeConfig.senderId,
           id: messageId,
           playerId: message.playerId,
           platformId: message.platformId,
@@ -100,7 +102,7 @@ export class ViberSenderService {
       );
       return { messageId };
     } catch (err) {
-      await this.eventService.publishLogCreated({
+      await this.eventPublisher.publishLogCreated({
         type: 'Otp',
         id: messageId,
         platformId: message.platformId,
@@ -122,7 +124,7 @@ export class ViberSenderService {
       if (!phoneNo) throw new Error(`Failed to obtain player's phone number`);
 
       // retrieve available config
-      const routeConfig = await this.configManager.getRouteConfig('Mkt', message.platformId);
+      const routeConfig = await this.routeConfigCache.get('Mkt', message.platformId);
       if (!routeConfig) throw new Error('No route config is available');
 
       // determine destination route provider
@@ -130,11 +132,12 @@ export class ViberSenderService {
       if (!routeTo) throw new Error('System cannot determine destination route');
 
       // dispatch request to provider worker
-      await this.dispatcherService.dispatchMkt(
+      await this.queueDispatcher.dispatchMkt(
         {
           type: 'Content',
           routeType: 'Mkt',
           phoneNo,
+          senderId: routeConfig.senderId,
           id: messageId,
           playerId: message.playerId,
           platformId: message.platformId,
@@ -144,7 +147,7 @@ export class ViberSenderService {
       );
       return { messageId };
     } catch (err) {
-      await this.eventService.publishLogCreated({
+      await this.eventPublisher.publishLogCreated({
         type: 'Mkt',
         id: messageId,
         platformId: message.platformId,

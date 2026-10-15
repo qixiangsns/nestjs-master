@@ -1,7 +1,7 @@
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { RouteType } from '../models/viber-route-config.model';
 
-export const ViberRouteTopicPrefix = {
+const ViberRouteTopicPrefix = {
   'Infobip.Mkt': 'viber.mkt.infobip',
   'Infobip.Notif': 'viber.notif.infobip',
   'Infobip.Otp': 'viber.notif.infobip',
@@ -16,7 +16,7 @@ export const ViberRouteTopicPrefix = {
   'MockProvider.Notif': 'viber.notif.mock-provider',
 } as const satisfies Record<`${ViberProviderCode}.${RouteType}`, `viber.${Lowercase<RouteType>}.${string}`>;
 
-export type ViberRouteTopicPrefix = keyof typeof ViberRouteTopicPrefix;
+type ViberRouteTopicPrefix = keyof typeof ViberRouteTopicPrefix;
 
 /**
  * Build the viber provider route topic
