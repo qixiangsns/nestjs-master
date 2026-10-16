@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import pLimit, { LimitFunction } from 'p-limit';
-import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import { RouteType } from '../models/viber-route-config.model';
 import { Consumer } from 'pulsar-client';
 import { Pacer } from '@framework/utils/pacer.utils';
@@ -14,6 +13,7 @@ import { getViberRouteTopic } from '../queues/viber-message.queues';
 import waitFor, { TimeoutError } from 'p-wait-for';
 import { ViberRequest } from '../models/viber-message.model';
 import { SendViberResult } from '../models/viber-message.model';
+import { LimiterService } from '@application/modules/limiter';
 
 type BatchOptions = {
   maxNumMessages: number;
@@ -22,16 +22,17 @@ type BatchOptions = {
 
 const RoutePriority: RouteType[] = ['Otp', 'Notif', 'Mkt'] as const;
 type BatchResult = { retryAfterMs: number; batchMessages: Message[] };
+type ReceivedMessage = { consumer: Consumer; message: Message };
 
 @Injectable()
 export class ViberAccountWorker {
   private logger = new Logger(ViberAccountWorker.name);
   private concurrency: LimitFunction;
-  private rateLimiter: RateLimiterMemory;
   private state: 'paused' | 'running' | 'connected';
   private isProcessing: boolean;
   private consumers: Map<RouteType, Consumer> = new Map();
   private pacer: Pacer;
+  private bufferedMessage: ReceivedMessage | null ;
 
   constructor(
     private readonly providerCode: ViberProviderCode,
@@ -39,6 +40,7 @@ export class ViberAccountWorker {
     private readonly pulsarClient: Client,
     private readonly logDispatcher: ViberLogDispatcher,
     private readonly sender: ViberSender,
+    private readonly limiter: LimiterService,
   ) {
     this.pacer = new Pacer({
       maxDelayMs: 2000,
@@ -48,11 +50,6 @@ export class ViberAccountWorker {
     });
 
     this.concurrency = pLimit(50);
-
-    this.rateLimiter = new RateLimiterMemory({
-      points: 1000,
-      duration: 1,
-    });
   }
 
   private async consumeBatch(options: BatchOptions): Promise<BatchResult> {
@@ -70,34 +67,38 @@ export class ViberAccountWorker {
       if (remainingMs < 0) break;
 
       try {
-        await this.rateLimiter.consume(this.account.id, 1);
-      } catch (err) {
-        if (err instanceof RateLimiterRes) {
-          return {
-            batchMessages,
-            retryAfterMs: err.msBeforeNext,
-          };
-        }
-      }
+        const received = this.takeBufferedMessage() ?? (await this.receive(priority, peekTimeoutMs));
+        if (!received) continue;
 
-      try {
-        const consumer = this.consumers.get(RoutePriority[priority]);
-        if (consumer && consumer.isConnected()) {
-          const message = await consumer.receive(peekTimeoutMs);
-          await consumer.acknowledge(message);
-
-          batchMessages.push(message);
+        const { allowed, retryAfterMs } = await this.limiter.acquire(this.account.limiterPoolIds);
+        if (!allowed) {
+          this.bufferedMessage = received;
+          return { batchMessages, retryAfterMs };
         }
+
+        await received.consumer.acknowledge(received.message);
+        batchMessages.push(received.message);
+
+        if (retryAfterMs > 0) return { batchMessages, retryAfterMs };
       } catch (error) {
         // When queue is drained, priority moves to the lower ones
         priority = priority === lastPriority ? 0 : priority + 1;
       }
     }
 
-    return {
-      retryAfterMs: 0,
-      batchMessages,
-    };
+    return { retryAfterMs: 0, batchMessages };
+  }
+
+  private takeBufferedMessage() {
+    const buffered = this.bufferedMessage;
+    this.bufferedMessage = null;
+    return buffered;
+  }
+
+  private async receive(priority: number, timeoutMs: number): Promise<ReceivedMessage | null> {
+    const consumer = this.consumers.get(RoutePriority[priority]);
+    if (!consumer || !consumer.isConnected()) return null;
+    return { consumer, message: await consumer.receive(timeoutMs) };
   }
 
   async subscribe() {
@@ -185,8 +186,7 @@ export class ViberAccountWorker {
         const successResult = results.filter((res) => res.status === 'fulfilled');
         const errorResult = results.filter((res) => res.status === 'rejected');
         this.logger.log({ success: successResult.length, error: errorResult.length }, 'Send message results');
-      } else {
-        // Gracedully slow down consumption when requests are low
+      } else if (!isRateLimited) {
         this.pacer.slowDown();
       }
 

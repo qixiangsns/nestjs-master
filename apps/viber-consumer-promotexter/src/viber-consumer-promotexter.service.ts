@@ -17,7 +17,7 @@ export class ViberConsumerPromotexterService implements OnModuleInit, OnApplicat
   private manager: ViberWorkerManager;
   // process account signals one at a time so consumers are added/removed in arrival order
   private limit = pLimit(1);
-  private readonly provideCode: ViberProviderCode = 'MockProvider';
+  private readonly provideCode: ViberProviderCode = 'Promotexter';
 
   constructor(
     private readonly managerFactory: ViberWorkerManagerFactory,

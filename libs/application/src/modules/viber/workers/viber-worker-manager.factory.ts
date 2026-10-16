@@ -5,6 +5,7 @@ import { ViberSenderFactory } from '../adapters/viber-sender.factory';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { Client } from 'pulsar-client';
 import { ViberWorkerManager } from './viber-worker.manager';
+import { LimiterService } from '@application/modules/limiter';
 
 @Injectable()
 export class ViberWorkerManagerFactory {
@@ -12,9 +13,16 @@ export class ViberWorkerManagerFactory {
     @Inject(PULSAR_CONN_TOKEN.PRIMARY) private readonly pulsarClient: Client,
     private readonly logDispatcher: ViberLogDispatcher,
     private readonly senderFactory: ViberSenderFactory,
+    private readonly limiter: LimiterService,
   ) {}
 
   createManager(providerCode: ViberProviderCode) {
-    return new ViberWorkerManager(providerCode, this.pulsarClient, this.logDispatcher, this.senderFactory);
+    return new ViberWorkerManager(
+      providerCode,
+      this.pulsarClient,
+      this.logDispatcher,
+      this.senderFactory,
+      this.limiter,
+    );
   }
 }

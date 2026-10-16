@@ -19,6 +19,9 @@ export class ViberAccountBase {
   @Prop({ type: [String] })
   senderIds: string[];
 
+  @Prop({ type: [String], default: [] })
+  limiterPoolIds: string[];
+
   @Prop({ type: Boolean })
   isEnabled: boolean;
 
@@ -40,6 +43,7 @@ export class ViberAccountApiToken implements ViberAccountBase {
   providerCode: ViberProviderCode;
   url: string;
   senderIds: string[];
+  limiterPoolIds: string[];
   isEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -61,6 +65,7 @@ export class ViberAccountApiKeySecret implements ViberAccountBase {
   providerCode: ViberProviderCode;
   url: string;
   senderIds: string[];
+  limiterPoolIds: string[];
   isEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -80,6 +85,7 @@ export class ViberAccountBearerToken implements ViberAccountBase {
   providerCode: ViberProviderCode;
   url: string;
   senderIds: string[];
+  limiterPoolIds: string[];
   isEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
