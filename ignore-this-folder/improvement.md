@@ -52,7 +52,9 @@ Mission statement:
 Provider rate limit
 
 - x qps per provider (regardless of IP/account) - mocean
-- x qps per endpoint - infobip
+
+<!-- - x qps per endpoint - infobip -->
+
 - x qps per IP
 - x qps per IP/account - PLDT
 
