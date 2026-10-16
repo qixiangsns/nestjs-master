@@ -4,12 +4,14 @@ import { ViberProviderService } from './viber-provider.service';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { ProviderTransportMethod, ViberAccount } from '../models/viber-account.model';
 import { CreateViberAccount, PatchViberAccount } from '../dtos/viber-account.dto';
+import { LimiterPoolService } from '@application/modules/limiter';
 
 @Injectable()
 export class ViberAccountService {
   constructor(
     private readonly accountRepo: ViberAccountRepository,
     private readonly providerService: ViberProviderService,
+    private readonly limiterPoolService: LimiterPoolService,
   ) {}
 
   async getAllAccounts() {
@@ -34,6 +36,7 @@ export class ViberAccountService {
     }
 
     await this.validateProviderUrl(account.providerCode, account.url);
+    await this.validateLimiterPools(account.limiterPoolIds);
 
     if (credentials.type === 'ApiToken') {
       return this.accountRepo.addApiTokenAcc({ ...account, ...credentials, isEnabled: false });
@@ -49,7 +52,17 @@ export class ViberAccountService {
       throw new NotFoundException('Viber account not found');
     }
 
+    if (account.limiterPoolIds) await this.validateLimiterPools(account.limiterPoolIds);
     await this.accountRepo.updateAccount(id, account);
+  }
+
+  private async validateLimiterPools(poolIds: string[]) {
+    if (poolIds.length === 0) return;
+
+    const pools = await this.limiterPoolService.findPools(poolIds);
+    if (pools.length !== new Set(poolIds).size) {
+      throw new BadRequestException('limiterPoolIds contains an unknown limiter pool');
+    }
   }
 
   private async validateProviderUrl(providerCode: ViberProviderCode, url: string) {

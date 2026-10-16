@@ -34,12 +34,12 @@ export class ViberAccountRepository {
 
   async getAllAccount(): Promise<ViberAccount[]> {
     const accounts = await this.accountModel.find().lean<Lean<ViberAccountModel>[]>();
-    return accounts.map((acc) => ({ ...acc, id: acc._id.toString() }));
+    return accounts.map((acc) => ({ ...acc, id: acc._id.toString(), limiterPoolIds: acc.limiterPoolIds ?? [] }));
   }
 
   async findAccount(id: string): Promise<ViberAccount | null> {
     const acc = await this.accountModel.findById(new Types.ObjectId(id)).lean<Lean<ViberAccountModel>>();
-    return acc ? { ...acc, id: acc._id.toString() } : null;
+    return acc ? { ...acc, id: acc._id.toString(), limiterPoolIds: acc.limiterPoolIds ?? [] } : null;
   }
 
   async findAccounts(ids: string[]) {
@@ -48,7 +48,7 @@ export class ViberAccountRepository {
 
   async findEnabledAccountsByProvider(code: ViberProviderCode): Promise<ViberAccount[]> {
     const accounts = await this.accountModel.find({ providerCode: code, isEnabled: true }).lean<Lean<ViberAccountModel>[]>();
-    return accounts.map((acc) => ({ ...acc, id: acc._id.toString() }));
+    return accounts.map((acc) => ({ ...acc, id: acc._id.toString(), limiterPoolIds: acc.limiterPoolIds ?? [] }));
   }
 
   async addApiKeySecretAcc(account: Except<ViberAccountApiKeySecret, 'id' | 'createdAt' | 'updatedAt'>) {

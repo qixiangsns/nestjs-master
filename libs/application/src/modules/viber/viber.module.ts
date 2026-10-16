@@ -4,6 +4,7 @@ import { ViberAccountRepository } from './repositories/viber-account.repository'
 import { ViberAccountService } from './services/viber-account.service';
 import { ViberRouteConfigRepository } from './repositories/viber-route-config.repository';
 import { PlayerModule } from '@application/modules/player';
+import { LimiterModule } from '@application/modules/limiter';
 import { ViberProviderRepository } from './repositories/viber-provider.repository';
 import { ViberProviderService } from './services/viber-provider.service';
 import { ViberLogRepository } from './repositories/viber-log.repository';
@@ -47,7 +48,7 @@ const Providers = [
 ];
 
 @Module({
-  imports: [MongoSchemaModule, PlayerModule],
+  imports: [MongoSchemaModule, PlayerModule, LimiterModule],
   exports: [...Services],
   providers: [...Repositories, ...Providers],
 })
