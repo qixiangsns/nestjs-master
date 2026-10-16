@@ -2,7 +2,7 @@ import { ViberAccountWorker } from './viber-account.worker';
 import { Logger } from '@nestjs/common';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { Client } from 'pulsar-client';
-import { ViberEventPublisher } from '../events/viber-event.publisher';
+import { ViberLogDispatcher } from '../queues/viber-log.dispatcher';
 import { ViberSenderFactory } from '../adapters/viber-sender.factory';
 import { ViberAccountSender } from '../models/viber-account.model';
 import { LimiterService } from '@application/modules/limiter';
@@ -14,7 +14,7 @@ export class ViberWorkerManager {
   constructor(
     private readonly providerCode: ViberProviderCode,
     private readonly pulsarClient: Client,
-    private readonly eventPublisher: ViberEventPublisher,
+    private readonly logDispatcher: ViberLogDispatcher,
     private readonly senderFactory: ViberSenderFactory,
     private readonly limiter: LimiterService,
   ) {}
@@ -33,7 +33,7 @@ export class ViberWorkerManager {
       this.providerCode,
       account,
       this.pulsarClient,
-      this.eventPublisher,
+      this.logDispatcher,
       sender,
       this.limiter,
     );

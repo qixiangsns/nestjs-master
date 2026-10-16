@@ -73,51 +73,6 @@
         "tsConfigPath": "apps/messaging-admin/tsconfig.app.json"
       }
     },
-    "messaging-dlr-webhooks": {
-      "type": "application",
-      "root": "apps/messaging-dlr-webhooks",
-      "entryFile": "main",
-      "sourceRoot": "apps/messaging-dlr-webhooks/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/messaging-dlr-webhooks/tsconfig.app.json"
-      }
-    },
-    "sms-consumer-pldt": {
-      "type": "application",
-      "root": "apps/sms-consumer-pldt",
-      "entryFile": "main",
-      "sourceRoot": "apps/sms-consumer-pldt/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/sms-consumer-pldt/tsconfig.app.json"
-      }
-    },
-    "sms-consumer-pldt-smpp": {
-      "type": "application",
-      "root": "apps/sms-consumer-pldt-smpp",
-      "entryFile": "main",
-      "sourceRoot": "apps/sms-consumer-pldt-smpp/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/sms-consumer-pldt-smpp/tsconfig.app.json"
-      }
-    },
-    "sms-consumer-promotexter": {
-      "type": "application",
-      "root": "apps/sms-consumer-promotexter",
-      "entryFile": "main",
-      "sourceRoot": "apps/sms-consumer-promotexter/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/sms-consumer-promotexter/tsconfig.app.json"
-      }
-    },
-    "sms-router": {
-      "type": "application",
-      "root": "apps/sms-router",
-      "entryFile": "main",
-      "sourceRoot": "apps/sms-router/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/sms-router/tsconfig.app.json"
-      }
-    },
     "viber-consumer-promotexter": {
       "type": "application",
       "root": "apps/viber-consumer-promotexter",
@@ -125,15 +80,6 @@
       "sourceRoot": "apps/viber-consumer-promotexter/src",
       "compilerOptions": {
         "tsConfigPath": "apps/viber-consumer-promotexter/tsconfig.app.json"
-      }
-    },
-    "worker": {
-      "type": "application",
-      "root": "apps/worker",
-      "entryFile": "main",
-      "sourceRoot": "apps/worker/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/worker/tsconfig.app.json"
       }
     }
   }

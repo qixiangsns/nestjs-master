@@ -3,15 +3,15 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
 import { Client } from 'pulsar-client';
 import { ViberRequest } from '../models/viber-message.model';
-import { getViberRouteTopic } from './viber-request.queues';
+import { getViberRouteTopic } from './viber-message.queues';
 import { RouteAccountRoutable } from '../models/viber-route-config.model';
 
 /**
  * Dispatch viber requests to designated provider workers
  */
 @Injectable()
-export class ViberQueueDispatcher extends PulsarProducerService {
-  protected logger = new Logger(ViberQueueDispatcher.name);
+export class ViberMessageDispatcher extends PulsarProducerService {
+  protected logger = new Logger(ViberMessageDispatcher.name);
 
   constructor(@Inject(PULSAR_CONN_TOKEN.PRIMARY) client: Client) {
     super(client, {

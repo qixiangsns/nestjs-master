@@ -109,9 +109,7 @@ export class EmailController {
     description: 'Add a routing rule for email delivery.',
   })
   @ZodResponse({ type: CreateEmailRouteConfigResponse, status: HttpStatus.CREATED })
-  async createEmailRouteConfig(
-    @Body() body: CreateEmailRouteConfigRequest,
-  ): Promise<CreateEmailRouteConfigResponse> {
+  async createEmailRouteConfig(@Body() body: CreateEmailRouteConfigRequest): Promise<CreateEmailRouteConfigResponse> {
     throw new Error('Not implemented');
   }
 

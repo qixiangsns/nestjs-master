@@ -10,14 +10,14 @@ import { ViberProviderService } from './services/viber-provider.service';
 import { ViberLogRepository } from './repositories/viber-log.repository';
 import { ViberLogService } from './services/viber-log.service';
 import { ViberRouteConfigCache } from './caches/viber-route-config.cache';
-import { ViberEventPublisher } from './events/viber-event.publisher';
+import { ViberLogDispatcher } from './queues/viber-log.dispatcher';
 import { ViberRouteConfigService } from './services/viber-route-config.service';
 import { ViberSenderFactory } from './adapters/viber-sender.factory';
 import { ViberAccountTokenCache } from './caches/viber-account-token.cache';
 import { ViberPromotexterClientFactory } from './adapters/promotexter/viber-promotexter-client.factory';
 import { ViberPromotexterApixClientFactory } from './adapters/promotexter-apix/viber-promotexter-apix-client.factory';
 import { ViberSenderService } from './services/viber-sender.service';
-import { ViberQueueDispatcher } from './queues/viber-queue.dispatcher';
+import { ViberMessageDispatcher } from './queues/viber-message.dispatcher';
 import { ViberSignalBroadcaster } from './signals/viber-signal.broadcaster';
 import { ViberWorkerManagerFactory } from './workers/viber-worker-manager.factory';
 
@@ -36,13 +36,13 @@ const Providers = [
   ViberLogService,
   ViberRouteConfigService,
   ViberRouteConfigCache,
-  ViberEventPublisher,
+  ViberMessageDispatcher,
   ViberSenderFactory,
   ViberPromotexterClientFactory,
   ViberPromotexterApixClientFactory,
   ViberAccountTokenCache,
   ViberSenderService,
-  ViberQueueDispatcher,
+  ViberLogDispatcher,
   ViberSignalBroadcaster,
   ViberWorkerManagerFactory,
 ];

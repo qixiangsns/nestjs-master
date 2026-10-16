@@ -12,11 +12,7 @@ import { NodeClickHouseClientConfigOptions } from '@clickhouse/client/dist/confi
 
 interface ClickhouseModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   provide: symbol | string;
-  useFactory?: (
-    ...args: unknown[]
-  ) =>
-    | Promise<NodeClickHouseClientConfigOptions>
-    | NodeClickHouseClientConfigOptions;
+  useFactory?: (...args: unknown[]) => Promise<NodeClickHouseClientConfigOptions> | NodeClickHouseClientConfigOptions;
   inject?: (InjectionToken | OptionalFactoryDependency)[];
 }
 
@@ -30,18 +26,12 @@ export class ClickhouseModule {
         const connectionOptions = await options.useFactory?.(...args);
         const client = createClient(connectionOptions);
 
-        logger.debug(
-          { url: connectionOptions?.url },
-          `Connecting to Clickhouse ${options.provide.toString()}`,
-        );
+        logger.debug({ url: connectionOptions?.url }, `Connecting to Clickhouse ${options.provide.toString()}`);
 
         client
           .ping()
           .then(() => {
-            logger.log(
-              { url: connectionOptions?.url },
-              `Connected to Clickhouse ${options.provide.toString()}`,
-            );
+            logger.log({ url: connectionOptions?.url }, `Connected to Clickhouse ${options.provide.toString()}`);
           })
           .catch((error) => {
             logger.error(
