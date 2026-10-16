@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "deny": [
-      "Read(./improvement.md)",
-      "Edit(./improvement.md)"
-    ]
-  }
-}
