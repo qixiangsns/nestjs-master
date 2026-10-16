@@ -43,10 +43,7 @@ export class RedisModule {
           logger.debug({ host, port }, `Connected to Redis ${options.provide.toString()}`);
         });
         client.on('error', (error) => {
-          logger.error(
-            { host, port, error: error.message },
-            `Error connecting to Redis ${options.provide.toString()}`,
-          );
+          logger.error({ host, port, error: error.message }, `Error connecting to Redis ${options.provide.toString()}`);
         });
         return client;
       },

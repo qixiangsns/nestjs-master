@@ -3,11 +3,11 @@ import { SECRET_TOKEN, Secret } from '../config';
 
 export const REDIS_TOKEN = {
   PRIMARY: Symbol('REDIS_PRIMARY_CONN'),
-} as const satisfies Record<string, Symbol>;
+} as const satisfies Record<string, symbol>;
 
 export const REDIS_SUBSCRIBER_TOKEN = {
   PRIMARY: Symbol('REDIS_PRIMARY_SUBSCRIBER_CONN'),
-} as const satisfies Record<string, Symbol>;
+} as const satisfies Record<string, symbol>;
 
 export const RedisConnection = () =>
   RedisModule.forRootAsync({

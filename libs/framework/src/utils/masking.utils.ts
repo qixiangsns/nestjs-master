@@ -1,4 +1,4 @@
-import { maskPassword as maskDataPassword, maskEmail2 , maskPhone, maskStringV2 } from 'maskdata';
+import { maskPassword as maskDataPassword, maskEmail2, maskPhone, maskStringV2 } from 'maskdata';
 
 /**
  * Mask an API token, key or secret for logs and admin responses, keeping only the last 4 characters
@@ -6,12 +6,12 @@ import { maskPassword as maskDataPassword, maskEmail2 , maskPhone, maskStringV2 
  * Credentials of 4 characters or fewer are returned as is.
  */
 export function maskCredentials(credential: string): string {
-    if (!credential) return '';
-  
-    return maskStringV2(credential, {
-      maskWith: '*',
-      unmaskedEndCharacters: 4,
-    });
+  if (!credential) return '';
+
+  return maskStringV2(credential, {
+    maskWith: '*',
+    unmaskedEndCharacters: 4,
+  });
 }
 
 /**
@@ -19,14 +19,14 @@ export function maskCredentials(credential: string): string {
  * so the original length is not revealed, e.g. `P@ssw0rd!` -> `********`.
  */
 export function maskPassword(password: string): string {
-    const PASSWORD_MASKED_LENGTH = 8;
-  
-    if (!password) return '';
-  
-    return maskDataPassword(password, {
-      maskWith: '*',
-      fixedOutputLength: PASSWORD_MASKED_LENGTH,
-    });
+  const PASSWORD_MASKED_LENGTH = 8;
+
+  if (!password) return '';
+
+  return maskDataPassword(password, {
+    maskWith: '*',
+    fixedOutputLength: PASSWORD_MASKED_LENGTH,
+  });
 }
 
 /**
@@ -36,18 +36,18 @@ export function maskPassword(password: string): string {
  * Expects a valid email with a single `@`; input without `@` throws.
  */
 export function maskEmail(email: string): string {
-    const EMAIL_SHORT_LENGTH = 5;
+  const EMAIL_SHORT_LENGTH = 5;
 
-    if (!email) return '';
+  if (!email) return '';
 
-    const nameLength = email.indexOf('@');
-    const unmaskedLength = nameLength <= EMAIL_SHORT_LENGTH ? 1 : 3
+  const nameLength = email.indexOf('@');
+  const unmaskedLength = nameLength <= EMAIL_SHORT_LENGTH ? 1 : 3;
 
-    return maskEmail2(email, {
-      maskWith: '*',
-      unmaskedStartCharactersBeforeAt: unmaskedLength,
-      unmaskedEndCharactersAfterAt: Number.MAX_SAFE_INTEGER,
-    });
+  return maskEmail2(email, {
+    maskWith: '*',
+    unmaskedStartCharactersBeforeAt: unmaskedLength,
+    unmaskedEndCharactersAfterAt: Number.MAX_SAFE_INTEGER,
+  });
 }
 
 /**
