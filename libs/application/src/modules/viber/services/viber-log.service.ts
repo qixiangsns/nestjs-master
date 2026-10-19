@@ -15,7 +15,7 @@ export class ViberLogService {
   }
 
   async batchSave(logs: ViberLog[]) {
-    this.logRepository.batchInsert(logs);
+    await this.logRepository.batchInsert(logs);
   }
 
   async findLogs({ page, pageSize, startTime, endTime, ...filter }: GetViberLogListRequest) {
@@ -25,6 +25,6 @@ export class ViberLogService {
   }
 
   async updateMessageDelivery(referenceId: string, deliveryStatus: DeliveryStatus) {
-    this.logRepository.updateByReferenceId(referenceId, { deliveryStatus });
+    await this.logRepository.updateByReferenceId(referenceId, { deliveryStatus });
   }
 }

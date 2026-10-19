@@ -51,8 +51,8 @@ export class ViberSignalBroadcaster implements OnModuleInit, OnModuleDestroy {
       let payload: unknown;
       try {
         payload = JSON.parse(message);
-      } catch (error) {
-        this.logger.error({ channel, message }, 'Failed to parse viber signal');
+      } catch (error: unknown) {
+        this.logger.error({ channel, message, error }, 'Failed to parse viber signal');
         return;
       }
 

@@ -1,4 +1,4 @@
-import { PromotexterApi, SendViberRichMsgRequest, SendViberResponse } from '@application/integrations/promotexter';
+import { PromotexterApi, SendViberRichMsgRequest } from '@application/integrations/promotexter';
 import { ViberSender } from '../../ports/viber-sender.port';
 import {
   SendViberResult,

@@ -24,7 +24,7 @@ export class PlayerGrpcService implements OnModuleDestroy {
     return data?.email || null;
   }
 
-  async onModuleDestroy() {
+  onModuleDestroy() {
     this.clientChannel.close();
   }
 }

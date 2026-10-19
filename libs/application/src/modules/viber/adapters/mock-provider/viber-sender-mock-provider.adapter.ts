@@ -1,26 +1,21 @@
 import { randomUUID } from 'node:crypto';
 import { ViberSender } from '../../ports/viber-sender.port';
-import {
-  SendViberResult,
-  ViberContentRequest,
-  ViberOtpRequest,
-  ViberTemplateRequest,
-} from '../../models/viber-message.model';
+import { SendViberResult } from '../../models/viber-message.model';
 
 /**
  * Fake Viber provider for local end-to-end testing, every send succeeds without calling a real provider
  */
 export class ViberSenderMockProvider implements ViberSender {
-  async sendOtp(message: ViberOtpRequest): Promise<SendViberResult> {
-    return this.success();
+  sendOtp(): Promise<SendViberResult> {
+    return Promise.resolve(this.success());
   }
 
-  async sendTemplateMsg(message: ViberTemplateRequest): Promise<SendViberResult> {
-    return this.success();
+  sendTemplateMsg(): Promise<SendViberResult> {
+    return Promise.resolve(this.success());
   }
 
-  async sendContentMsg(message: ViberContentRequest): Promise<SendViberResult> {
-    return this.success();
+  sendContentMsg(): Promise<SendViberResult> {
+    return Promise.resolve(this.success());
   }
 
   private success(): SendViberResult {

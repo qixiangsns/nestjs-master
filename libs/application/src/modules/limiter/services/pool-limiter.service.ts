@@ -1,6 +1,6 @@
 import { REDIS_TOKEN } from '@application/connnections';
 import { Inject, Injectable } from '@nestjs/common';
-import { RateLimiterRedis, RateLimiterMemory } from 'rate-limiter-flexible';
+import { RateLimiterRedis } from 'rate-limiter-flexible';
 import { Redis } from 'ioredis';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class PoolLimiter {
 
   private createLimiter() {}
 
-  async consume(poolId: string, points: number): Promise<boolean> {
+  async consume(poolId: string, _points: number): Promise<boolean> {
     const poolConfig = {
       requestPerSecond: 1,
       requestPerMinute: 1,

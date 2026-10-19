@@ -1,5 +1,5 @@
 import { PromotexterBase } from './promotexter-base.service';
-import { type ClientOptions, SendViberTemplateRequest, SendSmsRequest, SendViberResponse } from './promotexter.types';
+import { type ClientOptions, SendViberTemplateRequest, SendSmsRequest } from './promotexter.types';
 
 export class PromotexterApix extends PromotexterBase {
   static TOKEN_EXPIRATION_SECONDS = 60 * 60;

@@ -24,7 +24,7 @@ export class WhatsappController {
     description: 'OTP template needs to be pre-approved by whatsapp.',
   })
   @ZodResponse({ type: SendWhatsappOtpResponse, status: HttpStatus.CREATED })
-  async sendOtp(@Body() body: SendWhatsappOtpRequest) {
+  sendOtp(@Body() _body: SendWhatsappOtpRequest) {
     return {
       messageId: '',
     };
@@ -39,7 +39,7 @@ export class WhatsappController {
     description: 'Promotional template needs to be pre-approved by whatsapp.',
   })
   @ZodResponse({ type: SendWhatsappMktResponse, status: HttpStatus.CREATED })
-  async sendMktMsg(@Body() body: SendWhatsappMktRequest) {
+  sendMktMsg(@Body() _body: SendWhatsappMktRequest) {
     return {
       messageId: '',
     };

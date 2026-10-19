@@ -10,5 +10,5 @@ export class RateLimitPoolService {
 
   async getPool() {}
 
-  async findPools(name: string) {}
+  async findPools(_name: string) {}
 }

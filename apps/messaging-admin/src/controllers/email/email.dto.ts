@@ -1,4 +1,4 @@
-import { z, infer } from 'zod';
+import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { OffsetPaginationQuerySchema, OffsetPaginationSchema, offsetPaginated } from '@framework/pagination';
 

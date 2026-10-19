@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { DeliveryStatus, RequestStatus, MessageType } from '../models/viber-log.model';
 

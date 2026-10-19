@@ -88,7 +88,7 @@ export class ViberAccountWorker {
 
           batchMessages.push(message);
         }
-      } catch (error) {
+      } catch {
         // When queue is drained, priority moves to the lower ones
         priority = priority === lastPriority ? 0 : priority + 1;
       }
@@ -196,7 +196,7 @@ export class ViberAccountWorker {
   }
 
   private async sendMessage(message: Message) {
-    const data: ViberRequest = JSON.parse(message.getData().toString());
+    const data = JSON.parse(message.getData().toString()) as ViberRequest;
     let result: SendViberResult | null = null;
 
     const log = {
@@ -221,7 +221,7 @@ export class ViberAccountWorker {
           result = await this.sender.sendTemplateMsg(data);
           break;
       }
-    } catch (error) {
+    } catch {
       await this.logDispatcher.dispatchLogCreated({
         ...log,
         requestStatus: 'Failed',

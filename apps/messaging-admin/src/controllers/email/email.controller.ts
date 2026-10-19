@@ -34,7 +34,7 @@ export class EmailController {
     description: 'Register a new email sending account against a provider.',
   })
   @ZodResponse({ type: CreateEmailAccountResponse, status: HttpStatus.CREATED })
-  async createEmailAccount(@Body() body: CreateEmailAccountRequest): Promise<CreateEmailAccountResponse> {
+  createEmailAccount(@Body() _body: CreateEmailAccountRequest): Promise<CreateEmailAccountResponse> {
     throw new Error('Not implemented');
   }
 
@@ -44,7 +44,7 @@ export class EmailController {
     description: 'Search, filter and paginate email sending accounts.',
   })
   @ZodResponse({ type: GetEmailAccountListResponse, status: HttpStatus.OK })
-  async getEmailAccountList(@Query() query: GetEmailAccountListRequest): Promise<GetEmailAccountListResponse> {
+  getEmailAccountList(@Query() _query: GetEmailAccountListRequest): Promise<GetEmailAccountListResponse> {
     throw new Error('Not implemented');
   }
 
@@ -54,9 +54,9 @@ export class EmailController {
     description: 'Partially update an email sending account (sender details, quota, credentials, status).',
   })
   @ZodResponse({ type: PatchEmailAccountResponse, status: HttpStatus.OK })
-  async patchEmailAccount(
-    @Param('id') id: string,
-    @Body() body: PatchEmailAccountRequest,
+  patchEmailAccount(
+    @Param('id') _id: string,
+    @Body() _body: PatchEmailAccountRequest,
   ): Promise<PatchEmailAccountResponse> {
     throw new Error('Not implemented');
   }
@@ -67,7 +67,7 @@ export class EmailController {
     description: 'Retrieve the email providers accounts can be bound to.',
   })
   @ZodResponse({ type: [GetEmailProviderListResponse], status: HttpStatus.OK })
-  async getEmailProviderList(): Promise<GetEmailProviderListResponse[]> {
+  getEmailProviderList(): Promise<GetEmailProviderListResponse[]> {
     throw new Error('Not implemented');
   }
 
@@ -77,7 +77,7 @@ export class EmailController {
     description: 'Retrieve email delivery logs with filters.',
   })
   @ZodResponse({ type: GetEmailLogListResponse, status: HttpStatus.OK })
-  async getEmailLogList(@Query() query: GetEmailLogListRequest): Promise<GetEmailLogListResponse> {
+  getEmailLogList(@Query() _query: GetEmailLogListRequest): Promise<GetEmailLogListResponse> {
     throw new Error('Not implemented');
   }
 
@@ -87,7 +87,7 @@ export class EmailController {
     description: 'Submit a test email through a specific account, or through routing when no account is given.',
   })
   @ZodResponse({ type: SendEmailResponse, status: HttpStatus.OK })
-  async sendEmail(@Body() body: SendEmailRequest): Promise<SendEmailResponse> {
+  sendEmail(@Body() _body: SendEmailRequest): Promise<SendEmailResponse> {
     throw new Error('Not implemented');
   }
 
@@ -97,9 +97,7 @@ export class EmailController {
     description: 'Retrieve the routing rules selecting which account sends an email.',
   })
   @ZodResponse({ type: GetEmailRouteConfigListResponse, status: HttpStatus.OK })
-  async getEmailRouteConfigList(
-    @Query() query: GetEmailRouteConfigListRequest,
-  ): Promise<GetEmailRouteConfigListResponse> {
+  getEmailRouteConfigList(@Query() _query: GetEmailRouteConfigListRequest): Promise<GetEmailRouteConfigListResponse> {
     throw new Error('Not implemented');
   }
 
@@ -109,7 +107,7 @@ export class EmailController {
     description: 'Add a routing rule for email delivery.',
   })
   @ZodResponse({ type: CreateEmailRouteConfigResponse, status: HttpStatus.CREATED })
-  async createEmailRouteConfig(@Body() body: CreateEmailRouteConfigRequest): Promise<CreateEmailRouteConfigResponse> {
+  createEmailRouteConfig(@Body() _body: CreateEmailRouteConfigRequest): Promise<CreateEmailRouteConfigResponse> {
     throw new Error('Not implemented');
   }
 
@@ -119,9 +117,9 @@ export class EmailController {
     description: 'Partially update a routing rule (target account, priority, weight, criteria, status).',
   })
   @ZodResponse({ type: PatchEmailRouteConfigResponse, status: HttpStatus.OK })
-  async patchEmailRouteConfig(
-    @Param('id') id: string,
-    @Body() body: PatchEmailRouteConfigRequest,
+  patchEmailRouteConfig(
+    @Param('id') _id: string,
+    @Body() _body: PatchEmailRouteConfigRequest,
   ): Promise<PatchEmailRouteConfigResponse> {
     throw new Error('Not implemented');
   }

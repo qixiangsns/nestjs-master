@@ -22,7 +22,7 @@ export abstract class PulsarConsumer<T> implements OnModuleDestroy {
     this.consumer = await this.client.subscribe(this.config);
     this.running = true;
     this.logger.log(`${this.constructor.name} - Consumer for topic [${this.config.topic}] created`);
-    nextTick(this.consume.bind(this));
+    nextTick(() => this.consume());
   }
 
   public isConnected() {
@@ -42,22 +42,24 @@ export abstract class PulsarConsumer<T> implements OnModuleDestroy {
 
   private async receive(message: Message) {
     const ackMessage = () => this.consumer.acknowledge(message);
-    this.handleMessage(JSON.parse(message.getData().toString()), ackMessage, message.getMessageId().toString()).catch(
-      (err) => {
-        if (err instanceof ZodError) {
-          this.logger.error(
-            {
-              err: err.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join(''),
-            },
-            'Invalid event schema',
-          );
-        } else if (err instanceof Error) {
-          this.logger.error({ err }, 'Error handling message.');
-        } else {
-          this.logger.error('Error handling message.');
-        }
-      },
-    );
+    this.handleMessage(
+      JSON.parse(message.getData().toString()) as T,
+      ackMessage,
+      message.getMessageId().toString(),
+    ).catch((err) => {
+      if (err instanceof ZodError) {
+        this.logger.error(
+          {
+            err: err.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join(''),
+          },
+          'Invalid event schema',
+        );
+      } else if (err instanceof Error) {
+        this.logger.error({ err }, 'Error handling message.');
+      } else {
+        this.logger.error('Error handling message.');
+      }
+    });
 
     try {
       await ackMessage();
