@@ -34,8 +34,8 @@ When debugging or implementing fix/features, isolate execution to the specific a
 - run the built application for sandbox verification: `node dist/apps/<app-name>/main.js`
 - terminate the application after verification: `ctrl + c`
 
-## Topics
+## Domain maps
 
-Read these domain maps ONLY if your task explicitly modifies or deploys these independent services:
+Read these maps only when it is required:
 
 - Project structure (`docs/project-structure`)
