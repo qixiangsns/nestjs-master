@@ -19,6 +19,7 @@
     "build:messaging-admin": "nest build messaging-admin",
     "build:worker": "nest build worker",
     "build:cli": "nest build cli",
+    "build:cron": "nest build cron",
     "cli": "node dist/apps/cli/main",
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down",
