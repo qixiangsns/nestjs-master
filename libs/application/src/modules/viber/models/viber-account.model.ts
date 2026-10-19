@@ -16,7 +16,7 @@ export interface ViberAccountBase {
   name: string;
   providerCode: ViberProviderCode;
   senderIds: string[];
-  limiterPoolIds: string[];
+  limiterPoolId: string;
   isEnabled: boolean;
   createdAt: Date;
   url: string;

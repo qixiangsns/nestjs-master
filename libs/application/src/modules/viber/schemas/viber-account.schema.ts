@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, DiscriminatorSchema } from 'mongoose';
+import mongoose, { HydratedDocument, DiscriminatorSchema } from 'mongoose';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { AccountType } from '../models/viber-account.model';
 
@@ -19,8 +19,8 @@ export class ViberAccountBase {
   @Prop({ type: [String] })
   senderIds: string[];
 
-  @Prop({ type: [String], default: [] })
-  limiterPoolIds: string[];
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'LimiterPool', required: true })
+  limiterPoolId: mongoose.Types.ObjectId;
 
   @Prop({ type: Boolean })
   isEnabled: boolean;
@@ -43,7 +43,7 @@ export class ViberAccountApiToken implements ViberAccountBase {
   providerCode: ViberProviderCode;
   url: string;
   senderIds: string[];
-  limiterPoolIds: string[];
+  limiterPoolId: mongoose.Types.ObjectId;
   isEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -65,7 +65,7 @@ export class ViberAccountApiKeySecret implements ViberAccountBase {
   providerCode: ViberProviderCode;
   url: string;
   senderIds: string[];
-  limiterPoolIds: string[];
+  limiterPoolId: mongoose.Types.ObjectId;
   isEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -85,7 +85,7 @@ export class ViberAccountBearerToken implements ViberAccountBase {
   providerCode: ViberProviderCode;
   url: string;
   senderIds: string[];
-  limiterPoolIds: string[];
+  limiterPoolId: mongoose.Types.ObjectId;
   isEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;

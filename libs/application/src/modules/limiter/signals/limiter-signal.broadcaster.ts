@@ -4,7 +4,7 @@ import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nest
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LimiterPoolSignal, LimiterPoolUpdatedSignal } from './limiter-pool.signals';
 
-const LimiterSignalChannels: string[] = [LimiterPoolSignal.PoolUpdated];
+const LimiterSignalChannels = [LimiterPoolSignal.PoolUpdated];
 
 @Injectable()
 /**
@@ -30,7 +30,7 @@ export class LimiterSignalBroadcaster implements OnModuleInit, OnModuleDestroy {
   }
 
   private relay(channel: string, message: string) {
-    if (LimiterSignalChannels.includes(channel)) {
+    if (LimiterSignalChannels.some((signalChannel) => signalChannel === channel)) {
       let payload: unknown;
       try {
         payload = JSON.parse(message);

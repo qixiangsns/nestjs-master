@@ -1,5 +1,4 @@
 import { Body, Controller, Get, HttpStatus, Injectable, Param, Patch, Post } from '@nestjs/common';
-import { IsObjectIdPipe } from '@nestjs/mongoose';
 import { ApiErrorResponse } from '@framework/swagger';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
@@ -48,7 +47,7 @@ export class LimiterController {
     description: 'Partially update a limiter pool (name, rules). Workers pick up the change immediately.',
   })
   async patchLimiterPool(
-    @Param('id', IsObjectIdPipe) id: string,
+    @Param('id') id: string,
     @Body() body: PatchLimiterPoolRequest,
   ): Promise<void> {
     await this.limiterPoolService.updatePool(id, body);
@@ -60,7 +59,7 @@ export class LimiterController {
     description: 'A disabled pool blocks every account that uses it.',
   })
   async patchLimiterPoolStatus(
-    @Param('id', IsObjectIdPipe) id: string,
+    @Param('id') id: string,
     @Body() body: PatchLimiterPoolStatusRequest,
   ): Promise<void> {
     await this.limiterPoolService.updateStatus(id, body.isEnabled);

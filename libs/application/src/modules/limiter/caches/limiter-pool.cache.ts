@@ -20,24 +20,19 @@ export class LimiterPoolCache {
   async handlePoolUpdated(signal: LimiterPoolUpdatedSignal) {
     await this.limit(async () => {
       try {
-        await this.refresh([signal.poolId]);
+        await this.refresh(signal.poolId);
       } catch (error: unknown) {
         this.logger.error({ error, signal }, 'Failed to refresh limiter pool');
       }
     });
   }
 
-  async getPools(ids: string[]): Promise<LimiterPool[]> {
-    const missingIds = ids.filter((id) => !this.pools.has(id));
-    if (missingIds.length > 0) await this.refresh(missingIds);
-
-    return ids.map((id) => this.pools.get(id)).filter((pool): pool is LimiterPool => !!pool);
+  async getPool(id: string): Promise<LimiterPool | null> {
+    if (!this.pools.has(id)) await this.refresh(id);
+    return this.pools.get(id) ?? null;
   }
 
-  private async refresh(ids: string[]) {
-    const found = await this.poolRepo.findPools(ids);
-    for (const id of ids) {
-      this.pools.set(id, found.find((pool) => pool.id === id) ?? null);
-    }
+  private async refresh(id: string) {
+    this.pools.set(id, await this.poolRepo.findPool(id));
   }
 }

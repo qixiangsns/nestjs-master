@@ -1,4 +1,5 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { isArrayUnique } from '@framework/utils/array.utils';
 import { LimiterRule } from '../models/limiter.model';
 import { LimiterPoolRepository } from '../repositories/limiter-pool.repository';
 import { LimiterSignalBroadcaster } from '../signals/limiter-signal.broadcaster';
@@ -19,10 +20,6 @@ export class LimiterPoolService {
     const pool = await this.limiterPoolRepo.findPool(id);
     if (!pool) throw new NotFoundException('Limiter pool not found');
     return pool;
-  }
-
-  async findPools(ids: string[]) {
-    return this.limiterPoolRepo.findPools(ids);
   }
 
   async addPool(pool: CreateLimiterPool) {
@@ -51,7 +48,7 @@ export class LimiterPoolService {
     }
 
     const windows = rules.map((rule) => rule.window);
-    if (new Set(windows).size !== windows.length) {
+    if (!isArrayUnique(windows)) {
       throw new BadRequestException('Limiter pool rules must not repeat a window');
     }
   }

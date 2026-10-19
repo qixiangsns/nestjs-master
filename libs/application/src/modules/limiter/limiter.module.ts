@@ -4,12 +4,11 @@ import { LimiterPoolRepository } from './repositories/limiter-pool.repository';
 import { LimiterPoolCache } from './caches/limiter-pool.cache';
 import { LimiterPoolService } from './services/limiter-pool.service';
 import { LimiterService } from './services/limiter.service';
-import { LimiterRedis } from './adapters/limiter-redis.adapter';
 import { LimiterSignalBroadcaster } from './signals/limiter-signal.broadcaster';
 
 const Repositories = [LimiterPoolRepository];
 const Services = [LimiterService, LimiterPoolService];
-const Providers = [LimiterPoolCache, LimiterSignalBroadcaster, LimiterRedis];
+const Providers = [LimiterPoolCache, LimiterSignalBroadcaster];
 
 @Module({
   imports: [MongoSchemaModule],

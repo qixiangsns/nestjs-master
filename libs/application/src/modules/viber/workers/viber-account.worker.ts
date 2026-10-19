@@ -70,7 +70,7 @@ export class ViberAccountWorker {
         const received = this.takeBufferedMessage() ?? (await this.receive(priority, peekTimeoutMs));
         if (!received) continue;
 
-        const { allowed, retryAfterMs } = await this.limiter.acquire(this.account.limiterPoolIds);
+        const { allowed, retryAfterMs } = await this.limiter.acquire(this.account.limiterPoolId);
         if (!allowed) {
           this.bufferedMessage = received;
           return { batchMessages, retryAfterMs };
