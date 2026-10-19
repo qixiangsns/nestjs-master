@@ -17,7 +17,7 @@ type CounterResult = { allowed: boolean; state: RateLimiterRes };
  * const { allowed, retryAfterMs } = await limiterService.acquire(account.limiterPoolId);
  * const { allowed, retryAfterMs } = await limiterService.acquire(account.limiterPoolId, 5);
  *
- * @example Redis key: limiter:<pool id>:Second
+ * @example Redis key: limiter:pool-id:<pool id>:Second
  */
 @Injectable()
 export class LimiterService {
@@ -49,7 +49,7 @@ export class LimiterService {
   }
 
   private toCounters(pool: LimiterPool): LimiterCounter[] {
-    return pool.rules.map((rule) => ({ key: `${pool.id}:${rule.window}`, rule }));
+    return pool.rules.map((rule) => ({ key: `pool-id:${pool.id}:${rule.window}`, rule }));
   }
 
   private async consumeAll(counters: LimiterCounter[], points: number): Promise<LimiterGrant> {

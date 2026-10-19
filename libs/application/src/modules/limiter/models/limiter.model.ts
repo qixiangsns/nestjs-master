@@ -20,7 +20,7 @@ export interface LimiterRule {
 /**
  * One Redis counter per pool per window, counts the messages sent in the current window
  *
- * @example { key: '6ad07126b6b0d62d3eb5357b:Second', rule: { window: 'Second', limit: 50 } }
+ * @example { key: 'pool-id:6ad07126b6b0d62d3eb5357b:Second', rule: { window: 'Second', limit: 50 } }
  */
 export interface LimiterCounter {
   key: string;
