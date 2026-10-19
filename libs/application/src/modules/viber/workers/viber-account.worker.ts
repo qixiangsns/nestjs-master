@@ -3,7 +3,7 @@ import pLimit, { LimitFunction } from 'p-limit';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import { RouteType } from '../models/viber-route-config.model';
 import { Consumer } from 'pulsar-client';
-import { Pacer } from '@framework/utils/pacer.utils';
+import { Pacer } from '@framework/utils';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { type ViberAccountSender } from '../models/viber-account.model';
 import { Client, Message } from 'pulsar-client';

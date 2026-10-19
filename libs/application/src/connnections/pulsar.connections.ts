@@ -1,4 +1,4 @@
-import { PulsarModule } from '@framework/pulsar/pulsar.module';
+import { PulsarModule } from '@framework/pulsar';
 import { AuthenticationToken } from 'pulsar-client';
 import { Secret, SECRET_TOKEN } from '../config';
 

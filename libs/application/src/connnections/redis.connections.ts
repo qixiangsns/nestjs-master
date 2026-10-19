@@ -1,4 +1,4 @@
-import { RedisModule } from '@framework/redis/redis.module';
+import { RedisModule } from '@framework/redis';
 import { SECRET_TOKEN, Secret } from '../config';
 
 export const REDIS_TOKEN = {
