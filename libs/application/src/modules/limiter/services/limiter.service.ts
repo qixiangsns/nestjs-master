@@ -39,7 +39,7 @@ export class LimiterService {
       }
 
       return await this.consumeAll(this.toCounters(pool), points);
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error({ poolId, error }, 'Limiter unavailable, blocking');
       return { allowed: false, retryAfterMs: LIMITER_BLOCKED_RETRY_MS };
     }
@@ -68,7 +68,7 @@ export class LimiterService {
   private async consume({ key, rule }: LimiterCounter, points: number): Promise<CounterResult> {
     try {
       return { allowed: true, state: await this.getLimiter(rule).consume(key, points) };
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof RateLimiterRes) return { allowed: false, state: error };
       throw error;
     }
