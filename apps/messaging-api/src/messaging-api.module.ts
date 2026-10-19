@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ApplicationModule } from '@application';
-import { SecretsModule } from '@framework/secret/secret.module';
+import { SecretsModule } from '@framework/secret';
 import { API_ENV_TOKEN, ApiEnvSchema } from './config';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';

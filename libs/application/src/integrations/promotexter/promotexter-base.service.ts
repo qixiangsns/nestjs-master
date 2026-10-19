@@ -60,7 +60,9 @@ export class PromotexterBase {
 
       throw new Error(`${PromotexterBase.name} failed to obtained bearer token.`);
     } catch (error) {
-      throw new Error(`${PromotexterBase.name} failed to generate bearer token. ${error?.message}`);
+      throw new Error(
+        `${PromotexterBase.name} failed to generate bearer token. ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
@@ -117,11 +119,13 @@ export class PromotexterBase {
       return response.data;
     } catch (error) {
       if (axios.isAxiosError<PromotexterErrorResponse>(error) && error.response) {
-        switch (error.response.status) {
-          case HttpStatusCode.BadRequest:
-          case HttpStatusCode.Unauthorized:
-          case HttpStatusCode.UnprocessableContent:
-            throw new PromotexterError(error.response.data.code, error.response.status, error.response.data.message);
+        const handledStatuses: number[] = [
+          HttpStatusCode.BadRequest,
+          HttpStatusCode.Unauthorized,
+          HttpStatusCode.UnprocessableContent,
+        ];
+        if (handledStatuses.includes(error.response.status)) {
+          throw new PromotexterError(error.response.data.code, error.response.status, error.response.data.message);
         }
       }
 

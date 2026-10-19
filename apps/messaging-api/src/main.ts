@@ -13,6 +13,7 @@ async function bootstrap() {
     bufferLogs: true,
   });
   const env = app.get<ApiEnv>(API_ENV_TOKEN);
+  app.enableShutdownHooks();
 
   // Logging
   app.useLogger(app.get(PinoLogger));

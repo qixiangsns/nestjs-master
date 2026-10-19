@@ -69,12 +69,14 @@ export class ViberAccountRepository {
     await this.accountModel.updateOne({ _id: new Types.ObjectId(id) }, account);
   }
 
-  async updateStatus(id: string, isEnabled: boolean) {
-    await this.accountModel.updateOne(
-      { _id: new Types.ObjectId(id) },
-      {
-        isEnabled,
-      },
+  /**
+   * @returns true if the status was changed
+   */
+  async updateStatus(id: string, isEnabled: boolean): Promise<boolean> {
+    const result = await this.accountModel.updateOne(
+      { _id: new Types.ObjectId(id), isEnabled: { $ne: isEnabled } },
+      { isEnabled },
     );
+    return result.modifiedCount > 0;
   }
 }

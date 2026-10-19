@@ -3,17 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
   ViberRouteConfig as ViberRouteConfigModel,
-  RouteAccount as RouteAccountModel,
   RouteAccountVirtualField,
 } from '../schemas/viber-route-config.schema';
-import {
-  ViberAccountBase as ViberAccountBaseModel,
-  ViberAccountBaseSchema,
-  ViberAccount as ViberAccountModel,
-} from '../schemas/viber-account.schema';
+import { ViberAccountBase as ViberAccountBaseModel } from '../schemas/viber-account.schema';
 import { MONGO_CONN_NAME } from '@application/connnections';
 import {
-  AccountDetailsRoutable,
   RoutableViberRouteConfig,
   RouteAccountRoutable,
   RouteAccountView,

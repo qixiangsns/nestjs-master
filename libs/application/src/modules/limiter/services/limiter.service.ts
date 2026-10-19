@@ -40,10 +40,7 @@ export class LimiterService {
 
       return await this.consumeAll(this.toCounters(pool), points);
     } catch (error) {
-      this.logger.error(
-        { poolId, error },
-        'Limiter unavailable, blocking',
-      );
+      this.logger.error({ poolId, error }, 'Limiter unavailable, blocking');
       return { allowed: false, retryAfterMs: LIMITER_BLOCKED_RETRY_MS };
     }
   }
@@ -57,7 +54,10 @@ export class LimiterService {
 
     const refused = results.filter((res) => !res.allowed);
     if (refused.length > 0) {
-      await this.undo(counters.filter((_, i) => results[i].allowed), points);
+      await this.undo(
+        counters.filter((_, i) => results[i].allowed),
+        points,
+      );
       return { allowed: false, retryAfterMs: this.wait(refused) };
     }
 

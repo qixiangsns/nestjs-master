@@ -26,7 +26,7 @@ export class AdminsController {
     description: 'Search, filter and paginate admin accounts.',
   })
   @ZodResponse({ type: GetAdminListResponse, status: HttpStatus.OK })
-  async getAdminList(@Query() query: GetAdminListRequest): Promise<GetAdminListResponse> {
+  getAdminList(@Query() _query: GetAdminListRequest): Promise<GetAdminListResponse> {
     throw new Error('Not implemented');
   }
 
@@ -36,7 +36,7 @@ export class AdminsController {
     description: 'Retrieve details for a specific admin.',
   })
   @ZodResponse({ type: GetAdminInfoResponse, status: HttpStatus.OK })
-  async getAdminInfo(@Param('adminId') adminId: string): Promise<GetAdminInfoResponse> {
+  getAdminInfo(@Param('adminId') _adminId: string): Promise<GetAdminInfoResponse> {
     throw new Error('Not implemented');
   }
 
@@ -46,9 +46,9 @@ export class AdminsController {
     description: 'Partially update profile details (name, email, role, etc.).',
   })
   @ZodResponse({ type: PatchAdminInfoResponse, status: HttpStatus.OK })
-  async patchAdminInfo(
-    @Param('adminId') adminId: string,
-    @Body() body: PatchAdminInfoRequest,
+  patchAdminInfo(
+    @Param('adminId') _adminId: string,
+    @Body() _body: PatchAdminInfoRequest,
   ): Promise<PatchAdminInfoResponse> {
     throw new Error('Not implemented');
   }
@@ -59,7 +59,7 @@ export class AdminsController {
     description: "Force-reset another admin's password and issue a temporary password.",
   })
   @ZodResponse({ type: ResetAdminPasswordResponse, status: HttpStatus.OK })
-  async resetAdminPassword(@Param('adminId') adminId: string): Promise<ResetAdminPasswordResponse> {
+  resetAdminPassword(@Param('adminId') _adminId: string): Promise<ResetAdminPasswordResponse> {
     throw new Error('Not implemented');
   }
 
@@ -69,7 +69,7 @@ export class AdminsController {
     description: 'Clear the 2FA registration so the target admin can re-enroll.',
   })
   @ZodResponse({ type: ResetAdminTfaResponse, status: HttpStatus.OK })
-  async resetAdminTfa(@Param('adminId') adminId: string): Promise<ResetAdminTfaResponse> {
+  resetAdminTfa(@Param('adminId') _adminId: string): Promise<ResetAdminTfaResponse> {
     throw new Error('Not implemented');
   }
 
@@ -79,9 +79,9 @@ export class AdminsController {
     description: 'Toggle or set the account status (e.g. active, suspended).',
   })
   @ZodResponse({ type: UpdateAdminStatusResponse, status: HttpStatus.OK })
-  async updateAdminStatus(
-    @Param('adminId') adminId: string,
-    @Body() body: UpdateAdminStatusRequest,
+  updateAdminStatus(
+    @Param('adminId') _adminId: string,
+    @Body() _body: UpdateAdminStatusRequest,
   ): Promise<UpdateAdminStatusResponse> {
     throw new Error('Not implemented');
   }

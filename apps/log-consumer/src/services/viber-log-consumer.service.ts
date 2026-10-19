@@ -1,8 +1,13 @@
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
 import { Inject, Injectable, OnModuleInit, OnApplicationShutdown, Logger } from '@nestjs/common';
-import { Client, Consumer, ConsumerConfig, Message } from 'pulsar-client';
+import { Client, Consumer, ConsumerConfig } from 'pulsar-client';
 import PQueue from 'p-queue';
-import { ViberLogService, ViberLogTopic, type ViberLog } from '@application/modules/viber';
+import {
+  ViberLogCreatedQueueSchema,
+  ViberLogService,
+  ViberLogTopic,
+  type ViberLogCreatedQueue,
+} from '@application/modules/viber';
 
 @Injectable()
 export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutdown {
@@ -45,7 +50,7 @@ export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutd
     }
   }
 
-  private async pause() {
+  private pause() {
     this.isConsuming = false;
   }
 
@@ -66,15 +71,15 @@ export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutd
     this.logger.log(config, 'Connected to consumer');
   }
 
-  private async consumeBatch(): Promise<ViberLog[]> {
-    const logs: ViberLog[] = [];
+  private async consumeBatch(): Promise<ViberLogCreatedQueue[]> {
+    const logs: ViberLogCreatedQueue[] = [];
     const messages = await this.consumer.batchReceive();
     for (const message of messages) {
       try {
-        const log: ViberLog = JSON.parse(message.getData().toString());
+        const log = ViberLogCreatedQueueSchema.parse(JSON.parse(message.getData().toString()));
         logs.push(log);
-      } catch (error) {
-        this.logger.error('Failed to parse viber log');
+      } catch (error: unknown) {
+        this.logger.error({ error }, 'Failed to parse viber log');
       }
       await this.consumer.acknowledge(message);
     }

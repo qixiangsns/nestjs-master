@@ -17,6 +17,7 @@ async function bootstrap() {
     bufferLogs: true,
   });
   const env = app.get<Env>(ENV_TOKEN);
+  app.enableShutdownHooks();
 
   // Logging
   app.useLogger(app.get(PinoLogger));

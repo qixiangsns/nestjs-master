@@ -27,10 +27,7 @@ export class AuthController {
   })
   @ZodResponse({ type: LoginResponse, status: HttpStatus.OK })
   @ApiResponseMfaToken()
-  async loginWithUsername(
-    @Body() body: LoginRequest,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<LoginResponse> {
+  loginWithUsername(@Body() body: LoginRequest, @Res({ passthrough: true }) response: Response): LoginResponse {
     this._setMfaTokenCookie(response, '1');
 
     // set mfaToken in cookie server only path
@@ -46,7 +43,7 @@ export class AuthController {
     description: 'Allow user to signin via Lark OAuth2',
   })
   @ZodResponse({ type: GetLarkLoginUrlResponse, status: HttpStatus.OK })
-  async getLarkLoginUrl(): Promise<GetLarkLoginUrlResponse> {
+  getLarkLoginUrl(): GetLarkLoginUrlResponse {
     return {
       redirectUrl: 'https://',
     };
@@ -59,10 +56,10 @@ export class AuthController {
   })
   @ApiResponseMfaToken()
   @ZodResponse({ type: LoginResponse, status: HttpStatus.OK })
-  async processLarkLoginCallback(
+  processLarkLoginCallback(
     @Body() body: LarkLoginCallbackRequest,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<LoginResponse> {
+  ): LoginResponse {
     // set mfaToken in cookie server only path
     this._setMfaTokenCookie(response, '1');
     return {
@@ -77,13 +74,11 @@ export class AuthController {
   })
   @Post('tfa/verify')
   @ZodResponse({ type: VerifyTfaResponse, status: HttpStatus.OK })
-  async verifyTfa(
+  verifyTfa(
     @Body() body: VerifyTfaRequest,
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<VerifyTfaResponse> {
-    const mfaToken = request.cookies['mfaToken'];
-
+  ): VerifyTfaResponse {
     // Set a long-lived refreshToken
     response.cookie('refreshToken', '1', {
       path: '/tfa/verify',

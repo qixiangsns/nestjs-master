@@ -25,7 +25,7 @@ export class SmsController {
     description: 'Priority: low',
   })
   @ZodResponse({ type: SendMktSmsResponse, status: HttpStatus.CREATED })
-  async sendMktSms(@Body() body: SendMktSmsRequest) {
+  sendMktSms(@Body() _body: SendMktSmsRequest) {
     return {
       messageId: '',
     };
@@ -37,7 +37,7 @@ export class SmsController {
     description: 'Priority: high',
   })
   @ZodResponse({ type: SendLoginOtpSmsResponse, status: HttpStatus.CREATED })
-  async sendLoginOtpSms(@Body() body: SendLoginOtpSmsRequest) {
+  sendLoginOtpSms(@Body() _body: SendLoginOtpSmsRequest) {
     return {
       messageId: '',
     };
@@ -49,7 +49,7 @@ export class SmsController {
     description: 'Priority: high',
   })
   @ZodResponse({ type: SendRegisterOtpSmsResponse, status: HttpStatus.CREATED })
-  async sendRegisterOtpSms(@Body() body: SendRegisterOtpSmsRequest) {
+  sendRegisterOtpSms(@Body() _body: SendRegisterOtpSmsRequest) {
     return {
       messageId: '',
     };
@@ -61,7 +61,7 @@ export class SmsController {
     description: 'Priority: medium',
   })
   @ZodResponse({ type: SendNotificationSmsResponse, status: HttpStatus.CREATED })
-  async sendNotificationSms(@Body() body: SendNotificationSmsRequest) {
+  sendNotificationSms(@Body() _body: SendNotificationSmsRequest) {
     return {
       messageId: '',
     };

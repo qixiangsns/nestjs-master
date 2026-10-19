@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository';
 import { ViberAccountRepository } from '../repositories/viber-account.repository';
 import { ViberAccountService } from './viber-account.service';
+import { ViberSignalBroadcaster } from '../signals/viber-signal.broadcaster';
 import { CreateViberRouteConfig, GetViberRouteConfigRequest, PatchViberRouteConfig } from '../dtos/viber-config.dto';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class ViberRouteConfigService {
     private readonly routeConfigRepo: ViberRouteConfigRepository,
     private readonly accountRepo: ViberAccountRepository,
     private readonly accountService: ViberAccountService,
+    private readonly signalBroadcaster: ViberSignalBroadcaster,
   ) {}
 
   async getConfig({ platformId, routeType }: GetViberRouteConfigRequest) {
@@ -35,6 +37,7 @@ export class ViberRouteConfigService {
     );
 
     await this.routeConfigRepo.addConfig(config);
+    await this.syncAccountsStatus(config.accounts.map((acc) => acc.id));
   }
 
   async updateConfig(id: string, config: PatchViberRouteConfig) {
@@ -72,12 +75,21 @@ export class ViberRouteConfigService {
   }
 
   /**
-   * Check if account is configured for all the routes and update its enabled status
+   * Check if account is configured for all the routes and update its enabled status.
+   * Broadcasts a signal only when the status actually changes.
    */
   private async syncAccountsStatus(accountIds: string[]) {
     for (const accountId of new Set(accountIds)) {
       const isEnabled = await this.routeConfigRepo.isAccountEnabled(accountId);
-      await this.accountRepo.updateStatus(accountId, isEnabled);
+      const isChanged = await this.accountRepo.updateStatus(accountId, isEnabled);
+
+      if (!isChanged) continue;
+
+      if (isEnabled) {
+        await this.signalBroadcaster.broadcastAccountEnabled({ accountId });
+      } else {
+        await this.signalBroadcaster.broadcastAccountDisabled({ accountId });
+      }
     }
   }
 }

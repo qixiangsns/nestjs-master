@@ -16,7 +16,7 @@ export class SmsController {
     description: 'Retrieve list of sms logs with filters',
   })
   @ZodResponse({ type: [SmsLogResponse], status: HttpStatus.OK })
-  async login(@Body() body: SmsLogRequest) {
+  login(@Body() _body: SmsLogRequest) {
     return [
       {
         token: '1234567890',

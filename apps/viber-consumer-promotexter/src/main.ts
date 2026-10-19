@@ -11,6 +11,7 @@ async function bootstrap() {
   });
 
   const env = app.get<ConsumerEnv>(CONSUMER_ENV_TOKEN);
+  app.enableShutdownHooks();
   app.useLogger(app.get(PinoLogger));
   const logger = new Logger('Server');
   app.flushLogs();

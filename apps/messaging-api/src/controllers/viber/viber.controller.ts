@@ -27,7 +27,7 @@ export class ViberController {
     description: 'Notification template needs to be pre-approved by Viber.',
   })
   @ZodResponse({ type: SendViberResponseDto, status: HttpStatus.ACCEPTED })
-  async sendNotification(@Body() body: SendViberNotifDto) {
+  sendNotification(@Body() _body: SendViberNotifDto) {
     return {
       messageId: '',
     };
@@ -38,7 +38,7 @@ export class ViberController {
     summary: 'Send marketing message',
   })
   @ZodResponse({ type: SendViberResponseDto, status: HttpStatus.ACCEPTED })
-  async sendMktMsg(@Body() body: SendViberMktDto) {
+  sendMktMsg(@Body() _body: SendViberMktDto) {
     return {
       messageId: '',
     };

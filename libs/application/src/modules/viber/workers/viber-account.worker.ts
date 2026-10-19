@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import pLimit, { LimitFunction } from 'p-limit';
 import { RouteType } from '../models/viber-route-config.model';
 import { Consumer } from 'pulsar-client';
-import { Pacer } from '@framework/utils/pacer.utils';
+import { Pacer } from '@framework/utils';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { type ViberAccountSender } from '../models/viber-account.model';
 import { Client, Message } from 'pulsar-client';
@@ -32,7 +32,7 @@ export class ViberAccountWorker {
   private isProcessing: boolean;
   private consumers: Map<RouteType, Consumer> = new Map();
   private pacer: Pacer;
-  private bufferedMessage: ReceivedMessage | null ;
+  private bufferedMessage: ReceivedMessage | null;
 
   constructor(
     private readonly providerCode: ViberProviderCode,
@@ -80,7 +80,7 @@ export class ViberAccountWorker {
         batchMessages.push(received.message);
 
         if (retryAfterMs > 0) return { batchMessages, retryAfterMs };
-      } catch (error) {
+      } catch {
         // When queue is drained, priority moves to the lower ones
         priority = priority === lastPriority ? 0 : priority + 1;
       }
@@ -196,7 +196,7 @@ export class ViberAccountWorker {
   }
 
   private async sendMessage(message: Message) {
-    const data: ViberRequest = JSON.parse(message.getData().toString());
+    const data = JSON.parse(message.getData().toString()) as ViberRequest;
     let result: SendViberResult | null = null;
 
     const log = {
@@ -221,7 +221,7 @@ export class ViberAccountWorker {
           result = await this.sender.sendTemplateMsg(data);
           break;
       }
-    } catch (error) {
+    } catch {
       await this.logDispatcher.dispatchLogCreated({
         ...log,
         requestStatus: 'Failed',

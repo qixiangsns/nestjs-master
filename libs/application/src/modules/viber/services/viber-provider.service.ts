@@ -31,7 +31,7 @@ export class ViberProviderService {
     return providers;
   }
 
-  async getProviderCodes() {
+  getProviderCodes() {
     return ViberProviderCode;
   }
 

@@ -16,7 +16,7 @@ export class EmailController {
     description: 'Priority: low',
   })
   @ZodResponse({ type: SendMktEmailResponse, status: HttpStatus.CREATED })
-  async sendMktEmail(@Body() body: SendMktEmailRequest) {
+  sendMktEmail(@Body() _body: SendMktEmailRequest) {
     return {
       messageId: '',
     };
