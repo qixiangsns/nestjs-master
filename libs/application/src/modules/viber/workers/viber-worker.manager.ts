@@ -5,6 +5,7 @@ import { Client } from 'pulsar-client';
 import { ViberLogDispatcher } from '../queues/viber-log.dispatcher';
 import { ViberSenderFactory } from '../adapters/viber-sender.factory';
 import { ViberAccountSender } from '../models/viber-account.model';
+import { LimiterService } from '@application/modules/limiter';
 
 export class ViberWorkerManager {
   private accountConsumers: Map<string, ViberAccountWorker> = new Map();
@@ -15,6 +16,7 @@ export class ViberWorkerManager {
     private readonly pulsarClient: Client,
     private readonly logDispatcher: ViberLogDispatcher,
     private readonly senderFactory: ViberSenderFactory,
+    private readonly limiter: LimiterService,
   ) {}
 
   async addConsumer(account: ViberAccountSender) {
@@ -27,7 +29,14 @@ export class ViberWorkerManager {
     if (this.accountConsumers.has(account.id)) return;
 
     const sender = await this.senderFactory.createSender(account);
-    const consumer = new ViberAccountWorker(this.providerCode, account, this.pulsarClient, this.logDispatcher, sender);
+    const consumer = new ViberAccountWorker(
+      this.providerCode,
+      account,
+      this.pulsarClient,
+      this.logDispatcher,
+      sender,
+      this.limiter,
+    );
     await consumer.subscribe();
     this.accountConsumers.set(account.id, consumer);
     consumer.start();
