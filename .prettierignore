@@ -1,0 +1,5 @@
+# Generated integration types (e.g. pnpm generate:proto:player-grpc), do not format
+libs/application/src/integrations/*/types/
+
+# Managed by pnpm
+pnpm-lock.yaml

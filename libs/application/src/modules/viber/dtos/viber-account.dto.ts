@@ -10,6 +10,7 @@ export const GetViberAccountListResponseSchema = z
     type: z.enum(AccountType),
     url: z.string(),
     senderIds: z.array(z.string()),
+    limiterPoolId: z.string(),
     createdAt: z.iso.datetime(),
     updatedAt: z.iso.datetime(),
   })
@@ -23,6 +24,7 @@ export const CreateViberAccountSchema = z.object({
   providerCode: z.enum(ViberProviderCode),
   url: z.url(),
   senderIds: z.array(z.string().trim().min(1)).min(1),
+  limiterPoolId: z.string(),
   credentials: z.xor([
     z
       .object({
@@ -45,6 +47,7 @@ export type CreateViberAccount = z.output<typeof CreateViberAccountSchema>;
 export const PatchViberAccountSchema = CreateViberAccountSchema.pick({
   name: true,
   senderIds: true,
+  limiterPoolId: true,
 }).partial();
 
 export type PatchViberAccount = z.output<typeof PatchViberAccountSchema>;

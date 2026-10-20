@@ -37,7 +37,8 @@
     "test:e2e": "jest --config ./apps/api/test/jest-e2e.json",
     "generate:openapi:messaging-api": "ts-node -P tsconfig.scripts.json apps/messaging-api/src/openapi/generate.ts && openapi-ts",
     "generate:clickhouse-types": "hypequery generate -o \"libs/application/src/integrations/cpms-pcr-reader/schemas/database.schema.ts\" --tables PCR,BONUS_PCR,dynamicJackpotRecord",
-    "generate:proto:player-grpc": "protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./libs/application/src/integrations/player-grpc/types --ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false,snakeToCamel=true,removeEnumPrefix=true --proto_path=./node_modules/@snsoft/player-grpc/dist/protos ./node_modules/@snsoft/player-grpc/dist/protos/player.proto"
+    "generate:proto:player-grpc": "protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./libs/application/src/integrations/player-grpc/types --ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false,snakeToCamel=true,removeEnumPrefix=true --proto_path=./node_modules/@snsoft/player-grpc/dist/protos ./node_modules/@snsoft/player-grpc/dist/protos/player.proto",
+    "prepare": "husky"
   },
   "dependencies": {
     "@alicloud/dysmsapi20180501": "^1.0.10",
@@ -107,6 +108,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@hey-api/openapi-ts": "0.99.0",
@@ -128,8 +131,10 @@
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^17.0.0",
     "grpc-tools": "^1.13.1",
+    "husky": "9.1.7",
     "jest": "^30.0.0",
     "kill-port": "^2.0.1",
+    "lint-staged": "^17.6.0",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
