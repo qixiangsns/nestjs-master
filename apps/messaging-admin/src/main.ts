@@ -1,4 +1,4 @@
-import '@framework/trace';
+import '@framework/trace/register';
 import { NestFactory } from '@nestjs/core';
 import { Logger, VersioningType } from '@nestjs/common';
 import { MessagingAdminModule } from './messaging-admin.module';

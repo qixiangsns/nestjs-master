@@ -6,8 +6,8 @@ export type SendViberResult = {
   messageId: string;
 };
 
-const ViberMessageType = ['Otp', 'Template', 'Content'] as const;
-type ViberMessageType = (typeof ViberMessageType)[number];
+export const ViberMessageType = ['Otp', 'Template', 'Content'] as const;
+export type ViberMessageType = (typeof ViberMessageType)[number];
 
 /**
  * Viber request payload

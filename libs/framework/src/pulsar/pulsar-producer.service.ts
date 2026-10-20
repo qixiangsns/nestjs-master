@@ -1,5 +1,5 @@
 import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Client, Producer, type ProducerConfig } from 'pulsar-client';
+import { Client, Producer, ProducerMessage, type ProducerConfig } from 'pulsar-client';
 
 type Config = Omit<ProducerConfig, 'topic'>;
 
@@ -47,12 +47,13 @@ export abstract class PulsarProducerService implements OnModuleDestroy, OnModule
     }
   }
 
-  protected async produce(topic: string, message: unknown) {
+  protected async produce(topic: string, message: unknown, properties?: ProducerMessage['properties']) {
     const producer = this.producers.get(topic) || (await this.createProducer(topic));
 
     this.logger.log({ message, topic }, 'Producing message');
     await producer.send({
       data: Buffer.from(JSON.stringify(message)),
+      properties,
     });
   }
 

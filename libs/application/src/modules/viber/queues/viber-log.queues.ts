@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DeliveryStatus, MessageType, RequestStatus, ViberLog } from '../models/viber-log.model';
+import { DeliveryStatus, ErrorType, MessageType, RequestStatus, ViberLog } from '../models/viber-log.model';
 import { ViberProviderCode } from '../models/viber-provider.model';
 
 export const ViberLogTopic = {
@@ -25,6 +25,7 @@ export const ViberLogCreatedQueueSchema = z.object({
   deliveryStatus: z.enum(DeliveryStatus),
   campaignId: z.string().optional(),
   campaignSender: z.string().optional(),
+  error: z.enum(ErrorType).optional(),
   // Dates arrive as ISO strings after JSON serialization
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),

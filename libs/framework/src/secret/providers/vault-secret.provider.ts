@@ -18,13 +18,12 @@ export class VaultSecretProvider implements SecretProvider {
   }
 
   async get() {
-    // eslint-disable-next-line
     const response = await this.vault.read(this.vaultPath);
-    // eslint-disable-next-line
+
     if (!response?.data?.data) {
       throw new Error('Vault secret not found');
     }
-    // eslint-disable-next-line
+
     return response.data.data;
   }
 }

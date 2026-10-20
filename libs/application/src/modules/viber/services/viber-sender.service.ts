@@ -36,8 +36,8 @@ export class ViberSenderService {
       if (!routeTo) throw new Error('Viber route cannnot be determined');
 
       // dispatch request to viber worker
-      await this.messageDispatcher.dispatchOtp(
-        {
+      await this.messageDispatcher.dispatchOtp({
+        request: {
           type: 'Otp',
           routeType: 'Otp',
           phoneNo,
@@ -50,7 +50,7 @@ export class ViberSenderService {
           templateId: message.templateId,
         },
         routeTo,
-      );
+      });
 
       return { messageId };
     } catch (err) {
@@ -85,8 +85,8 @@ export class ViberSenderService {
       if (!routeTo) throw new Error('System cannot determine destination route');
 
       // dispatch request to viber worker
-      await this.messageDispatcher.dispatchNotif(
-        {
+      await this.messageDispatcher.dispatchNotif({
+        request: {
           type: 'Template',
           routeType: 'Notif',
           phoneNo,
@@ -99,7 +99,7 @@ export class ViberSenderService {
           templateParams: message.templateParams,
         },
         routeTo,
-      );
+      });
       return { messageId };
     } catch (err) {
       await this.logDispatcher.dispatchLogCreated({
@@ -132,8 +132,8 @@ export class ViberSenderService {
       if (!routeTo) throw new Error('System cannot determine destination route');
 
       // dispatch request to provider worker
-      await this.messageDispatcher.dispatchMkt(
-        {
+      await this.messageDispatcher.dispatchMkt({
+        request: {
           type: 'Content',
           routeType: 'Mkt',
           phoneNo,
@@ -144,7 +144,7 @@ export class ViberSenderService {
           templateContent: message.content,
         },
         routeTo,
-      );
+      });
       return { messageId };
     } catch (err) {
       await this.logDispatcher.dispatchLogCreated({
