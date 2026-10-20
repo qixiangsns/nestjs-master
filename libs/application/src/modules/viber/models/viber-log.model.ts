@@ -8,6 +8,10 @@ export type DeliveryStatus = (typeof DeliveryStatus)[number];
 
 export const MessageType = ['Otp', 'Mkt', 'Notif'] as const;
 export type MessageType = (typeof MessageType)[number];
+
+export const ErrorType = ['InvalidPhoneNumber', 'InvalidPayload'] as const;
+export type ErrorType = (typeof ErrorType)[number];
+
 export interface ViberLog {
   id: string;
   providerCode?: ViberProviderCode;
@@ -21,6 +25,7 @@ export interface ViberLog {
   deliveryStatus: DeliveryStatus;
   campaignId?: string;
   campaignSender?: string;
+  error?: ErrorType;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -1,4 +1,4 @@
-import '@framework/trace';
+import '@framework/trace/register';
 import { NestFactory } from '@nestjs/core';
 import { Logger, VersioningType, INestApplication } from '@nestjs/common';
 import { Logger as PinoLogger } from 'nestjs-pino';

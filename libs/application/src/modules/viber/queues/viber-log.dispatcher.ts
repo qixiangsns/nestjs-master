@@ -1,7 +1,11 @@
 import { PulsarProducerService, Client } from '@framework/pulsar';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PULSAR_CONN_TOKEN } from '@application/connnections';
-import { ViberDeliveryUpdatedQueue, ViberLogCreatedQueue, ViberLogTopic } from './viber-log.queues';
+import { type ViberDeliveryUpdatedQueue, type ViberLogCreatedQueue, ViberLogTopic } from './viber-log.queues';
+import { getTraceHeaders, TracePublish } from '@framework/trace';
+import { trace } from '@opentelemetry/api';
+
+const tracer = trace.getTracer('viber-log-dispatcher');
 
 @Injectable()
 /**
@@ -20,10 +24,14 @@ export class ViberLogDispatcher extends PulsarProducerService {
       },
     });
   }
+
+  @TracePublish({ name: 'dispatch-log-created', tracer })
   async dispatchLogCreated(payload: ViberLogCreatedQueue): Promise<void> {
-    await this.produce(ViberLogTopic.LogCreated, payload);
+    await this.produce(ViberLogTopic.LogCreated, payload, getTraceHeaders());
   }
+
+  @TracePublish({ name: 'dispatch-delivery-updated', tracer })
   async dispatchDeliveryUpdated(payload: ViberDeliveryUpdatedQueue): Promise<void> {
-    await this.produce(ViberLogTopic.DeliveryUpdated, payload);
+    await this.produce(ViberLogTopic.DeliveryUpdated, payload, getTraceHeaders());
   }
 }

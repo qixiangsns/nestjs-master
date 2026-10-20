@@ -63,7 +63,7 @@ export class ViberConsumerPromotexterService implements OnModuleInit, OnApplicat
   }
 
   async onApplicationShutdown(signal?: string) {
-    this.logger.log({ receivedAt: new Date(), signal }, 'Received shutdown signal at ');
+    this.logger.log({ receivedAt: new Date(), signal }, 'Received shutdown signal at');
     await this.manager.stopConsumers();
     this.logger.log({ finishedAt: new Date() }, 'Finished processing and disconnected from consumers');
   }

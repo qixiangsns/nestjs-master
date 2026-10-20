@@ -1,3 +1,4 @@
+import '@framework/trace/register';
 import { NestFactory } from '@nestjs/core';
 import { CronModule } from './cron.module';
 

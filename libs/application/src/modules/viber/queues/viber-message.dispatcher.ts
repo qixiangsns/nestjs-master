@@ -5,10 +5,15 @@ import { Client } from 'pulsar-client';
 import { ViberRequest } from '../models/viber-message.model';
 import { getViberRouteTopic } from './viber-message.queues';
 import { RouteAccountRoutable } from '../models/viber-route-config.model';
+import { getTraceHeaders, TracePublish } from '@framework/trace';
+import { trace } from '@opentelemetry/api';
 
+const tracer = trace.getTracer('viber-message-dispatcher');
 /**
  * Dispatch viber requests to designated provider workers
  */
+
+type DispatchPayload = { request: ViberRequest; routeTo: RouteAccountRoutable };
 @Injectable()
 export class ViberMessageDispatcher extends PulsarProducerService {
   protected logger = new Logger(ViberMessageDispatcher.name);
@@ -23,21 +28,25 @@ export class ViberMessageDispatcher extends PulsarProducerService {
       },
     });
   }
-  async dispatchOtp(request: ViberRequest, routeTo: RouteAccountRoutable) {
-    const { providerCode } = routeTo.details;
-    const topic = getViberRouteTopic(providerCode, 'Otp', routeTo.id);
-    await this.produce(topic, request);
+
+  @TracePublish({ name: 'dispatch-otp', tracer })
+  async dispatchOtp(payload: DispatchPayload) {
+    const { routeTo, request } = payload;
+    const topic = getViberRouteTopic(routeTo.details.providerCode, 'Otp', routeTo.id);
+    await this.produce(topic, request, getTraceHeaders());
   }
 
-  async dispatchMkt(request: ViberRequest, routeTo: RouteAccountRoutable) {
-    const { providerCode } = routeTo.details;
-    const topic = getViberRouteTopic(providerCode, 'Mkt', routeTo.id);
-    await this.produce(topic, request);
+  @TracePublish({ name: 'dispatch-mkt', tracer })
+  async dispatchMkt(payload: DispatchPayload) {
+    const { routeTo, request } = payload;
+    const topic = getViberRouteTopic(routeTo.details.providerCode, 'Mkt', routeTo.id);
+    await this.produce(topic, request, getTraceHeaders());
   }
 
-  async dispatchNotif(request: ViberRequest, routeTo: RouteAccountRoutable) {
-    const { providerCode } = routeTo.details;
-    const topic = getViberRouteTopic(providerCode, 'Notif', routeTo.id);
-    await this.produce(topic, request);
+  @TracePublish({ name: 'dispatch-notif', tracer })
+  async dispatchNotif(payload: DispatchPayload) {
+    const { routeTo, request } = payload;
+    const topic = getViberRouteTopic(routeTo.details.providerCode, 'Notif', routeTo.id);
+    await this.produce(topic, request, getTraceHeaders());
   }
 }
