@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { isArrayUnique } from '@framework/utils/array.utils';
-import { LimiterRule } from '../models/limiter.model';
+import { LimiterRule, LimiterStrategy } from '../models/limiter.model';
 import { LimiterPoolRepository } from '../repositories/limiter-pool.repository';
 import { LimiterSignalBroadcaster } from '../signals/limiter-signal.broadcaster';
 import { CreateLimiterPool, PatchLimiterPool } from '../dtos/limiter-pool.dto';
@@ -47,9 +47,11 @@ export class LimiterPoolService {
       throw new BadRequestException('Limiter pool requires at least one rule');
     }
 
-    const windows = rules.map((rule) => rule.window);
-    if (!isArrayUnique(windows)) {
-      throw new BadRequestException('Limiter pool rules must not repeat a window');
+    for (const strategy of LimiterStrategy) {
+      const windows = rules.filter((rule) => rule.strategy === strategy).map((rule) => rule.window);
+      if (!isArrayUnique(windows)) {
+        throw new BadRequestException(`Limiter pool ${strategy} rules must not repeat a window`);
+      }
     }
   }
 
