@@ -45,7 +45,7 @@ export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutd
       if (!this.isConsuming) return;
 
       const logs = await this.consumeBatch();
-      this.queue.add(() => this.logService.batchSave(logs));
+      if (logs.length > 0) this.queue.add(() => this.logService.batchSave(logs));
       await this.queue.onSizeLessThan(this.queue.concurrency);
     }
   }

@@ -1,3 +1,4 @@
+import '@framework/trace/register';
 import { NestFactory } from '@nestjs/core';
 import { LogConsumerModule } from './log-consumer.module';
 
