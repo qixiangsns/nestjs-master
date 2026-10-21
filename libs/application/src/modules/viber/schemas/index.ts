@@ -9,6 +9,8 @@ import {
   ViberAccountApiTokenSchema,
   ViberAccountApiKeySecret,
   ViberAccountApiKeySecretSchema,
+  ViberAccountBearerToken,
+  ViberAccountBearerTokenSchema,
   ViberAccountBaseSchema,
 } from './viber-account.schema';
 import { AccountType } from '../models/viber-account.model';
@@ -28,6 +30,11 @@ export const MongoSchemaModule = MongooseModule.forFeature(
           name: ViberAccountApiKeySecret.name,
           schema: ViberAccountApiKeySecretSchema,
           value: 'ApiKeySecret' satisfies AccountType,
+        },
+        {
+          name: ViberAccountBearerToken.name,
+          schema: ViberAccountBearerTokenSchema,
+          value: 'BearerToken' satisfies AccountType,
         },
       ],
     },
