@@ -3,7 +3,7 @@ import PQueue from 'p-queue';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { sleep } from 'radash';
 import { trace, type Span } from '@opentelemetry/api';
-import { ActiveSpan, TraceCron } from '@framework/trace';
+import { ActiveSpan, TraceJob } from '@framework/trace';
 
 const tracer = trace.getTracer('cron-service');
 
@@ -13,7 +13,7 @@ export class CronService implements OnApplicationShutdown {
   private queue = new PQueue({ concurrency: 20 });
 
   @Cron(CronExpression.EVERY_5_SECONDS)
-  @TraceCron({ name: 'check-balance', tracer })
+  @TraceJob({ name: 'check-balance', tracer })
   async checkBalance(@ActiveSpan() span?: Span) {
     span?.setAttributes({
       'cron.queue.pending': this.queue.pending,

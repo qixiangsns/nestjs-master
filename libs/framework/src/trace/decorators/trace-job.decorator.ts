@@ -7,14 +7,28 @@ type TraceOptions = {
 };
 
 /**
- * Starts a root trace span wrapping the decorated service method.
+ * Starts a root trace span wrapping a job run: a cron tick, a consumed batch, or any unit of
+ * background work that is not a child of an incoming request or message.
+ * The span is the active span inside the method; inject it with `@ActiveSpan()`.
  * The span is ended automatically when the method resolves or throws.
  *
- * @param name  Defaults to `ClassName.methodName` when omitted.
- * @param tracer    Defaults to the global tracer named 'app'.
+ * @param name    Span name.
+ * @param tracer  Tracer used to start the span.
  *
+ * @example
+ * ```typescript
+ *
+ * const tracer = trace.getTracer('cron-service');
+ *
+ * `@Cron`(CronExpression.EVERY_5_SECONDS)
+ * `@TraceJob`({ name: 'check-balance', tracer })
+ * async checkBalance(@ActiveSpan() span?: Span) {
+ *    span?.setAttribute('cron.queue.size', this.queue.size);
+ * }
+ *
+ * ```
  */
-export function TraceCron(options: TraceOptions): MethodDecorator {
+export function TraceJob(options: TraceOptions): MethodDecorator {
   return (target, propertyKey, descriptor: PropertyDescriptor) => {
     const { name, tracer } = options;
     const originalMethod = descriptor.value as (...args: unknown[]) => unknown;
