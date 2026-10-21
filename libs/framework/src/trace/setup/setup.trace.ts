@@ -31,7 +31,20 @@ export function startTracing() {
       propagators: [new W3CTraceContextPropagator(), new W3CBaggagePropagator()],
     }),
     // Already includes the NestJS core, Mongoose and IORedis instrumentations.
-    instrumentations: [getNodeAutoInstrumentations()],
+    instrumentations: [
+      getNodeAutoInstrumentations({
+        // Noise reduction
+        '@opentelemetry/instrumentation-winston': { enabled: false },
+        '@opentelemetry/instrumentation-net': { enabled: false },
+        '@opentelemetry/instrumentation-fs': { enabled: false },
+        '@opentelemetry/instrumentation-router': { enabled: false },
+        '@opentelemetry/instrumentation-dns': { enabled: false },
+        // Using @opentelemetry/instrumentation-ioredis
+        '@opentelemetry/instrumentation-redis': { enabled: false },
+        // Using @opentelemetry/instrumentation-mongoose
+        '@opentelemetry/instrumentation-mongodb': { enabled: false },
+      }),
+    ],
     sampler: new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(config.OTEL_SAMPLING_RATE),
     }),
