@@ -8,6 +8,10 @@ import {
   ViberLogTopic,
   type ViberLogCreatedQueue,
 } from '@application/modules/viber';
+import { TraceJob } from '@framework/trace';
+import { trace } from '@opentelemetry/api';
+
+const tracer = trace.getTracer('viber-log-consumer');
 
 @Injectable()
 export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutdown {
@@ -45,8 +49,21 @@ export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutd
       if (!this.isConsuming) return;
 
       const logs = await this.consumeBatch();
-      if (logs.length > 0) this.queue.add(() => this.logService.batchSave(logs));
+      if (logs.length > 0) this.queue.add(() => this.saveBatch(logs)).catch(() => undefined);
       await this.queue.onSizeLessThan(this.queue.concurrency);
+    }
+  }
+
+  @TraceJob({ name: 'save-viber-log-batch', tracer })
+  private async saveBatch(logs: ViberLogCreatedQueue[]) {
+    const ids = logs.map((log) => log.id);
+    try {
+      const { savedIds, failedIds } = await this.logService.batchSave(logs);
+      this.logger.log({ savedIds }, 'Saved viber log batch');
+      if (failedIds.length > 0) this.logger.error({ failedIds }, 'Failed to save some viber logs');
+    } catch (error: unknown) {
+      this.logger.error({ error, ids }, 'Failed to save viber log batch');
+      throw error;
     }
   }
 
@@ -79,7 +96,7 @@ export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutd
         const log = ViberLogCreatedQueueSchema.parse(JSON.parse(message.getData().toString()));
         logs.push(log);
       } catch (error: unknown) {
-        this.logger.error({ error }, 'Failed to parse viber log');
+        this.logger.error({ error, data: message.getData().toString() }, 'Failed to parse viber log');
       }
       await this.consumer.acknowledge(message);
     }

@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types, QueryFilter } from 'mongoose';
+import { Model, Types, QueryFilter, mongo } from 'mongoose';
 import { ViberLog as ViberLogModel } from '../schemas/viber-log.schema';
 import { MONGO_CONN_NAME } from '@application/connnections';
 import { ViberLogFilterDto, ViberLog } from '../models/viber-log.model';
+
+export type BatchInsertResult = { savedIds: string[]; failedIds: string[] };
 
 @Injectable()
 export class ViberLogRepository {
@@ -57,7 +59,7 @@ export class ViberLogRepository {
     await this.logModel.updateOne({ refId: referenceId }, log);
   }
 
-  async batchInsert(logs: ViberLog[]) {
+  async batchInsert(logs: ViberLog[]): Promise<BatchInsertResult> {
     const newLogs = logs.map((log) => {
       const { id, ...data } = log; //exclude
       return {
@@ -66,7 +68,16 @@ export class ViberLogRepository {
       };
     });
 
-    await this.logModel.insertMany(newLogs);
+    const inserted: { _id: Types.ObjectId }[] = await this.logModel
+      .insertMany(newLogs, { ordered: false })
+      .catch(async (error: unknown) => {
+        if (!(error instanceof mongo.MongoBulkWriteError)) throw error;
+        return this.logModel.find({ _id: { $in: newLogs.map((log) => log._id) } }, { _id: 1 });
+      });
+
+    const savedIds = inserted.map((doc) => doc._id.toString());
+    const failedIds = logs.map((log) => log.id).filter((id) => !savedIds.includes(id));
+    return { savedIds, failedIds };
   }
 
   generateId() {
