@@ -30,8 +30,13 @@ export function startTracing() {
     textMapPropagator: new CompositePropagator({
       propagators: [new W3CTraceContextPropagator(), new W3CBaggagePropagator()],
     }),
-    // Already includes the NestJS core, Mongoose and IORedis instrumentations.
     instrumentations: [
+      /**
+       * Already enabled the following instruments by default:
+       * - @opentelemetry/instrumentation-ioredis
+       * - @opentelemetry/instrumentation-mongoose
+       * - @opentelemetry/instrumentation-nestjs-core
+       */
       getNodeAutoInstrumentations({
         // Noise reduction
         '@opentelemetry/instrumentation-winston': { enabled: false },
@@ -39,9 +44,7 @@ export function startTracing() {
         '@opentelemetry/instrumentation-fs': { enabled: false },
         '@opentelemetry/instrumentation-router': { enabled: false },
         '@opentelemetry/instrumentation-dns': { enabled: false },
-        // Using @opentelemetry/instrumentation-ioredis
         '@opentelemetry/instrumentation-redis': { enabled: false },
-        // Using @opentelemetry/instrumentation-mongoose
         '@opentelemetry/instrumentation-mongodb': { enabled: false },
       }),
     ],
