@@ -57,6 +57,12 @@ export default tseslint.config(
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
+  {
+    files: ['libs/application/src/**/*.ts'],
+    rules: {
+      'no-console': 'error',
+    },
+  },
   // Layer boundaries, see docs/project-structure.md "Import rules"
   {
     files: ['apps/**/*.ts', 'libs/**/*.ts'],
