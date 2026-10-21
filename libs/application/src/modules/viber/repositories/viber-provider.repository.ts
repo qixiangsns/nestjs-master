@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { ViberProvider as ViberProviderModel } from '../schemas/viber-provider.schema';
+import { VIBER_PROVIDER_MODEL, ViberProviderEntity } from '../schemas/viber-provider.schema';
 import { ViberProvider, ViberProviderCode } from '../models/viber-provider.model';
 import { MONGO_CONN_NAME } from '@application/connections';
 
 @Injectable()
 export class ViberProviderRepository {
   constructor(
-    @InjectModel(ViberProviderModel.name, MONGO_CONN_NAME.PRIMARY)
-    private model: Model<ViberProviderModel>,
+    @InjectModel(VIBER_PROVIDER_MODEL, MONGO_CONN_NAME.PRIMARY)
+    private model: Model<ViberProviderEntity>,
   ) {}
 
   async findProviders(): Promise<ViberProvider[]> {

@@ -2,10 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
-  ViberRouteConfig as ViberRouteConfigModel,
+  VIBER_ROUTE_CONFIG_MODEL,
+  ViberRouteConfigEntity,
   RouteAccountVirtualField,
 } from '../schemas/viber-route-config.schema';
-import { ViberAccountBase as ViberAccountBaseModel } from '../schemas/viber-account.schema';
+import { VIBER_ACCOUNT_MODEL, ViberAccountBaseEntity } from '../schemas/viber-account.schema';
 import { MONGO_CONN_NAME } from '@application/connections';
 import {
   RoutableViberRouteConfig,
@@ -21,11 +22,11 @@ import { Except } from 'type-fest';
 export class ViberRouteConfigRepository {
   private logger = new Logger(ViberRouteConfigRepository.name);
   constructor(
-    @InjectModel(ViberRouteConfigModel.name, MONGO_CONN_NAME.PRIMARY)
-    private configModel: Model<ViberRouteConfigModel>,
+    @InjectModel(VIBER_ROUTE_CONFIG_MODEL, MONGO_CONN_NAME.PRIMARY)
+    private configModel: Model<ViberRouteConfigEntity>,
 
-    @InjectModel(ViberAccountBaseModel.name, MONGO_CONN_NAME.PRIMARY)
-    private accountModel: Model<ViberAccountBaseModel>,
+    @InjectModel(VIBER_ACCOUNT_MODEL, MONGO_CONN_NAME.PRIMARY)
+    private accountModel: Model<ViberAccountBaseEntity>,
   ) {}
 
   async addConfig(routeConfig: Except<ViberRouteConfig, 'id'>): Promise<string> {

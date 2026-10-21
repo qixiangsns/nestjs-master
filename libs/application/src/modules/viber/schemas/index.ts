@@ -1,15 +1,15 @@
 import { MONGO_CONN_NAME } from '@application/connections';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ViberLog, ViberLogSchema } from './viber-log.schema';
-import { ViberProvider, ViberProviderSchema } from './viber-provider.schema';
-import { ViberRouteConfig, ViberRouteConfigSchema } from './viber-route-config.schema';
+import { VIBER_LOG_MODEL, ViberLogSchema } from './viber-log.schema';
+import { VIBER_PROVIDER_MODEL, ViberProviderSchema } from './viber-provider.schema';
+import { VIBER_ROUTE_CONFIG_MODEL, ViberRouteConfigSchema } from './viber-route-config.schema';
 import {
-  ViberAccountBase,
-  ViberAccountApiToken,
+  VIBER_ACCOUNT_MODEL,
+  VIBER_ACCOUNT_API_TOKEN_MODEL,
+  VIBER_ACCOUNT_API_KEY_SECRET_MODEL,
+  VIBER_ACCOUNT_BEARER_TOKEN_MODEL,
   ViberAccountApiTokenSchema,
-  ViberAccountApiKeySecret,
   ViberAccountApiKeySecretSchema,
-  ViberAccountBearerToken,
   ViberAccountBearerTokenSchema,
   ViberAccountBaseSchema,
 } from './viber-account.schema';
@@ -18,36 +18,36 @@ import { AccountType } from '../models/viber-account.model';
 export const MongoSchemaModule = MongooseModule.forFeature(
   [
     {
-      name: ViberAccountBase.name,
+      name: VIBER_ACCOUNT_MODEL,
       schema: ViberAccountBaseSchema,
       discriminators: [
         {
-          name: ViberAccountApiToken.name,
+          name: VIBER_ACCOUNT_API_TOKEN_MODEL,
           schema: ViberAccountApiTokenSchema,
           value: 'ApiToken' satisfies AccountType,
         },
         {
-          name: ViberAccountApiKeySecret.name,
+          name: VIBER_ACCOUNT_API_KEY_SECRET_MODEL,
           schema: ViberAccountApiKeySecretSchema,
           value: 'ApiKeySecret' satisfies AccountType,
         },
         {
-          name: ViberAccountBearerToken.name,
+          name: VIBER_ACCOUNT_BEARER_TOKEN_MODEL,
           schema: ViberAccountBearerTokenSchema,
           value: 'BearerToken' satisfies AccountType,
         },
       ],
     },
     {
-      name: ViberLog.name,
+      name: VIBER_LOG_MODEL,
       schema: ViberLogSchema,
     },
     {
-      name: ViberProvider.name,
+      name: VIBER_PROVIDER_MODEL,
       schema: ViberProviderSchema,
     },
     {
-      name: ViberRouteConfig.name,
+      name: VIBER_ROUTE_CONFIG_MODEL,
       schema: ViberRouteConfigSchema,
     },
   ],
