@@ -48,13 +48,15 @@ export default tseslint.config(
     },
   },
   {
-    files: ['libs/applications/src/modules/**/*.ts'],
+    files: ['libs/application/src/modules/**/*.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unsafe-type-assertion': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
+      'no-duplicate-imports': 'error',
     },
   },
   {

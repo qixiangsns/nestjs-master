@@ -39,7 +39,9 @@ export class ViberWorkerManager {
     );
     await consumer.subscribe();
     this.accountConsumers.set(account.id, consumer);
-    consumer.start();
+    consumer.start().catch((err: unknown) => {
+      this.logger.error({ err, accountId: account.id }, 'Viber account worker stopped unexpectedly');
+    });
   }
 
   async removeConsumer(accountId: string) {
