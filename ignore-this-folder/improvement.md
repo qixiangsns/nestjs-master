@@ -2,16 +2,23 @@ Project focus: CRISP - Clear, Robust, Idiomatic, Simple, Performant
 
 NestJs Framework Architecture
 
-- Domain-to-db mapping (how the app translate db code to domain structure vice-versa to streamline logic handling)
+- ~~Domain-to-db mapping (how the app translate db code to domain structure vice-versa to streamline logic handling)~~
 - RFC9457 HTTP-API error handling (how server communicates error to the frontend, how the frontend can use the error object to localize, display, and handle the errors)
 - Application error handling (how the server throws and handle business logic error/how the server documents the errors)
-- Pulsar/Kafka consumption strategy (batch/rate-limited/memory-safe)
-- Real Graceful Shutdown (pulsar consumer/cron/api - ensure new job stops, finish processing job)
-- Script runner (commander.js) (Eg: seeder script, migration, manual job)
-- Third-party API integration handling (types, interface, validation, error mapping, adapter/port design pattern)
-- Translation (how the server can support localization when sending notifications/emails)
-- Multi-databases setup (MongoDB/Posgres/MySQL) - (Query builder for minimal library locked-in and setup)
-- NestJS v12 migration
+- ~~Pulsar/Kafka consumption strategy (batch/rate-limited/memory-safe)~~
+- ~~Real Graceful Shutdown (pulsar consumer/cron/api - ensure new job stops, finish processing job)~~
+- ~~Script runner (commander.js) (Eg: seeder script, migration, manual job)~~
+- ~~Third-party API integration handling (types, interface, validation, error mapping, adapter/port design pattern)~~
+
+Backend
+
+- Authentication (Access token/refresh token/cookie-based)
+- Authorization (Attributes-based access control)
+- Error handling and management (RFC9457 error details, Dto errors, Service errors, error handling, documentation)
+- Eslint strict rules (import rules, safe typescript usage)
+
+Frontend
+-
 
 Supplementary features
 
@@ -21,6 +28,10 @@ Supplementary features
 - Time handling (timezone)
 - Server liveness/readiness
 - Caching pattern (cache stampede, rate limiter)
+- Translation (how the server can support localization when sending notifications/emails)
+- Multi-databases setup (MongoDB/Posgres/MySQL) - (Query builder for minimal library locked-in and setup)
+
+- NestJS v12 migration (API documentation)
 
 Requirement revamp
 
