@@ -1,3 +1,4 @@
+import 'zod/compile';
 import '@framework/trace/register';
 import { NestFactory } from '@nestjs/core';
 import { Logger, VersioningType, INestApplication } from '@nestjs/common';
