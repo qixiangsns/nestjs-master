@@ -6,7 +6,7 @@ import {
   RouteAccountVirtualField,
 } from '../schemas/viber-route-config.schema';
 import { ViberAccountBase as ViberAccountBaseModel } from '../schemas/viber-account.schema';
-import { MONGO_CONN_NAME } from '@application/connnections';
+import { MONGO_CONN_NAME } from '@application/connections';
 import {
   RoutableViberRouteConfig,
   RouteAccountRoutable,

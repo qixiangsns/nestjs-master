@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { PULSAR_CONN_TOKEN } from '@application/connnections';
+import { PULSAR_CONN_TOKEN } from '@application/connections';
 import { ViberLogDispatcher } from '../queues/viber-log.dispatcher';
 import { ViberSenderFactory } from '../adapters/viber-sender.factory';
 import { ViberProviderCode } from '../models/viber-provider.model';

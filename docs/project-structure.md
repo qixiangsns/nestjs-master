@@ -9,7 +9,7 @@ apps/<app>/                  # Deployable entrypoints, one Nest app each
 libs/application/src/        # Domain code (@application)
 ├── modules/<module>/        # Domain modules (see "Module layout")
 ├── integrations/<provider>/ # Third-party API clients
-├── connnections/            # Mongo, Redis and Pulsar connection wiring
+├── connections/            # Mongo, Redis and Pulsar connection wiring
 └── config/                  # Shared env and secret schemas
 libs/framework/src/<concern>/ # Technical building blocks with no domain logic (@framework)
 docs/                        # Design notes and conventions
@@ -22,7 +22,7 @@ docs/                        # Design notes and conventions
 | `apps/<app>/`                    | `main.ts`, the app module, controllers, HTTP request/response DTOs, app-specific env config, and consumers that delegate to module services | Hold business logic, Mongoose models, or provider calls. Move these into a module. |
 | `libs/application/modules/`      | One folder per domain (a channel or a shared domain capability)                                                                             | Depend on a specific app                                                           |
 | `libs/application/integrations/` | One folder per external provider: a client service plus its types, constants and errors                                                     | Know about modules, routing or persistence. Clients only translate API calls.      |
-| `libs/application/connnections/` | Root connection modules configured from application config                                                                                  | Contain domain logic                                                               |
+| `libs/application/connections/`  | Root connection modules configured from application config                                                                                  | Contain domain logic                                                               |
 | `libs/application/config/`       | zod schemas for env and secrets shared by every app                                                                                         | Hold app-only settings. Those go in `apps/<app>/`.                                 |
 | `libs/framework/<concern>/`      | Reusable infrastructure: drivers, logger, tracing, secrets, OpenAPI helpers, generic utils                                                  | Import `@application` or mention a channel, provider or domain term                |
 

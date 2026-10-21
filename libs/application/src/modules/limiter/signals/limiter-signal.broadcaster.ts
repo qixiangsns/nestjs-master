@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connnections';
+import { REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connections';
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LimiterPoolSignal, LimiterPoolUpdatedSignal } from './limiter-pool.signals';

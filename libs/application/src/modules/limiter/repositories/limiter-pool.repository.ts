@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model, Types } from 'mongoose';
 import { Except } from 'type-fest';
-import { MONGO_CONN_NAME } from '@application/connnections';
+import { MONGO_CONN_NAME } from '@application/connections';
 import { LimiterPool as LimiterPoolModel } from '../schemas/limiter-pool.schema';
 import { LimiterPool } from '../models/limiter-pool.model';
 

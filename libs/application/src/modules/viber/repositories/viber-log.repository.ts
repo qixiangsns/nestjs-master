@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, QueryFilter } from 'mongoose';
 import { ViberLog as ViberLogModel } from '../schemas/viber-log.schema';
-import { MONGO_CONN_NAME } from '@application/connnections';
+import { MONGO_CONN_NAME } from '@application/connections';
 import { ViberLogFilterDto, ViberLog } from '../models/viber-log.model';
 
 @Injectable()

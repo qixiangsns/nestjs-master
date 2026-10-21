@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
-import { REDIS_TOKEN } from '@application/connnections';
+import { REDIS_TOKEN } from '@application/connections';
 import { LimiterCounter, LimiterGrant, LimiterRule, LimiterWindowSeconds } from '../models/limiter.model';
 import { LimiterPoolCache } from '../caches/limiter-pool.cache';
 import { LimiterPool } from '../models/limiter-pool.model';

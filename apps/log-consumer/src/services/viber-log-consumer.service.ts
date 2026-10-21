@@ -1,4 +1,4 @@
-import { PULSAR_CONN_TOKEN } from '@application/connnections';
+import { PULSAR_CONN_TOKEN } from '@application/connections';
 import { Inject, Injectable, OnModuleInit, OnApplicationShutdown, Logger } from '@nestjs/common';
 import { Client, Consumer, ConsumerConfig } from 'pulsar-client';
 import PQueue from 'p-queue';

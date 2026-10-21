@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ViberProvider as ViberProviderModel } from '../schemas/viber-provider.schema';
 import { ViberProvider, ViberProviderCode } from '../models/viber-provider.model';
-import { MONGO_CONN_NAME } from '@application/connnections';
+import { MONGO_CONN_NAME } from '@application/connections';
 
 @Injectable()
 export class ViberProviderRepository {

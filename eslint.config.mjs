@@ -75,7 +75,7 @@ export default tseslint.config(
           capture: ['provider'],
           partialMatch: false,
         },
-        { type: 'connection', pattern: 'libs/application/src/connnections', partialMatch: false },
+        { type: 'connection', pattern: 'libs/application/src/connections', partialMatch: false },
         { type: 'config', pattern: 'libs/application/src/config', partialMatch: false },
         { type: 'application-root', pattern: 'libs/application/src', partialMatch: false },
         { type: 'framework', pattern: 'libs/framework/src/*', capture: ['concern'], partialMatch: false },

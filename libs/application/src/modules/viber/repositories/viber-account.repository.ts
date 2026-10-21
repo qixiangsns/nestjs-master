@@ -13,7 +13,7 @@ import {
   ViberAccountApiToken,
   ViberAccountBase,
 } from '../models/viber-account.model';
-import { MONGO_CONN_NAME } from '@application/connnections';
+import { MONGO_CONN_NAME } from '@application/connections';
 import { Except } from 'type-fest';
 import { Lean } from '@framework/mongoose';
 import { ViberProviderCode } from '../models/viber-provider.model';

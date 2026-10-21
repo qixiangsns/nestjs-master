@@ -1,4 +1,4 @@
-import { MONGO_CONN_NAME } from '@application/connnections';
+import { MONGO_CONN_NAME } from '@application/connections';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LimiterPool, LimiterPoolSchema } from './limiter-pool.schema';
 
