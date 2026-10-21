@@ -14,6 +14,10 @@ import waitFor, { TimeoutError } from 'p-wait-for';
 import { ViberRequest } from '../models/viber-message.model';
 import { SendViberResult } from '../models/viber-message.model';
 import { LimiterService } from '@application/modules/limiter';
+import { TraceConsumer } from '@framework/trace';
+import { trace } from '@opentelemetry/api';
+
+const tracer = trace.getTracer('viber-account-worker');
 
 type BatchOptions = {
   maxNumMessages: number;
@@ -195,6 +199,11 @@ export class ViberAccountWorker {
     }
   }
 
+  @TraceConsumer({
+    name: 'consume-viber-message',
+    tracer,
+    getHeaders: (message: Message) => message.getProperties(),
+  })
   private async sendMessage(message: Message) {
     const data = JSON.parse(message.getData().toString()) as ViberRequest;
     let result: SendViberResult | null = null;
