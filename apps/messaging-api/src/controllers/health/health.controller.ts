@@ -4,7 +4,7 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, MongooseHealthIndicator } from '@nestjs/terminus';
 import { Redis } from 'ioredis';
 import { Connection } from 'mongoose';
-import { MONGO_CONN_NAME, REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connnections';
+import { MONGO_CONN_NAME, REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connections';
 import { RedisHealthIndicator } from '@framework/health';
 
 const CHECK_TIMEOUT_MS = 1000;

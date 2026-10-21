@@ -1,6 +1,6 @@
 import { PulsarProducerService } from '@framework/pulsar';
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { PULSAR_CONN_TOKEN } from '@application/connnections';
+import { PULSAR_CONN_TOKEN } from '@application/connections';
 import { Client } from 'pulsar-client';
 import { ViberRequest } from '../models/viber-message.model';
 import { getViberRouteTopic } from './viber-message.queues';

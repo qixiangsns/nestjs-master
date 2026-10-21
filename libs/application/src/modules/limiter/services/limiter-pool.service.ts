@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { isArrayUnique } from '@framework/utils/array.utils';
+import { isArrayUnique } from '@framework/utils';
 import { LimiterRule, LimiterStrategy } from '../models/limiter.model';
 import { LimiterPoolRepository } from '../repositories/limiter-pool.repository';
 import { LimiterSignalBroadcaster } from '../signals/limiter-signal.broadcaster';

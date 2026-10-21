@@ -7,6 +7,9 @@ export * from './limiter.module';
 export * from './models/limiter.model';
 export * from './models/limiter-pool.model';
 
+// Mongoose model names for cross-module refs; entities stay internal
+export { LIMITER_POOL_MODEL } from './schemas/limiter-pool.schema';
+
 // API request/response contracts
 export * from './dtos';
 

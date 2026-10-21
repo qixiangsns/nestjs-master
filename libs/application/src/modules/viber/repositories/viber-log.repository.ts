@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, QueryFilter, mongo } from 'mongoose';
-import { ViberLog as ViberLogModel } from '../schemas/viber-log.schema';
-import { MONGO_CONN_NAME } from '@application/connnections';
+import { VIBER_LOG_MODEL, ViberLogEntity } from '../schemas/viber-log.schema';
+import { MONGO_CONN_NAME } from '@application/connections';
 import { ViberLogFilterDto, ViberLog } from '../models/viber-log.model';
 
 export type BatchInsertResult = { savedIds: string[]; failedIds: string[] };
@@ -11,12 +11,12 @@ export type BatchInsertResult = { savedIds: string[]; failedIds: string[] };
 export class ViberLogRepository {
   private logger = new Logger(ViberLogRepository.name);
   constructor(
-    @InjectModel(ViberLogModel.name, MONGO_CONN_NAME.PRIMARY)
-    private logModel: Model<ViberLogModel>,
+    @InjectModel(VIBER_LOG_MODEL, MONGO_CONN_NAME.PRIMARY)
+    private logModel: Model<ViberLogEntity>,
   ) {}
 
   async findLogs(filterDto: ViberLogFilterDto, page: number, pageSize: number) {
-    const filter: QueryFilter<ViberLogModel> = {
+    const filter: QueryFilter<ViberLogEntity> = {
       createdAt: { $gte: filterDto.startTime, $lte: filterDto.endTime },
     };
 

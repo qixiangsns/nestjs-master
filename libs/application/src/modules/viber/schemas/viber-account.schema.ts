@@ -1,12 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { LIMITER_POOL_MODEL } from '@application/modules/limiter';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { AccountType } from '../models/viber-account.model';
 
-export type ViberAccountDocument = HydratedDocument<ViberAccount>;
+export const VIBER_ACCOUNT_MODEL = 'ViberAccountBase';
+export const VIBER_ACCOUNT_API_TOKEN_MODEL = 'ViberAccountApiToken';
+export const VIBER_ACCOUNT_API_KEY_SECRET_MODEL = 'ViberAccountApiKeySecret';
+export const VIBER_ACCOUNT_BEARER_TOKEN_MODEL = 'ViberAccountBearerToken';
+
+export type ViberAccountDocument = HydratedDocument<ViberAccountEntity>;
 
 @Schema({ collection: 'viber_accounts', timestamps: true, discriminatorKey: 'type' })
-export class ViberAccountBase {
+export class ViberAccountBaseEntity {
   @Prop({ type: String })
   name: string;
 
@@ -19,7 +25,7 @@ export class ViberAccountBase {
   @Prop({ type: [String] })
   senderIds: string[];
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'LimiterPool', required: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: LIMITER_POOL_MODEL, required: true })
   limiterPoolId: mongoose.Types.ObjectId;
 
   @Prop({ type: Boolean })
@@ -30,10 +36,10 @@ export class ViberAccountBase {
   updatedAt: Date;
 }
 
-export const ViberAccountBaseSchema = SchemaFactory.createForClass(ViberAccountBase);
+export const ViberAccountBaseSchema = SchemaFactory.createForClass(ViberAccountBaseEntity);
 
 @Schema()
-export class ViberAccountApiToken implements ViberAccountBase {
+export class ViberAccountApiTokenEntity implements ViberAccountBaseEntity {
   type: 'ApiToken';
 
   @Prop({ type: String })
@@ -49,10 +55,10 @@ export class ViberAccountApiToken implements ViberAccountBase {
   updatedAt: Date;
 }
 
-export const ViberAccountApiTokenSchema = SchemaFactory.createForClass(ViberAccountApiToken);
+export const ViberAccountApiTokenSchema = SchemaFactory.createForClass(ViberAccountApiTokenEntity);
 
 @Schema()
-export class ViberAccountApiKeySecret implements ViberAccountBase {
+export class ViberAccountApiKeySecretEntity implements ViberAccountBaseEntity {
   type: 'ApiKeySecret';
 
   @Prop({ type: String })
@@ -71,8 +77,10 @@ export class ViberAccountApiKeySecret implements ViberAccountBase {
   updatedAt: Date;
 }
 
+export const ViberAccountApiKeySecretSchema = SchemaFactory.createForClass(ViberAccountApiKeySecretEntity);
+
 @Schema()
-export class ViberAccountBearerToken implements ViberAccountBase {
+export class ViberAccountBearerTokenEntity implements ViberAccountBaseEntity {
   type: 'BearerToken';
 
   @Prop({ type: String })
@@ -91,5 +99,7 @@ export class ViberAccountBearerToken implements ViberAccountBase {
   updatedAt: Date;
 }
 
-export const ViberAccountApiKeySecretSchema = SchemaFactory.createForClass(ViberAccountApiKeySecret);
-export type ViberAccount = ViberAccountApiKeySecret | ViberAccountApiToken | ViberAccountBearerToken;
+export const ViberAccountBearerTokenSchema = SchemaFactory.createForClass(ViberAccountBearerTokenEntity);
+
+export type ViberAccountEntity =
+  ViberAccountApiKeySecretEntity | ViberAccountApiTokenEntity | ViberAccountBearerTokenEntity;

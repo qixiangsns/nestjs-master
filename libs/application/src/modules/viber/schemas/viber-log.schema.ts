@@ -3,10 +3,12 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { DeliveryStatus, RequestStatus, MessageType } from '../models/viber-log.model';
 
-export type ViberLogDocument = HydratedDocument<ViberLog>;
+export const VIBER_LOG_MODEL = 'ViberLog';
+
+export type ViberLogDocument = HydratedDocument<ViberLogEntity>;
 
 @Schema({ collection: 'viber_logs', timestamps: true })
-export class ViberLog {
+export class ViberLogEntity {
   @Prop({ type: mongoose.Types.ObjectId })
   _id: mongoose.Types.ObjectId;
 
@@ -47,4 +49,4 @@ export class ViberLog {
   updatedAt: Date;
 }
 
-export const ViberLogSchema = SchemaFactory.createForClass(ViberLog);
+export const ViberLogSchema = SchemaFactory.createForClass(ViberLogEntity);

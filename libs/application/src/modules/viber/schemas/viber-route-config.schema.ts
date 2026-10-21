@@ -1,12 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { RouteStrategy, RouteType } from '../models/viber-route-config.model';
-import { ViberAccountBase } from './viber-account.schema';
+import { VIBER_ACCOUNT_MODEL } from './viber-account.schema';
 
-export type ViberRouteConfigDocument = HydratedDocument<ViberRouteConfig>;
+export const VIBER_ROUTE_CONFIG_MODEL = 'ViberRouteConfig';
+
+export type ViberRouteConfigDocument = HydratedDocument<ViberRouteConfigEntity>;
 @Schema({ _id: false })
-export class RouteAccount {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: ViberAccountBase.name })
+export class RouteAccountEntity {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: VIBER_ACCOUNT_MODEL })
   id: mongoose.Types.ObjectId;
 
   @Prop({ type: Boolean, required: true })
@@ -16,21 +18,21 @@ export class RouteAccount {
   weight: number;
 }
 
-export const RouteAccountSchema = SchemaFactory.createForClass(RouteAccount);
+export const RouteAccountSchema = SchemaFactory.createForClass(RouteAccountEntity);
 
 export enum RouteAccountVirtualField {
   AccountDetails = 'details',
 }
 
 RouteAccountSchema.virtual(RouteAccountVirtualField.AccountDetails, {
-  ref: ViberAccountBase.name,
+  ref: VIBER_ACCOUNT_MODEL,
   localField: 'id',
   foreignField: '_id',
   justOne: true,
 });
 
 @Schema({ collection: 'viber_route_configs', timestamps: true })
-export class ViberRouteConfig {
+export class ViberRouteConfigEntity {
   @Prop({ type: String, enum: RouteType, required: true })
   type: RouteType;
 
@@ -44,9 +46,9 @@ export class ViberRouteConfig {
   senderId: string;
 
   @Prop({ type: [RouteAccountSchema], required: true })
-  accounts: RouteAccount[];
+  accounts: RouteAccountEntity[];
 
   createdAt: Date;
   updatedAt: Date;
 }
-export const ViberRouteConfigSchema = SchemaFactory.createForClass(ViberRouteConfig);
+export const ViberRouteConfigSchema = SchemaFactory.createForClass(ViberRouteConfigEntity);

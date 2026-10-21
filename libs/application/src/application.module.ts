@@ -1,7 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { SecretsModule } from '@framework/secret';
 import { SecretSchema, SECRET_TOKEN, EnvSchema, Env, ENV_TOKEN } from './config';
-import { RedisConnection, MongoDbConnection, PulsarConnection, RedisSubscriberConnection } from './connnections';
+import { RedisConnection, MongoDbConnection, PulsarConnection, RedisSubscriberConnection } from './connections';
 import { LoggerModule } from 'nestjs-pino';
 import { getPinoOptions } from '@framework/logger';
 import { ViberModule } from './modules/viber';
