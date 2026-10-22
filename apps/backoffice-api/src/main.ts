@@ -1,13 +1,11 @@
 import 'zod/compile';
 import '@framework/trace/register';
 import { NestFactory } from '@nestjs/core';
-import { Logger, VersioningType } from '@nestjs/common';
+import { INestApplication, Logger, VersioningType } from '@nestjs/common';
 import { BackofficeApiModule } from './backoffice-api.module';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import { ENV_TOKEN, Env } from './env';
-import { INestApplication } from '@nestjs/common';
-import { SwaggerModule } from '@nestjs/swagger';
-import { DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { DEFAULT_OPTIONS } from '@framework/scalar';
 import { version } from '@package';
 import { cleanupOpenApiDoc } from 'nestjs-zod';
