@@ -8,6 +8,8 @@ import { EmailController } from './controllers/email/email.controller';
 import { SmsController } from './controllers/sms/sms.controller';
 import { WhatsappController } from './controllers/whatsapp/whatsapp.controller';
 import { ViberController } from './controllers/viber/viber.controller';
+import { HealthModule } from '@framework/health';
+import { HealthController } from './controllers/health/health.controller';
 
 @Module({
   imports: [
@@ -20,8 +22,9 @@ import { ViberController } from './controllers/viber/viber.controller';
       },
     ]),
     ApplicationModule,
+    HealthModule,
   ],
-  controllers: [EmailController, SmsController, WhatsappController, ViberController],
+  controllers: [EmailController, SmsController, WhatsappController, ViberController, HealthController],
   providers: [
     {
       provide: APP_PIPE,

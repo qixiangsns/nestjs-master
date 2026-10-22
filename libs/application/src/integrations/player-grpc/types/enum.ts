@@ -4,7 +4,7 @@
 //   protoc               v7.36.2
 // source: enum.proto
 
-/* eslint-disable */
+ 
 
 export const protobufPackage = "player";
 
