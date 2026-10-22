@@ -19,7 +19,7 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
         provide: ENV_TOKEN,
         schema: EnvSchema,
         providerType: 'env',
-        envFilePath: ['.env.messaging-admin'],
+        envFilePath: ['.env.backoffice-api'],
       },
     ]),
   ],
@@ -35,4 +35,4 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
     },
   ],
 })
-export class MessagingAdminModule {}
+export class BackofficeApiModule {}

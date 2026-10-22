@@ -64,13 +64,13 @@
         "tsConfigPath": "apps/log-consumer/tsconfig.app.json"
       }
     },
-    "messaging-admin": {
+    "backoffice-api": {
       "type": "application",
-      "root": "apps/messaging-admin",
+      "root": "apps/backoffice-api",
       "entryFile": "main",
-      "sourceRoot": "apps/messaging-admin/src",
+      "sourceRoot": "apps/backoffice-api/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/messaging-admin/tsconfig.app.json"
+        "tsConfigPath": "apps/backoffice-api/tsconfig.app.json"
       }
     },
     "viber-consumer-promotexter": {

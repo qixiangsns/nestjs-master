@@ -2,7 +2,7 @@ import 'zod/compile';
 import '@framework/trace/register';
 import { NestFactory } from '@nestjs/core';
 import { INestApplication, Logger, VersioningType } from '@nestjs/common';
-import { MessagingAdminModule } from './messaging-admin.module';
+import { BackofficeApiModule } from './backoffice-api.module';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import { ENV_TOKEN, Env } from './env';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -14,7 +14,7 @@ import { createMarkdownFromOpenApi } from '@scalar/openapi-to-markdown';
 import { Request, Response } from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(MessagingAdminModule, {
+  const app = await NestFactory.create(BackofficeApiModule, {
     bufferLogs: true,
   });
   const env = app.get<Env>(ENV_TOKEN);
