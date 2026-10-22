@@ -1,3 +1,4 @@
+import 'zod/compile';
 import '@framework/trace/register';
 import { NestFactory } from '@nestjs/core';
 import { Logger, VersioningType } from '@nestjs/common';
@@ -11,6 +12,8 @@ import { DEFAULT_OPTIONS } from '@framework/scalar';
 import { version } from '@package';
 import { cleanupOpenApiDoc } from 'nestjs-zod';
 import { apiReference } from '@scalar/nestjs-api-reference';
+import { createMarkdownFromOpenApi } from '@scalar/openapi-to-markdown';
+import { Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(BackofficeApiModule, {
@@ -26,15 +29,16 @@ async function bootstrap() {
 
   // API documentation
   app.enableVersioning({ type: VersioningType.URI });
-  setupApiDocumentation(app);
+  await setupApiDocumentation(app);
 
   app.listen(env.PORT).then(() => {
     logger.log({ url: `http://localhost:${env.PORT}` }, `Server is running`);
     logger.log({ url: `http://localhost:${env.PORT}/reference` }, `APIs documentation is hosted`);
+    logger.log({ url: `http://localhost:${env.PORT}/llms.txt` }, 'LLM Text is hosted');
   });
 }
 
-function setupApiDocumentation(app: INestApplication) {
+async function setupApiDocumentation(app: INestApplication) {
   const openApiDoc = SwaggerModule.createDocument(
     app,
     new DocumentBuilder()
@@ -43,14 +47,19 @@ function setupApiDocumentation(app: INestApplication) {
       .setVersion(version)
       .build(),
   );
+  const content = cleanupOpenApiDoc(openApiDoc);
+  const markdown = await createMarkdownFromOpenApi(JSON.stringify(content));
 
   app.use(
     '/reference',
     apiReference({
-      content: cleanupOpenApiDoc(openApiDoc),
+      content,
       ...DEFAULT_OPTIONS,
     }),
   );
+
+  const http = app.getHttpAdapter();
+  http.get('/llms.txt', (req: Request, res: Response) => res.type('txt').send(markdown));
 }
 
 bootstrap();

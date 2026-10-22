@@ -1,10 +1,10 @@
 const SPAN_PARAM_METADATA = 'tracing:span';
 
 /**
- * Injects the active {@link Span} created by `@TraceCron` into the
+ * Injects the active {@link Span} created by `@TraceJob` into the
  * decorated parameter.
  * @warning
- * The value is `undefined` when called outside a `@TraceCron`-decorated method.
+ * The value is `undefined` when called outside a `@TraceJob`-decorated method.
  *
  * @example
  * async handleCron(@ActiveSpan() span?: Span) {

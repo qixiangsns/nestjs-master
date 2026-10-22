@@ -1,19 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
 import pLimit, { LimitFunction } from 'p-limit';
 import { RouteType } from '../models/viber-route-config.model';
-import { Consumer } from 'pulsar-client';
+import { Client, Consumer, Message } from 'pulsar-client';
 import { Pacer } from '@framework/utils';
 import { ViberProviderCode } from '../models/viber-provider.model';
 import { type ViberAccountSender } from '../models/viber-account.model';
-import { Client, Message } from 'pulsar-client';
 import { ViberLogDispatcher } from '../queues/viber-log.dispatcher';
 import { type ViberSender } from '../ports/viber-sender.port';
 import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
-import { getViberRouteTopic } from '../queues/viber-message.queues';
+import { getViberRouteTopic, ViberRequestSchema } from '../queues/viber-message.queues';
 import waitFor, { TimeoutError } from 'p-wait-for';
-import { ViberRequest } from '../models/viber-message.model';
 import { SendViberResult } from '../models/viber-message.model';
 import { LimiterService } from '@application/modules/limiter';
+import { TraceConsumer } from '@framework/trace';
+import { trace } from '@opentelemetry/api';
+
+const tracer = trace.getTracer('viber-account-worker');
 
 type BatchOptions = {
   maxNumMessages: number;
@@ -156,47 +158,55 @@ export class ViberAccountWorker {
 
   async start() {
     this.state = 'running';
-    while (true) {
-      if (this.state !== 'running') {
-        this.isProcessing = false;
-        break;
+    try {
+      while (true) {
+        if (this.state !== 'running') {
+          break;
+        }
+        this.isProcessing = true;
+
+        const { batchMessages, retryAfterMs } = await this.consumeBatch({
+          maxNumMessages: 100,
+          timeoutMs: 1000,
+        });
+
+        const isRateLimited = retryAfterMs > 0;
+        if (isRateLimited) {
+          this.pacer.throttle(retryAfterMs);
+        }
+
+        if (batchMessages.length > 0) {
+          if (!isRateLimited) this.pacer.rampUp();
+
+          // Prepare sending
+          const tasks = batchMessages.map((message) => this.concurrency(() => this.sendMessage(message)));
+
+          // Send message concurrently
+          const results = await Promise.allSettled(tasks);
+
+          // Log sending result
+          const successResult = results.filter((res) => res.status === 'fulfilled');
+          const errorResult = results.filter((res) => res.status === 'rejected');
+          this.logger.log({ success: successResult.length, error: errorResult.length }, 'Send message results');
+        } else if (!isRateLimited) {
+          this.pacer.slowDown();
+        }
+
+        // Delay loop based on throttle/ramp up/slow down
+        await this.pacer.wait();
       }
-      this.isProcessing = true;
-
-      const { batchMessages, retryAfterMs } = await this.consumeBatch({
-        maxNumMessages: 100,
-        timeoutMs: 1000,
-      });
-
-      const isRateLimited = retryAfterMs > 0;
-      if (isRateLimited) {
-        this.pacer.throttle(retryAfterMs);
-      }
-
-      if (batchMessages.length > 0) {
-        if (!isRateLimited) this.pacer.rampUp();
-
-        // Prepare sending
-        const tasks = batchMessages.map((message) => this.concurrency(() => this.sendMessage(message)));
-
-        // Send message concurrently
-        const results = await Promise.allSettled(tasks);
-
-        // Log sending result
-        const successResult = results.filter((res) => res.status === 'fulfilled');
-        const errorResult = results.filter((res) => res.status === 'rejected');
-        this.logger.log({ success: successResult.length, error: errorResult.length }, 'Send message results');
-      } else if (!isRateLimited) {
-        this.pacer.slowDown();
-      }
-
-      // Delay loop based on throttle/ramp up/slow down
-      await this.pacer.wait();
+    } finally {
+      this.isProcessing = false;
     }
   }
 
+  @TraceConsumer({
+    name: 'consume-viber-message',
+    tracer,
+    getHeaders: (message: Message) => message.getProperties(),
+  })
   private async sendMessage(message: Message) {
-    const data = JSON.parse(message.getData().toString()) as ViberRequest;
+    const data = ViberRequestSchema.parse(JSON.parse(message.getData().toString()));
     let result: SendViberResult | null = null;
 
     const log = {

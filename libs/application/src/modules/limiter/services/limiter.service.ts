@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
 import { REDIS_TOKEN } from '@application/connections';
+import { EgressIpService } from '@application/modules/egress-ip';
 import { LimiterCounter, LimiterGrant, LimiterRule, LimiterWindowSeconds } from '../models/limiter.model';
 import { LimiterPoolCache } from '../caches/limiter-pool.cache';
 import { LimiterPool } from '../models/limiter-pool.model';
@@ -18,6 +19,7 @@ type CounterResult = { allowed: boolean; state: RateLimiterRes };
  * const { allowed, retryAfterMs } = await limiterService.acquire(account.limiterPoolId, 5);
  *
  * @example Redis key: limiter:pool-id:<pool id>:Second
+ * @example Redis key: limiter:pool-id:<pool id>:Second:Ip:<egress ip>
  */
 @Injectable()
 export class LimiterService {
@@ -27,6 +29,7 @@ export class LimiterService {
   constructor(
     @Inject(REDIS_TOKEN.PRIMARY) private readonly redis: Redis,
     private readonly poolCache: LimiterPoolCache,
+    private readonly egressIp: EgressIpService,
   ) {}
 
   async acquire(poolId: string, points = LIMITER_DEFAULT_POINTS): Promise<LimiterGrant> {
@@ -38,15 +41,21 @@ export class LimiterService {
         return { allowed: false, retryAfterMs: LIMITER_BLOCKED_RETRY_MS };
       }
 
-      return await this.consumeAll(this.toCounters(pool), points);
+      return await this.consumeAll(await this.toCounters(pool), points);
     } catch (error: unknown) {
       this.logger.error({ poolId, error }, 'Limiter unavailable, blocking');
       return { allowed: false, retryAfterMs: LIMITER_BLOCKED_RETRY_MS };
     }
   }
 
-  private toCounters(pool: LimiterPool): LimiterCounter[] {
-    return pool.rules.map((rule) => ({ key: `pool-id:${pool.id}:${rule.window}`, rule }));
+  private async toCounters(pool: LimiterPool): Promise<LimiterCounter[]> {
+    return Promise.all(pool.rules.map(async (rule) => ({ key: await this.toKey(pool.id, rule), rule })));
+  }
+
+  private async toKey(poolId: string, rule: LimiterRule) {
+    const key = `pool-id:${poolId}:${rule.window}`;
+    if (rule.strategy === 'Shared') return key;
+    return `${key}:Ip:${await this.egressIp.get()}`;
   }
 
   private async consumeAll(counters: LimiterCounter[], points: number): Promise<LimiterGrant> {

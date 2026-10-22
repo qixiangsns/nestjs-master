@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { LimiterWindow } from '../models/limiter.model';
+import { LimiterStrategy, LimiterWindow } from '../models/limiter.model';
 
 export const LIMITER_POOL_MODEL = 'LimiterPool';
 
@@ -13,6 +13,9 @@ export class LimiterRuleEntity {
 
   @Prop({ type: Number, required: true, min: 1 })
   limit: number;
+
+  @Prop({ type: String, enum: LimiterStrategy, required: true })
+  strategy: LimiterStrategy;
 }
 export const LimiterRuleSchema = SchemaFactory.createForClass(LimiterRuleEntity);
 

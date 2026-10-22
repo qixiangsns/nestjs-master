@@ -1,9 +1,13 @@
 import { z } from 'zod';
-import { LimiterWindow } from '../models/limiter.model';
+import { LimiterStrategy, LimiterWindow } from '../models/limiter.model';
 
 const LimiterRuleSchema = z.object({
   window: z.enum(LimiterWindow),
   limit: z.number().int().min(1),
+  strategy: z.enum(LimiterStrategy).meta({
+    description:
+      'Shared: one limit for all pods together. IpExclusive: each egress IP (pod) gets the full limit, so the total grows with the number of pods',
+  }),
 });
 
 export const GetLimiterPoolListResponseSchema = z

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EgressIpModule } from '@application/modules/egress-ip';
 import { MongoSchemaModule } from './schemas';
 import { LimiterPoolRepository } from './repositories/limiter-pool.repository';
 import { LimiterPoolCache } from './caches/limiter-pool.cache';
@@ -11,7 +12,7 @@ const Services = [LimiterService, LimiterPoolService];
 const Providers = [LimiterPoolCache, LimiterSignalBroadcaster];
 
 @Module({
-  imports: [MongoSchemaModule],
+  imports: [MongoSchemaModule, EgressIpModule],
   exports: [...Services],
   providers: [...Repositories, ...Services, ...Providers],
 })
