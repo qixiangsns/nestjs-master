@@ -10,7 +10,7 @@
   "monorepo": true,
   "root": "apps/messaging-api",
   "projects": {
-    "api": {
+    "messaging-api": {
       "type": "application",
       "root": "apps/messaging-api",
       "entryFile": "main",

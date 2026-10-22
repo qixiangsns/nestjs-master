@@ -10,6 +10,8 @@ import { ENV_TOKEN, EnvSchema } from './env';
 import { ApplicationModule } from '@application';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { HealthModule } from '@framework/health';
+import { HealthController } from './controllers/health/health.controller';
 
 @Module({
   imports: [
@@ -22,8 +24,17 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
         envFilePath: ['.env.backoffice-api'],
       },
     ]),
+    HealthModule,
   ],
-  controllers: [SmsController, AuthController, EmailController, AdminsController, ViberController, LimiterController],
+  controllers: [
+    SmsController,
+    AuthController,
+    EmailController,
+    AdminsController,
+    ViberController,
+    LimiterController,
+    HealthController,
+  ],
   providers: [
     {
       provide: APP_PIPE,
