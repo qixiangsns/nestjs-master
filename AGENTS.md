@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A high-throughput multi-channel messaging system to dispatch transactional and promotional messages across SMS, Viber, Email, and WhatsApp. This a Nest JS monorepo that contains multiple independently deployable applications with shared internal libraries and core modules.
+A high-throughput multi-channel messaging gateway to dispatch transactional and promotional messages across SMS, Viber, Email, and WhatsApp. This a Nest JS monorepo that contains multiple independently deployable applications with shared internal libraries and core modules.
 
 ## Tech Stack & Environment
 

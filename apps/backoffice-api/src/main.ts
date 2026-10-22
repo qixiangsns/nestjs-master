@@ -1,7 +1,7 @@
 import '@framework/trace/register';
 import { NestFactory } from '@nestjs/core';
 import { Logger, VersioningType } from '@nestjs/common';
-import { MessagingAdminModule } from './messaging-admin.module';
+import { BackofficeApiModule } from './backoffice-api.module';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import { ENV_TOKEN, Env } from './env';
 import { INestApplication } from '@nestjs/common';
@@ -13,7 +13,7 @@ import { cleanupOpenApiDoc } from 'nestjs-zod';
 import { apiReference } from '@scalar/nestjs-api-reference';
 
 async function bootstrap() {
-  const app = await NestFactory.create(MessagingAdminModule, {
+  const app = await NestFactory.create(BackofficeApiModule, {
     bufferLogs: true,
   });
   const env = app.get<Env>(ENV_TOKEN);

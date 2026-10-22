@@ -1,98 +1,97 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Messaging Gateway
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A high-throughput, multi-channel messaging gateway for dispatching transactional and promotional messages.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This project supersedes the legacy **SMS Gateway**. That system started as an SMS sender and grew to cover email,
+WhatsApp and other channels, but its plain JavaScript codebase and outdated framework made new features and
+architectural changes hard to ship. This repository is a ground-up rewrite that addresses those limits.
 
-## Description
+## Channels
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Viber (developing)
+- SMS (planning)
+- Email (planning)
+- Whatsapp (planning)
+- App Push (comming soon)
 
-## Project setup
+## Why this project exists
+
+The legacy system had no enforced structure or rules, so every feature was built in a different way. Over time that produced inconsistent code, AI-generated slop, and unsafe handling of data and business logic, which led to production bugs and failures.
+
+This project counters that with:
+
+- **Strict structure:** a fixed project and module layout with lint-enforced import boundaries.
+- **Safe TypeScript:** strict null checks, validated inputs (zod) and type-safe contracts between layers.
+- **SOLID design:** small, single-purpose modules, ports and adapters for providers, and dependencies that point
+  one way.
+
+Read [docs/project-structure.md](docs/project-structure.md) before adding code. It defines where code goes, what
+it may import, and how modules are named.
+
+### Focus: CRISP
+
+- **Clear:** code and structure that read the same everywhere.
+- **Robust:** safe data handling and predictable failure modes.
+- **Idiomatic:** NestJS and TypeScript used the way they are meant to be used.
+- **Simple:** no abstraction without a reason.
+- **Performant:** built for high message throughput.
+
+## Tech stack
+
+NestJS 11 (Express), TypeScript 5, Node.js 24, MongoDB (Mongoose), Redis (Ioredis), Apache Pulsar, OpenTelemetry,pnpm
+
+## Applications
+
+List of independently deployable application that serves different purposes
+
+- apps/backoffice-api: Internal admin API for managing admins, provider accounts, routing, rate limits and message logs.
+- apps/messaging-api: Public API that clients call to send OTP, notification and marketing messages on each channel.
+- apps/log-consumer: Consumes message log events from Pulsar and saves them to the database in batches.
+- apps/dlr-receiver: (coming soon)
+- apps/viber-consumer-promotexter: (coming soon)
+- apps/viber-consumer-promotexter-apix: (coming soon)
+- apps/sms-consumer-promtexter-apix: (coming soon)
+- apps/sms-consumer-promtexter: (coming soon)
+- apps/sms-consumer-pldt: (coming soon)
+- apps/sms-consumer-airudder: (coming soon)
+- apps/sms-consumer-aliyun: (coming soon)
+- apps/sms-consumer-dito: (coming soon)
+- apps/sms-consumer-m360: (coming soon)
+- apps/sms-consumer-mocean: (coming soon)
+- apps/sms-consumer-laafic: (coming soon)
+- apps/sms-consumer-oaktel: (coming soon)
+- apps/email-consumer-aliyun: (coming soon)
+- apps/email-consumer-aws: (coming soon)
+- apps/whatsapp-consumer-infobip: (coming soon)
+
+## Development
+
+### Env
+
+Each app may read its environment from env files at the repository root:
+
+- A shared `.env`
+- A `.env.<app-name>` file at the repository root.
 
 ```bash
-$ pnpm install
+pnpm install
+pnpm run infra:up               # Mongo, Redis, Pulsar, ClickHouse, Jaeger via Docker
+pnpm run dev:<app-name>         # Eg: pnpm run dev:messaging-api, pnpm run dev:backoffice-api
 ```
 
-## Compile and run the project
+### Build
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm install
+pnpm run build:<app-name>       # Eg: pnpm run build:messaging-api
+pnpm run start:<app-name>       # Eg: pnpm run start:messaging-api
 ```
 
-## Run tests
+## Quality checks
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+pnpm run lint        # ESLint, including import-boundary rules
+pnpm run format      # Prettier
+pnpm run typecheck   # TypeScript across the workspace
+pnpm test            # Jest
 ```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
