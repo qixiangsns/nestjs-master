@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { OffsetPaginationQuerySchema, OffsetPaginationSchema, offsetPaginated } from '@framework/pagination';
+import {
+  OffsetPaginationQuerySchema,
+  OffsetPaginationSchema,
+  offsetPaginated,
+} from '@framework/pagination/index.js';
 
 const EmailAccountStatus = z.enum(['active', 'suspended']);
 const EmailRouteConfigStatus = z.enum(['active', 'disabled']);
@@ -40,7 +44,11 @@ const EmailAccountSchema = z
     fromEmail: z.email(),
     fromName: z.string().nullable(),
     status: EmailAccountStatus,
-    dailyQuota: z.number().int().nullable().describe('Maximum messages per day, null when unlimited'),
+    dailyQuota: z
+      .number()
+      .int()
+      .nullable()
+      .describe('Maximum messages per day, null when unlimited'),
     createdAt: z.iso.datetime(),
     updatedAt: z.iso.datetime(),
   })
@@ -155,7 +163,12 @@ export class GetEmailLogListResponse extends createZodDto(GetEmailLogListRespons
 /* -------------------------------------------------------------------------- */
 
 const SendEmailRequestSchema = z.object({
-  accountId: z.string().trim().min(1).describe('Sending account to use, routing is bypassed when set').optional(),
+  accountId: z
+    .string()
+    .trim()
+    .min(1)
+    .describe('Sending account to use, routing is bypassed when set')
+    .optional(),
   to: z.array(z.email()).min(1),
   cc: z.array(z.email()).optional(),
   bcc: z.array(z.email()).optional(),
@@ -187,13 +200,17 @@ export class SendEmailResponse extends createZodDto(SendEmailResponseSchema) {}
 
 const EmailRouteCriteriaSchema = z
   .object({
-    recipientDomains: z.array(z.string().trim().min(1)).optional().describe('Match on the recipient address domain'),
+    recipientDomains: z
+      .array(z.string().trim().min(1))
+      .optional()
+      .describe('Match on the recipient address domain'),
     campaignIds: z.array(z.string().trim().min(1)).optional(),
     tags: z.array(z.string().trim().min(1)).optional(),
   })
   .meta({
     title: 'EmailRouteCriteria',
-    description: 'Conditions a message must match for the route to apply, an empty object matches everything',
+    description:
+      'Conditions a message must match for the route to apply, an empty object matches everything',
   });
 
 const EmailRouteConfigSchema = z
@@ -202,7 +219,10 @@ const EmailRouteConfigSchema = z
     name: z.string(),
     description: z.string().nullable(),
     accountId: z.string().describe('Account messages matching this route are sent through'),
-    fallbackAccountId: z.string().nullable().describe('Account to retry with when the primary account fails'),
+    fallbackAccountId: z
+      .string()
+      .nullable()
+      .describe('Account to retry with when the primary account fails'),
     priority: z.number().int().describe('Lower values are evaluated first'),
     weight: z.number().int().describe('Relative share when several routes share a priority'),
     status: EmailRouteConfigStatus,
@@ -244,14 +264,20 @@ const PatchEmailRouteConfigRequestSchema = z
   })
   .partial();
 
-export class GetEmailRouteConfigListRequest extends createZodDto(GetEmailRouteConfigListRequestSchema) {}
+export class GetEmailRouteConfigListRequest extends createZodDto(
+  GetEmailRouteConfigListRequestSchema,
+) {}
 export class GetEmailRouteConfigListResponse extends createZodDto(
   offsetPaginated(EmailRouteConfigSchema, {
     title: 'EmailRouteConfigList',
     description: 'Paginated email routing rules',
   }),
 ) {}
-export class CreateEmailRouteConfigRequest extends createZodDto(CreateEmailRouteConfigRequestSchema) {}
+export class CreateEmailRouteConfigRequest extends createZodDto(
+  CreateEmailRouteConfigRequestSchema,
+) {}
 export class CreateEmailRouteConfigResponse extends createZodDto(EmailRouteConfigSchema) {}
-export class PatchEmailRouteConfigRequest extends createZodDto(PatchEmailRouteConfigRequestSchema) {}
+export class PatchEmailRouteConfigRequest extends createZodDto(
+  PatchEmailRouteConfigRequestSchema,
+) {}
 export class PatchEmailRouteConfigResponse extends createZodDto(EmailRouteConfigSchema) {}

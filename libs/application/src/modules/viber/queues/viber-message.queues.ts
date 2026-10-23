@@ -7,9 +7,9 @@ import {
   ViberRequest,
   ViberRequestBase,
   ViberTemplateRequest,
-} from '../models/viber-message.model';
-import { ViberProviderCode } from '../models/viber-provider.model';
-import { RouteType } from '../models/viber-route-config.model';
+} from '../models/viber-message.model.js';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
+import { RouteType } from '../models/viber-route-config.model.js';
 
 const ViberRouteTopicPrefix = {
   'Infobip.Mkt': 'viber.mkt.infobip',
@@ -24,7 +24,10 @@ const ViberRouteTopicPrefix = {
   'MockProvider.Mkt': 'viber.mkt.mock-provider',
   'MockProvider.Otp': 'viber.otp.mock-provider',
   'MockProvider.Notif': 'viber.notif.mock-provider',
-} as const satisfies Record<`${ViberProviderCode}.${RouteType}`, `viber.${Lowercase<RouteType>}.${string}`>;
+} as const satisfies Record<
+  `${ViberProviderCode}.${RouteType}`,
+  `viber.${Lowercase<RouteType>}.${string}`
+>;
 
 type ViberRouteTopicPrefix = keyof typeof ViberRouteTopicPrefix;
 
@@ -35,10 +38,16 @@ type ViberRouteTopicPrefix = keyof typeof ViberRouteTopicPrefix;
  * - viber.otp.promotexter-apix.6abb65351474721200daa7c8
  * - viber.mkt.promotexter.6abb65351474721200daa7c8
  */
-export const getViberRouteTopic = (providerCode: ViberProviderCode, routeType: RouteType, accountId: string) => {
+export const getViberRouteTopic = (
+  providerCode: ViberProviderCode,
+  routeType: RouteType,
+  accountId: string,
+) => {
   const topicPrefix = ViberRouteTopicPrefix[`${providerCode}.${routeType}`];
   if (!topicPrefix) {
-    throw new Error(`Invalid Viber route topic mapping for provider "${providerCode}" with type "${routeType}`);
+    throw new Error(
+      `Invalid Viber route topic mapping for provider "${providerCode}" with type "${routeType}`,
+    );
   }
   return `${topicPrefix}.${accountId}`;
 };

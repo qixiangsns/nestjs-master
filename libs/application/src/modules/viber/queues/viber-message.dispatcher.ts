@@ -1,12 +1,12 @@
-import { PulsarProducerService } from '@framework/pulsar';
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { PULSAR_CONN_TOKEN } from '@application/connections';
-import { Client } from 'pulsar-client';
-import { ViberRequest } from '../models/viber-message.model';
-import { getViberRouteTopic } from './viber-message.queues';
-import { RouteAccountRoutable } from '../models/viber-route-config.model';
-import { getTraceHeaders, TracePublish } from '@framework/trace';
+import Pulsar from 'pulsar-client';
 import { trace } from '@opentelemetry/api';
+import { PulsarProducerService } from '@framework/pulsar/index.js';
+import { PULSAR_CONN_TOKEN } from '@application/connections/index.js';
+import { ViberRequest } from '../models/viber-message.model.js';
+import { getViberRouteTopic } from './viber-message.queues.js';
+import { RouteAccountRoutable } from '../models/viber-route-config.model.js';
+import { getTraceHeaders, TracePublish } from '@framework/trace/index.js';
 
 const tracer = trace.getTracer('viber-message-dispatcher');
 /**
@@ -18,7 +18,7 @@ type DispatchPayload = { request: ViberRequest; routeTo: RouteAccountRoutable };
 export class ViberMessageDispatcher extends PulsarProducerService {
   protected logger = new Logger(ViberMessageDispatcher.name);
 
-  constructor(@Inject(PULSAR_CONN_TOKEN.PRIMARY) client: Client) {
+  constructor(@Inject(PULSAR_CONN_TOKEN.PRIMARY) client: Pulsar.Client) {
     super(client, {
       producerConfig: {
         batchingEnabled: true,

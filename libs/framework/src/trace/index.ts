@@ -1,7 +1,7 @@
-export * from './utils/trace.utils';
+export * from './utils/trace.utils.js';
 
 // Decorators
-export * from './decorators/active-span.decorator';
-export * from './decorators/trace-consume.decorator';
-export * from './decorators/trace-job.decorator';
-export * from './decorators/trace-publish.decorator';
+export * from './decorators/active-span.decorator.js';
+export * from './decorators/trace-consume.decorator.js';
+export * from './decorators/trace-job.decorator.js';
+export * from './decorators/trace-publish.decorator.js';

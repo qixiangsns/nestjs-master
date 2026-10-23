@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { LimiterStrategy, LimiterWindow } from '../models/limiter.model';
+import { LimiterStrategy, LimiterWindow } from '../models/limiter.model.js';
 
 const LimiterRuleSchema = z.object({
   window: z.enum(LimiterWindow),
@@ -21,7 +21,8 @@ export const GetLimiterPoolListResponseSchema = z
   })
   .meta({
     title: 'LimiterPool',
-    description: 'A shared limit pool consumed by provider accounts, eg: one Promotexter pool for Viber + SMS',
+    description:
+      'A shared limit pool consumed by provider accounts, eg: one Promotexter pool for Viber + SMS',
   });
 
 export const CreateLimiterPoolSchema = z.object({

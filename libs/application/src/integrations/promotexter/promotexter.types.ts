@@ -1,4 +1,4 @@
-import { PromotexterErrorCode } from './promotexter.constant';
+import { PromotexterErrorCode } from './promotexter.constant.js';
 import { RawAxiosHeaders } from 'axios';
 
 interface TokenStore {

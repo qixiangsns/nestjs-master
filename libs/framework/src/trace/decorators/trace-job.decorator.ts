@@ -1,5 +1,5 @@
 import { Tracer, Span, SpanStatusCode } from '@opentelemetry/api';
-import { getActiveSpanParamIndices } from './active-span.decorator';
+import { getActiveSpanParamIndices } from './active-span.decorator.js';
 
 type TraceOptions = {
   name: string;

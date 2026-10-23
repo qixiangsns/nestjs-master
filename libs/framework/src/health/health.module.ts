@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
-import { RedisHealthIndicator } from './redis.health';
+import { RedisHealthIndicator } from './redis.health.js';
 
 @Module({
   imports: [TerminusModule],

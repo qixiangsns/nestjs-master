@@ -3,7 +3,7 @@ import PQueue from 'p-queue';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { sleep } from 'radash';
 import { trace, type Span } from '@opentelemetry/api';
-import { ActiveSpan, TraceJob } from '@framework/trace';
+import { ActiveSpan, TraceJob } from '@framework/trace/index.js';
 
 const tracer = trace.getTracer('cron-service');
 
@@ -21,14 +21,14 @@ export class CronService implements OnApplicationShutdown {
     });
 
     await this.queue.add(async () => {
-      await sleep(10_000);
-      this.logger.log({ executedAt: new Date() }, 'Cron executed');
+      await sleep(1000);
+      this.logger.log('Cron executed', { executedAt: new Date() });
     });
   }
 
   async onApplicationShutdown(signal?: string) {
-    this.logger.log({ receivedAt: new Date(), signal }, 'Received signal');
+    this.logger.log('Received signal', { receivedAt: new Date(), signal });
     await this.queue.onIdle();
-    this.logger.log({ finishedAt: new Date(), signal }, 'Finished cron');
+    this.logger.log('Finished signal', { finishedAt: new Date(), signal });
   }
 }

@@ -1,2 +1,2 @@
-export * from './player.module';
-export * from './player.service';
+export * from './player.module.js';
+export * from './player.service.js';

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { RouteStrategy, RouteType } from '../models/viber-route-config.model';
-import { VIBER_ACCOUNT_MODEL } from './viber-account.schema';
+import { RouteStrategy, RouteType } from '../models/viber-route-config.model.js';
+import { VIBER_ACCOUNT_MODEL } from './viber-account.schema.js';
 
 export const VIBER_ROUTE_CONFIG_MODEL = 'ViberRouteConfig';
 

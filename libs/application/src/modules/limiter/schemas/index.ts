@@ -1,6 +1,6 @@
-import { MONGO_CONN_NAME } from '@application/connections';
+import { MONGO_CONN_NAME } from '@application/connections/index.js';
 import { MongooseModule } from '@nestjs/mongoose';
-import { LIMITER_POOL_MODEL, LimiterPoolSchema } from './limiter-pool.schema';
+import { LIMITER_POOL_MODEL, LimiterPoolSchema } from './limiter-pool.schema.js';
 
 export const MongoSchemaModule = MongooseModule.forFeature(
   [{ name: LIMITER_POOL_MODEL, schema: LimiterPoolSchema }],

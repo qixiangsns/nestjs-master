@@ -1,4 +1,4 @@
-import { TelesignMessageType } from './telesign.constant';
+import { TelesignMessageType } from './telesign.constant.js';
 
 export type ClientOptions = {
   baseUrl: string;

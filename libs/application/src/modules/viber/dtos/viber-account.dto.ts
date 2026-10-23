@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ViberProviderCode } from '../models/viber-provider.model';
-import { AccountType } from '../models/viber-account.model';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
+import { AccountType } from '../models/viber-account.model.js';
 
 export const GetViberAccountListResponseSchema = z
   .object({

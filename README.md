@@ -38,7 +38,7 @@ it may import, and how modules are named.
 
 ## Tech stack
 
-NestJS 11 (Express), TypeScript 5, Node.js 24, MongoDB (Mongoose), Redis (Ioredis), Apache Pulsar, OpenTelemetry,pnpm
+NestJS 12 (Express), TypeScript 6, Node.js 24, MongoDB (Mongoose), Redis (Ioredis), Apache Pulsar, OpenTelemetry,pnpm
 
 ## Applications
 

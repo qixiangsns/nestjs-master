@@ -1,4 +1,4 @@
-import { AliyunMessageType } from './aliyun.constant';
+import { AliyunMessageType } from './aliyun.constant.js';
 
 export type ClientOptions = {
   /** Endpoint host, e.g. `dysmsapi.ap-southeast-1.aliyuncs.com`. */

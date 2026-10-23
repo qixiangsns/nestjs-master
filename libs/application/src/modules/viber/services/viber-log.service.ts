@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ViberLogRepository } from '../repositories/viber-log.repository';
-import { DeliveryStatus, ViberLog } from '../models/viber-log.model';
-import { GetViberLogListRequest } from '../dtos/viber-logs.dto';
+import { ViberLogRepository } from '../repositories/viber-log.repository.js';
+import { DeliveryStatus, ViberLog } from '../models/viber-log.model.js';
+import { GetViberLogListRequest } from '../dtos/viber-logs.dto.js';
 
 @Injectable()
 /**

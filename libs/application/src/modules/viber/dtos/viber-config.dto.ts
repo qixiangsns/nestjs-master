@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { isValidObjectId } from 'mongoose';
-import { ViberProviderCode } from '../models/viber-provider.model';
-import { RouteStrategy, RouteType } from '../models/viber-route-config.model';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
+import { RouteStrategy, RouteType } from '../models/viber-route-config.model.js';
 
 export const GetViberRouteConfigRequestSchema = z.object({
   platformId: z.string().trim().min(1),
@@ -50,7 +50,10 @@ export const CreateViberRouteConfigSchema = z.object({
       }),
     )
     .min(1)
-    .refine((accounts) => new Set(accounts.map((acc) => acc.id)).size === accounts.length, 'Duplicate account id'),
+    .refine(
+      (accounts) => new Set(accounts.map((acc) => acc.id)).size === accounts.length,
+      'Duplicate account id',
+    ),
 });
 
 export type CreateViberRouteConfig = z.output<typeof CreateViberRouteConfigSchema>;

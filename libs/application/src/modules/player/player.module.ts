@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PlayerGrpcService } from '@application/integrations/player-grpc';
-import { ExternalSmsMissionApi } from '@application/integrations/external-sms-mission';
-import { Secret, SECRET_TOKEN } from '@application/config';
-import { PlayerService } from './player.service';
+import { FpmsPlayerGrpcClient } from '@application/integrations/fpms-player-grpc/index.js';
+import { ExternalSmsMissionClient } from '@application/integrations/external-sms-mission/index.js';
+import { Secret, SECRET_TOKEN } from '@application/config/index.js';
+import { PlayerService } from './player.service.js';
 
 @Module({
   imports: [],
@@ -10,17 +10,17 @@ import { PlayerService } from './player.service';
   providers: [
     PlayerService,
     {
-      provide: PlayerGrpcService,
+      provide: FpmsPlayerGrpcClient,
       useFactory: (secret: Secret) =>
-        new PlayerGrpcService({
+        new FpmsPlayerGrpcClient({
           baseUrl: secret.PLAYER_GRPC_URL,
         }),
       inject: [SECRET_TOKEN],
     },
     {
-      provide: ExternalSmsMissionApi,
+      provide: ExternalSmsMissionClient,
       useFactory: (secret: Secret) =>
-        new ExternalSmsMissionApi({
+        new ExternalSmsMissionClient({
           baseUrl: secret.EXTERNAL_SMS_MISSION_URL,
           timeoutMs: 10000,
         }),

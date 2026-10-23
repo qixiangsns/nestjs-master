@@ -1,9 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import pLimit from 'p-limit';
-import { RoutableViberRouteConfig, RouteType } from '../models/viber-route-config.model';
-import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository';
-import { ViberRouteConfigSignal, type ViberRouteUpdatedSignal } from '../signals/viber-route-config.signals';
+import { RoutableViberRouteConfig, RouteType } from '../models/viber-route-config.model.js';
+import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository.js';
+import {
+  ViberRouteConfigSignal,
+  type ViberRouteUpdatedSignal,
+} from '../signals/viber-route-config.signals.js';
 
 type RouteConfigMap = Map<RouteType, RoutableViberRouteConfig>;
 /**
@@ -41,7 +44,7 @@ export class ViberRouteConfigCache {
       try {
         await this.refresh(signal.type, signal.platformId);
       } catch (error: unknown) {
-        this.logger.error({ error, signal }, 'Failed to refresh viber route config');
+        this.logger.error('Failed to refresh viber route config', { signal }, error);
       }
     });
   }
@@ -61,7 +64,8 @@ export class ViberRouteConfigCache {
     const config = await this.routeConfigRepo.findRoutableConfig(routeType, platformId);
 
     // update memory config
-    const platformConfig = this.configMap.get(platformId) ?? new Map<RouteType, RoutableViberRouteConfig>();
+    const platformConfig =
+      this.configMap.get(platformId) ?? new Map<RouteType, RoutableViberRouteConfig>();
     if (config) {
       platformConfig.set(routeType, config);
     } else {

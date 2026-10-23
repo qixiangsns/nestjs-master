@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { OffsetPaginationSchema } from '@framework/pagination';
+import { OffsetPaginationSchema } from '@framework/pagination/index.js';
 
 const AdminRole = z.enum(['manager', 'tester', 'superadmin']);
 const AdminStatus = z.enum(['active', 'suspended']);
@@ -53,7 +53,9 @@ export class PatchAdminInfoResponse extends createZodDto(AdminSchema) {}
 
 const ResetAdminPasswordResponseSchema = z
   .object({
-    temporaryPassword: z.string().describe('Temporary password the admin must change on next login'),
+    temporaryPassword: z
+      .string()
+      .describe('Temporary password the admin must change on next login'),
     expiresAt: z.iso.datetime(),
   })
   .meta({

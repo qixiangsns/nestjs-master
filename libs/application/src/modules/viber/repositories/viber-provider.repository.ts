@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { VIBER_PROVIDER_MODEL, ViberProviderEntity } from '../schemas/viber-provider.schema';
-import { ViberProvider, ViberProviderCode } from '../models/viber-provider.model';
-import { MONGO_CONN_NAME } from '@application/connections';
+import { VIBER_PROVIDER_MODEL, ViberProviderEntity } from '../schemas/viber-provider.schema.js';
+import { ViberProvider, ViberProviderCode } from '../models/viber-provider.model.js';
+import { MONGO_CONN_NAME } from '@application/connections/index.js';
 
 @Injectable()
 export class ViberProviderRepository {
@@ -20,7 +20,10 @@ export class ViberProviderRepository {
     await this.model.insertOne(provider);
   }
 
-  async updateProvider(id: string, provider: Partial<ViberProvider>): Promise<ViberProvider | null> {
+  async updateProvider(
+    id: string,
+    provider: Partial<ViberProvider>,
+  ): Promise<ViberProvider | null> {
     const objId = new Types.ObjectId(id);
     const docBeforeUpdate = await this.model.findOneAndUpdate({ _id: objId }, provider).lean();
     return docBeforeUpdate || null;

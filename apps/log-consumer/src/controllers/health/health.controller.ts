@@ -4,8 +4,12 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, MongooseHealthIndicator } from '@nestjs/terminus';
 import { Redis } from 'ioredis';
 import { Connection } from 'mongoose';
-import { MONGO_CONN_NAME, REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connections';
-import { RedisHealthIndicator } from '@framework/health';
+import {
+  MONGO_CONN_NAME,
+  REDIS_SUBSCRIBER_TOKEN,
+  REDIS_TOKEN,
+} from '@application/connections/index.js';
+import { RedisHealthIndicator } from '@framework/health/index.js';
 
 const CHECK_TIMEOUT_MS = 1000;
 
@@ -26,9 +30,15 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      () => this.mongoose.pingCheck('mongo', { connection: this.mongoConnection }).withTimeout(CHECK_TIMEOUT_MS),
+      () =>
+        this.mongoose
+          .pingCheck('mongo', { connection: this.mongoConnection })
+          .withTimeout(CHECK_TIMEOUT_MS),
       () => this.redis.pingCheck('redis', this.redisClient).withTimeout(CHECK_TIMEOUT_MS),
-      () => this.redis.pingCheck('redis-subscriber', this.redisSubscriber).withTimeout(CHECK_TIMEOUT_MS),
+      () =>
+        this.redis
+          .pingCheck('redis-subscriber', this.redisSubscriber)
+          .withTimeout(CHECK_TIMEOUT_MS),
     ]);
   }
 }

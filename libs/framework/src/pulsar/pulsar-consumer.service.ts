@@ -48,14 +48,11 @@ export abstract class PulsarConsumer<T> implements OnModuleDestroy {
       message.getMessageId().toString(),
     ).catch((err) => {
       if (err instanceof ZodError) {
-        this.logger.error(
-          {
-            err: err.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join(''),
-          },
-          'Invalid event schema',
-        );
+        this.logger.error('Invalid event schema', {
+          err: err.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join(''),
+        });
       } else if (err instanceof Error) {
-        this.logger.error({ err }, 'Error handling message.');
+        this.logger.error('Error handling message.', err);
       } else {
         this.logger.error('Error handling message.');
       }
@@ -68,5 +65,9 @@ export abstract class PulsarConsumer<T> implements OnModuleDestroy {
     }
   }
 
-  protected abstract handleMessage(data: T, ackMessage: () => Promise<null>, messageId: string): Promise<any>;
+  protected abstract handleMessage(
+    data: T,
+    ackMessage: () => Promise<null>,
+    messageId: string,
+  ): Promise<any>;
 }

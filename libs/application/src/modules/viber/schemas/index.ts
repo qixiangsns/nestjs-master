@@ -1,8 +1,8 @@
-import { MONGO_CONN_NAME } from '@application/connections';
+import { MONGO_CONN_NAME } from '@application/connections/index.js';
 import { MongooseModule } from '@nestjs/mongoose';
-import { VIBER_LOG_MODEL, ViberLogSchema } from './viber-log.schema';
-import { VIBER_PROVIDER_MODEL, ViberProviderSchema } from './viber-provider.schema';
-import { VIBER_ROUTE_CONFIG_MODEL, ViberRouteConfigSchema } from './viber-route-config.schema';
+import { VIBER_LOG_MODEL, ViberLogSchema } from './viber-log.schema.js';
+import { VIBER_PROVIDER_MODEL, ViberProviderSchema } from './viber-provider.schema.js';
+import { VIBER_ROUTE_CONFIG_MODEL, ViberRouteConfigSchema } from './viber-route-config.schema.js';
 import {
   VIBER_ACCOUNT_MODEL,
   VIBER_ACCOUNT_API_TOKEN_MODEL,
@@ -12,8 +12,8 @@ import {
   ViberAccountApiKeySecretSchema,
   ViberAccountBearerTokenSchema,
   ViberAccountBaseSchema,
-} from './viber-account.schema';
-import { AccountType } from '../models/viber-account.model';
+} from './viber-account.schema.js';
+import { AccountType } from '../models/viber-account.model.js';
 
 export const MongoSchemaModule = MongooseModule.forFeature(
   [

@@ -1,1 +1,1 @@
-export * from './pagination.schema';
+export * from './pagination.schema.js';

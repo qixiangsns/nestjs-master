@@ -1,7 +1,10 @@
 import { z } from 'zod';
-import { OffsetPaginationQuerySchema, OffsetPaginationSchema } from '@framework/pagination';
-import { ViberProviderCode } from '../models/viber-provider.model';
-import { DeliveryStatus, MessageType, RequestStatus } from '../models/viber-log.model';
+import {
+  OffsetPaginationQuerySchema,
+  OffsetPaginationSchema,
+} from '@framework/pagination/index.js';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
+import { DeliveryStatus, MessageType, RequestStatus } from '../models/viber-log.model.js';
 
 export const GetViberLogListRequestSchema = OffsetPaginationQuerySchema.extend({
   type: z.enum(MessageType).optional(),

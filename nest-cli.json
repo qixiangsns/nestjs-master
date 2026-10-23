@@ -4,21 +4,12 @@
   "sourceRoot": "apps/messaging-api/src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "webpack": true,
+    "builder": "rspack",
     "tsConfigPath": "apps/messaging-api/tsconfig.app.json"
   },
   "monorepo": true,
   "root": "apps/messaging-api",
   "projects": {
-    "messaging-api": {
-      "type": "application",
-      "root": "apps/messaging-api",
-      "entryFile": "main",
-      "sourceRoot": "apps/messaging-api/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/messaging-api/tsconfig.app.json"
-      }
-    },
     "application": {
       "type": "library",
       "root": "libs/application",
@@ -26,6 +17,15 @@
       "sourceRoot": "libs/application/src",
       "compilerOptions": {
         "tsConfigPath": "libs/application/tsconfig.lib.json"
+      }
+    },
+    "backoffice-api": {
+      "type": "application",
+      "root": "apps/backoffice-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/backoffice-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/backoffice-api/tsconfig.app.json"
       }
     },
     "cli": {
@@ -64,13 +64,13 @@
         "tsConfigPath": "apps/log-consumer/tsconfig.app.json"
       }
     },
-    "backoffice-api": {
+    "messaging-api": {
       "type": "application",
-      "root": "apps/backoffice-api",
+      "root": "apps/messaging-api",
       "entryFile": "main",
-      "sourceRoot": "apps/backoffice-api/src",
+      "sourceRoot": "apps/messaging-api/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/backoffice-api/tsconfig.app.json"
+        "tsConfigPath": "apps/messaging-api/tsconfig.app.json"
       }
     },
     "viber-consumer-promotexter": {

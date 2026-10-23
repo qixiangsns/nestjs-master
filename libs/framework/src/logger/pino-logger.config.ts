@@ -1,6 +1,7 @@
 import { Options } from 'pino-http';
 import { PrettyOptions } from 'pino-pretty';
-import { callerMixin, traceMixin, versionMixin } from './mixins';
+import { callerMixin, traceMixin, versionMixin } from './mixins/index.js';
+
 const PRETTY_OPTIONS = {
   levelFirst: false,
   ignore: 'pid,hostname,time,context',

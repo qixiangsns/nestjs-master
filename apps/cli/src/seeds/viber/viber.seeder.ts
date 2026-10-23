@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ViberProviderService } from '@application/modules/viber';
-import { VIBER_PROVIDERS } from './viber-provider.seed';
+import { ViberProviderService } from '@application/modules/viber/index.js';
+import { VIBER_PROVIDERS } from './viber-provider.seed.js';
 
 @Injectable()
 export class ViberSeeder {
@@ -12,6 +12,6 @@ export class ViberSeeder {
     for (const provider of VIBER_PROVIDERS) {
       await this.providerService.saveProvider(provider);
     }
-    this.logger.log({ count: VIBER_PROVIDERS.length }, 'Viber providers seeded');
+    this.logger.log('Viber providers seeded', { count: VIBER_PROVIDERS.length });
   }
 }

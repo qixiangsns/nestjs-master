@@ -1,9 +1,13 @@
-import Redis from 'ioredis';
-import { REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connections';
+import { Redis } from 'ioredis';
+import { REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connections/index.js';
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { AccountDisabledSignal, AccountEnabledSignal, ViberAccountSignal } from './viber-account.signals';
-import { ViberRouteConfigSignal, ViberRouteUpdatedSignal } from './viber-route-config.signals';
+import {
+  AccountDisabledSignal,
+  AccountEnabledSignal,
+  ViberAccountSignal,
+} from './viber-account.signals.js';
+import { ViberRouteConfigSignal, ViberRouteUpdatedSignal } from './viber-route-config.signals.js';
 
 const ViberSignalChannels: string[] = [
   ViberAccountSignal.AccountDisabled,
@@ -27,7 +31,7 @@ export class ViberSignalBroadcaster implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     this.subscriber.on('message', (channel, message) => this.relay(channel, message));
     await this.subscriber.subscribe(...ViberSignalChannels);
-    this.logger.log({ channels: ViberSignalChannels }, 'Subscribed to viber signals');
+    this.logger.log('Subscribed to viber signals', { channels: ViberSignalChannels });
   }
 
   async broadcastAccountEnabled(signal: AccountEnabledSignal): Promise<void> {
@@ -52,7 +56,7 @@ export class ViberSignalBroadcaster implements OnModuleInit, OnModuleDestroy {
       try {
         payload = JSON.parse(message);
       } catch (error: unknown) {
-        this.logger.error({ channel, message, error }, 'Failed to parse viber signal');
+        this.logger.error('Failed to parse viber signal', { channel, message }, error);
         return;
       }
 

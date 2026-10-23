@@ -1,11 +1,23 @@
 import 'zod/compile';
-import '@framework/trace/register';
+import '@framework/trace/register.js';
 import { NestFactory } from '@nestjs/core';
-import { CronModule } from './cron.module';
+import { Logger } from '@nestjs/common';
+import { CronModule } from './cron.module.js';
+import { NativeLogger } from 'nestjs-pino';
 
 async function bootstrap() {
-  const app = await NestFactory.create(CronModule);
+  const app = await NestFactory.create(CronModule, {
+    bufferLogs: true,
+  });
+
   app.enableShutdownHooks();
-  await app.listen(process.env.PORT ?? 3000);
+
+  app.useLogger(app.get(NativeLogger));
+  const logger = new Logger('Server');
+  app.flushLogs();
+
+  app.listen(3000).then(() => {
+    logger.log('Cron service is running');
+  });
 }
 bootstrap();

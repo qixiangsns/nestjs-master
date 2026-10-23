@@ -5,9 +5,9 @@ import {
   VIBER_ROUTE_CONFIG_MODEL,
   ViberRouteConfigEntity,
   RouteAccountVirtualField,
-} from '../schemas/viber-route-config.schema';
-import { VIBER_ACCOUNT_MODEL, ViberAccountBaseEntity } from '../schemas/viber-account.schema';
-import { MONGO_CONN_NAME } from '@application/connections';
+} from '../schemas/viber-route-config.schema.js';
+import { VIBER_ACCOUNT_MODEL, ViberAccountBaseEntity } from '../schemas/viber-account.schema.js';
+import { MONGO_CONN_NAME } from '@application/connections/index.js';
 import {
   RoutableViberRouteConfig,
   RouteAccountRoutable,
@@ -15,7 +15,7 @@ import {
   RouteType,
   ViberRouteConfig,
   ViberRouteConfigView,
-} from '../models/viber-route-config.model';
+} from '../models/viber-route-config.model.js';
 import { Except } from 'type-fest';
 
 @Injectable()
@@ -61,7 +61,10 @@ export class ViberRouteConfigRepository {
     return isEnabled;
   }
 
-  async findRoutableConfig(routeType: RouteType, platformId: string): Promise<RoutableViberRouteConfig | null> {
+  async findRoutableConfig(
+    routeType: RouteType,
+    platformId: string,
+  ): Promise<RoutableViberRouteConfig | null> {
     const config = await this.configModel
       .findOne({
         platformId,
@@ -69,7 +72,10 @@ export class ViberRouteConfigRepository {
       })
       .populate<{
         accounts: RouteAccountRoutable[];
-      }>(`accounts.${RouteAccountVirtualField.AccountDetails}`, '-_id -__v -createdAt -updatedAt -name')
+      }>(
+        `accounts.${RouteAccountVirtualField.AccountDetails}`,
+        '-_id -__v -createdAt -updatedAt -name',
+      )
       .lean();
 
     if (!config) return null;

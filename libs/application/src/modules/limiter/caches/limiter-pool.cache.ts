@@ -1,9 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import pLimit from 'p-limit';
-import { LimiterPoolRepository } from '../repositories/limiter-pool.repository';
-import { LimiterPool } from '../models/limiter-pool.model';
-import { LimiterPoolSignal, type LimiterPoolUpdatedSignal } from '../signals/limiter-pool.signals';
+import { LimiterPoolRepository } from '../repositories/limiter-pool.repository.js';
+import { LimiterPool } from '../models/limiter-pool.model.js';
+import {
+  LimiterPoolSignal,
+  type LimiterPoolUpdatedSignal,
+} from '../signals/limiter-pool.signals.js';
 
 @Injectable()
 /**
@@ -22,7 +25,7 @@ export class LimiterPoolCache {
       try {
         await this.refresh(signal.poolId);
       } catch (error: unknown) {
-        this.logger.error({ error, signal }, 'Failed to refresh limiter pool');
+        this.logger.error('Failed to refresh limiter pool', { signal }, error);
       }
     });
   }

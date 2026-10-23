@@ -1,3 +1,4 @@
-export * from './clickhouse.module';
 export * from '@clickhouse/client';
-export * from './query.util';
+export * from './clickhouse.module.js';
+export * from './clickhouse.module.v2.js';
+export * from './query.util.js';

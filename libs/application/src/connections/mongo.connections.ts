@@ -1,8 +1,8 @@
 import { MongooseModule } from '@nestjs/mongoose';
-import { Secret, SECRET_TOKEN } from '../config';
+import { Secret, SECRET_TOKEN } from '../config/index.js';
 
 export const MONGO_CONN_NAME = {
-  PRIMARY: 'PRIMARY',
+  PRIMARY: 'MONGO_CONN',
 } as const;
 
 export const MongoDbConnection = () =>

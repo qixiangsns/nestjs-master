@@ -36,22 +36,26 @@ export function TracePublish(options: TracePublishOptions): MethodDecorator {
     const spanName = name ?? `${target.constructor.name}.${String(propertyKey)}`;
 
     const wrapped = async function (this: unknown, ...args: unknown[]) {
-      return await tracer.startActiveSpan(spanName, { kind: SpanKind.PRODUCER }, async (span: Span) => {
-        try {
-          const result = await originalMethod.apply(this, args);
-          span.setStatus({ code: SpanStatusCode.OK });
-          return result;
-        } catch (err) {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: err instanceof Error ? err.message : String(err),
-          });
-          span.recordException(err as Error);
-          throw err;
-        } finally {
-          span.end();
-        }
-      });
+      return await tracer.startActiveSpan(
+        spanName,
+        { kind: SpanKind.PRODUCER },
+        async (span: Span) => {
+          try {
+            const result = await originalMethod.apply(this, args);
+            span.setStatus({ code: SpanStatusCode.OK });
+            return result;
+          } catch (err) {
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: err instanceof Error ? err.message : String(err),
+            });
+            span.recordException(err as Error);
+            throw err;
+          } finally {
+            span.end();
+          }
+        },
+      );
     };
 
     // Preserve metadata set by decorators applied before this one (e.g. Nest's SetMetadata).

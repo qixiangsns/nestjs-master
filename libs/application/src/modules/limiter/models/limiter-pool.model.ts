@@ -1,4 +1,4 @@
-import { LimiterRule } from './limiter.model';
+import { LimiterRule } from './limiter.model.js';
 
 /**
  * A shared limit pool, eg: one Promotexter credential used by both Viber and SMS accounts

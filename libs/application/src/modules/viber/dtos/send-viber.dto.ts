@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { ViberContentType } from '../models/viber-message.model';
+import { ViberContentType } from '../models/viber-message.model.js';
 
 export const SendViberResponseSchema = z.object({
   messageId: z.string().trim(),
@@ -22,7 +22,9 @@ export const SendViberNotifSchema = z.object({
   platformId: z.string().trim(),
   playerId: z.string().trim(),
   templateId: z.string().trim(),
-  templateParams: z.object().describe('Example: { "amount": "10000.43", "date": "2026/04/01 12:00am" }'),
+  templateParams: z
+    .object()
+    .describe('Example: { "amount": "10000.43", "date": "2026/04/01 12:00am" }'),
 });
 
 export type SendViberNotif = z.output<typeof SendViberNotifSchema>;

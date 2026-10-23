@@ -1,6 +1,5 @@
 import { HttpStatusCode } from 'axios';
 
-export type HttpStatusCode = (typeof HttpStatusCode)[keyof typeof HttpStatusCode];
 export class PldtError extends Error {
   public readonly errorCode: string;
   public readonly statusCode: HttpStatusCode;

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ViberConsumerPromotexterService } from './viber-consumer-promotexter.service';
+import { ViberConsumerPromotexterService } from './viber-consumer-promotexter.service.js';
 import { ApplicationModule } from '@application';
-import { SecretsModule } from '@framework/secret';
-import { CONSUMER_ENV_TOKEN, ConsumerEnvSchema } from './env';
-import { HealthModule } from '@framework/health';
-import { HealthController } from './controllers/health/health.controller';
+import { SecretsModule } from '@framework/secret/index.js';
+import { CONSUMER_ENV_TOKEN, ConsumerEnvSchema } from './env.js';
+import { HealthModule } from '@framework/health/index.js';
+import { HealthController } from './controllers/health/health.controller.js';
 
 @Module({
   imports: [

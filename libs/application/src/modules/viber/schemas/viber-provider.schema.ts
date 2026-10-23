@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { ViberProviderCode } from '../models/viber-provider.model';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
 
 export const VIBER_PROVIDER_MODEL = 'ViberProvider';
 

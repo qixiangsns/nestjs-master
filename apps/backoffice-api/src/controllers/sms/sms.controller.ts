@@ -1,6 +1,6 @@
 import { Body, Controller, HttpStatus, Injectable, Post } from '@nestjs/common';
-import { ApiErrorResponse } from '@framework/swagger';
-import { SmsLogRequest, SmsLogResponse, SmsProviderResponse } from './sms.dto';
+import { ApiErrorResponse } from '@framework/openapi/index.js';
+import { SmsLogRequest, SmsLogResponse, SmsProviderResponse } from './sms.dto.js';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
 

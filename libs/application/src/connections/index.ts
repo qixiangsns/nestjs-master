@@ -1,3 +1,3 @@
-export * from './redis.connections';
-export * from './mongo.connections';
-export * from './pulsar.connections';
+export * from './redis.connections.js';
+export * from './mongo.connections.js';
+export * from './pulsar.connections.js';

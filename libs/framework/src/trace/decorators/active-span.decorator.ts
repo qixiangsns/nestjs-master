@@ -15,7 +15,12 @@ export function ActiveSpan(): ParameterDecorator {
   return (target, propertyKey, parameterIndex) => {
     const existing: number[] = Reflect.getMetadata(SPAN_PARAM_METADATA, target, propertyKey!) ?? [];
 
-    Reflect.defineMetadata(SPAN_PARAM_METADATA, [...existing, parameterIndex], target, propertyKey!);
+    Reflect.defineMetadata(
+      SPAN_PARAM_METADATA,
+      [...existing, parameterIndex],
+      target,
+      propertyKey!,
+    );
   };
 }
 

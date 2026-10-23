@@ -1,7 +1,6 @@
-import { InfobipErrorId } from './infobip.constant';
+import { InfobipErrorId } from './infobip.constant.js';
 import { HttpStatusCode } from 'axios';
 
-export type HttpStatusCode = (typeof HttpStatusCode)[keyof typeof HttpStatusCode];
 export class InfobipError extends Error {
   public readonly errorId: InfobipErrorId;
   public readonly statusCode: HttpStatusCode;

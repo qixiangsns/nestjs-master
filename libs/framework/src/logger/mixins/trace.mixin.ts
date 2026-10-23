@@ -2,12 +2,11 @@ import { trace } from '@opentelemetry/api';
 
 export function traceMixin() {
   const activeSpan = trace.getActiveSpan();
+
+  if (!activeSpan) return {};
+
   return {
-    ...(activeSpan
-      ? {
-          trace_id: activeSpan.spanContext().traceId,
-          span_id: activeSpan.spanContext().spanId,
-        }
-      : {}),
+    trace_id: activeSpan.spanContext().traceId,
+    span_id: activeSpan.spanContext().spanId,
   };
 }

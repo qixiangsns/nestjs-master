@@ -1,12 +1,12 @@
 import 'zod/compile';
-import '@framework/trace/register';
+import '@framework/trace/register.js';
 import { NestFactory } from '@nestjs/core';
 import { Logger, VersioningType, INestApplication } from '@nestjs/common';
-import { Logger as PinoLogger } from 'nestjs-pino';
-import { ApiModule } from './messaging-api.module';
-import { API_ENV_TOKEN, ApiEnv } from './config';
-import { DEFAULT_OPTIONS } from '@framework/scalar';
-import { buildOpenApiDocument } from './openapi';
+import { NativeLogger } from 'nestjs-pino';
+import { ApiModule } from './messaging-api.module.js';
+import { API_ENV_TOKEN, ApiEnv } from './config/index.js';
+import { DEFAULT_OPTIONS } from '@framework/scalar/index.js';
+import { buildOpenApiDocument } from './openapi/index.js';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { createMarkdownFromOpenApi } from '@scalar/openapi-to-markdown';
 import { Request, Response } from 'express';
@@ -19,7 +19,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   // Logging
-  app.useLogger(app.get(PinoLogger));
+  app.useLogger(app.get(NativeLogger));
   const logger = new Logger('Server');
   app.flushLogs();
 
@@ -28,9 +28,9 @@ async function bootstrap() {
   await setupApiDocumentation(app);
 
   app.listen(env.PORT).then(() => {
-    logger.log({ url: `http://localhost:${env.PORT}` }, `Server is running`);
-    logger.log({ url: `http://localhost:${env.PORT}/api` }, 'API documentation is hosted');
-    logger.log({ url: `http://localhost:${env.PORT}/llms.txt` }, 'LLM Text is hosted');
+    logger.log(`Server is running`, { url: `http://localhost:${env.PORT}` });
+    logger.log('API documentation is hosted', { url: `http://localhost:${env.PORT}/api` });
+    logger.log('LLM Text is hosted', { url: `http://localhost:${env.PORT}/llms.txt` });
   });
 }
 

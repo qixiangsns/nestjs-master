@@ -1,4 +1,4 @@
-import { RoutableViberRouteConfig } from '../models/viber-route-config.model';
+import { RoutableViberRouteConfig } from '../models/viber-route-config.model.js';
 
 export const ViberRouteConfigSignal = {
   RouteUpdated: 'viber.config.updated',

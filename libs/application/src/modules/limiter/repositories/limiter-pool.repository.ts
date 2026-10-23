@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model, Types } from 'mongoose';
 import { Except } from 'type-fest';
-import { MONGO_CONN_NAME } from '@application/connections';
-import { LIMITER_POOL_MODEL, LimiterPoolEntity } from '../schemas/limiter-pool.schema';
-import { LimiterPool } from '../models/limiter-pool.model';
+import { MONGO_CONN_NAME } from '@application/connections/index.js';
+import { LIMITER_POOL_MODEL, LimiterPoolEntity } from '../schemas/limiter-pool.schema.js';
+import { LimiterPool } from '../models/limiter-pool.model.js';
 
 @Injectable()
 export class LimiterPoolRepository {
@@ -33,7 +33,10 @@ export class LimiterPoolRepository {
     await this.model.create(pool);
   }
 
-  async updatePool(id: string, pool: Partial<Except<LimiterPool, 'id' | 'createdAt' | 'updatedAt'>>) {
+  async updatePool(
+    id: string,
+    pool: Partial<Except<LimiterPool, 'id' | 'createdAt' | 'updatedAt'>>,
+  ) {
     await this.model.updateOne({ _id: new Types.ObjectId(id) }, pool);
   }
 

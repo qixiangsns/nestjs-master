@@ -1,17 +1,17 @@
-import { PulsarModule } from '@framework/pulsar';
-import { AuthenticationToken } from 'pulsar-client';
-import { Secret, SECRET_TOKEN } from '../config';
+import { PulsarModuleV2 } from '@framework/pulsar/index.js';
+import Pulsar from 'pulsar-client';
+import { Secret, SECRET_TOKEN } from '../config/index.js';
 
 export const PULSAR_CONN_TOKEN = {
-  PRIMARY: Symbol('PRIMARY'),
+  PRIMARY: Symbol('PULSAR_CONN'),
 };
 
 export const PulsarConnection = () =>
-  PulsarModule.forRootAsync({
+  PulsarModuleV2.forRootAsync({
     provide: PULSAR_CONN_TOKEN.PRIMARY,
     useFactory: (secret: Secret) => ({
       serviceUrl: secret.PULSAR_URL,
-      authentication: new AuthenticationToken({ token: secret.PULSAR_TOKEN }),
+      authentication: new Pulsar.AuthenticationToken({ token: secret.PULSAR_TOKEN }),
     }),
     inject: [SECRET_TOKEN],
   });

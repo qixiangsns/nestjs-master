@@ -43,5 +43,9 @@ const SendNotificationEmailResponseSchema = z.object({
   messageId: z.string(),
 });
 
-export class SendNotificationEmailRequest extends createZodDto(SendNotificationEmailRequestSchema) {}
-export class SendNotificationEmailResponse extends createZodDto(SendNotificationEmailResponseSchema) {}
+export class SendNotificationEmailRequest extends createZodDto(
+  SendNotificationEmailRequestSchema,
+) {}
+export class SendNotificationEmailResponse extends createZodDto(
+  SendNotificationEmailResponseSchema,
+) {}

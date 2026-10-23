@@ -1,4 +1,4 @@
-import { SemaphoreMessagePath } from './semaphore.constant';
+import { SemaphoreMessagePath } from './semaphore.constant.js';
 
 export type ClientOptions = {
   baseUrl: string;

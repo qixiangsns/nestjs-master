@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-import { SmsController } from './controllers/sms/sms.controller';
-import { AuthController } from './controllers/auth/auth.controller';
-import { EmailController } from './controllers/email/email.controller';
-import { AdminsController } from './controllers/admins/admins.controller';
-import { ViberController } from './controllers/viber/viber.controller';
-import { LimiterController } from './controllers/limiter/limiter.controller';
-import { SecretsModule } from '@framework/secret';
-import { ENV_TOKEN, EnvSchema } from './env';
+import { SmsController } from './controllers/sms/sms.controller.js';
+import { AuthController } from './controllers/auth/auth.controller.js';
+import { EmailController } from './controllers/email/email.controller.js';
+import { AdminsController } from './controllers/admins/admins.controller.js';
+import { ViberController } from './controllers/viber/viber.controller.js';
+import { LimiterController } from './controllers/limiter/limiter.controller.js';
+import { SecretsModule } from '@framework/secret/index.js';
+import { ENV_TOKEN, EnvSchema } from './env.js';
 import { ApplicationModule } from '@application';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { HealthModule } from '@framework/health';
-import { HealthController } from './controllers/health/health.controller';
+import { HealthModule } from '@framework/health/index.js';
+import { HealthController } from './controllers/health/health.controller.js';
 
 @Module({
   imports: [

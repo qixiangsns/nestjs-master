@@ -1,9 +1,18 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository';
-import { ViberAccountRepository } from '../repositories/viber-account.repository';
-import { ViberAccountService } from './viber-account.service';
-import { ViberSignalBroadcaster } from '../signals/viber-signal.broadcaster';
-import { CreateViberRouteConfig, GetViberRouteConfigRequest, PatchViberRouteConfig } from '../dtos/viber-config.dto';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { ViberRouteConfigRepository } from '../repositories/viber-route-config.repository.js';
+import { ViberAccountRepository } from '../repositories/viber-account.repository.js';
+import { ViberAccountService } from './viber-account.service.js';
+import { ViberSignalBroadcaster } from '../signals/viber-signal.broadcaster.js';
+import {
+  CreateViberRouteConfig,
+  GetViberRouteConfigRequest,
+  PatchViberRouteConfig,
+} from '../dtos/viber-config.dto.js';
 
 @Injectable()
 export class ViberRouteConfigService {
@@ -28,7 +37,9 @@ export class ViberRouteConfigService {
     const existing = await this.routeConfigRepo.findConfig(config.type, config.platformId);
 
     if (existing) {
-      throw new ConflictException(`Route config for ${config.platformId} ${config.type} already exists`);
+      throw new ConflictException(
+        `Route config for ${config.platformId} ${config.type} already exists`,
+      );
     }
 
     await this.validateAccounts(

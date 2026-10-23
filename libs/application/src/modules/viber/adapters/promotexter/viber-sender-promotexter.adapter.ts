@@ -1,13 +1,16 @@
-import { PromotexterApi, SendViberRichMsgRequest } from '@application/integrations/promotexter';
-import { ViberSender } from '../../ports/viber-sender.port';
+import {
+  PromotexterApiClient,
+  SendViberRichMsgRequest,
+} from '@application/integrations/promotexter/index.js';
+import { ViberSender } from '../../ports/viber-sender.port.js';
 import {
   SendViberResult,
   ViberContentRequest,
   ViberOtpRequest,
   ViberTemplateRequest,
-} from '../../models/viber-message.model';
+} from '../../models/viber-message.model.js';
 export class ViberSenderPromotexter implements ViberSender {
-  constructor(private readonly api: PromotexterApi) {}
+  constructor(private readonly api: PromotexterApiClient) {}
 
   async sendOtp(message: ViberOtpRequest): Promise<SendViberResult> {
     const result = await this.api.sendViberOtp({
@@ -58,7 +61,9 @@ export class ViberSenderPromotexter implements ViberSender {
   /**
    * Map platform content components to Promotexter rich message fields
    */
-  private toRichContent(content: ViberContentRequest['templateContent']): Partial<SendViberRichMsgRequest> {
+  private toRichContent(
+    content: ViberContentRequest['templateContent'],
+  ): Partial<SendViberRichMsgRequest> {
     switch (content.contentType) {
       case 'TextOnly':
         return { text: content.text };

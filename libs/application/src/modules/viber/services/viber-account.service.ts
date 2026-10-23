@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ViberAccountRepository } from '../repositories/viber-account.repository';
-import { ViberProviderService } from './viber-provider.service';
-import { ViberProviderCode } from '../models/viber-provider.model';
-import { ProviderTransportMethod, ViberAccount } from '../models/viber-account.model';
-import { CreateViberAccount, PatchViberAccount } from '../dtos/viber-account.dto';
-import { LimiterPoolService } from '@application/modules/limiter';
+import { ViberAccountRepository } from '../repositories/viber-account.repository.js';
+import { ViberProviderService } from './viber-provider.service.js';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
+import { ProviderTransportMethod, ViberAccount } from '../models/viber-account.model.js';
+import { CreateViberAccount, PatchViberAccount } from '../dtos/viber-account.dto.js';
+import { LimiterPoolService } from '@application/modules/limiter/index.js';
 
 @Injectable()
 export class ViberAccountService {
@@ -32,7 +32,9 @@ export class ViberAccountService {
 
   async addAccount({ credentials, ...account }: CreateViberAccount) {
     if (!ProviderTransportMethod[account.providerCode].includes(credentials.type)) {
-      throw new BadRequestException(`${account.providerCode} does not support ${credentials.type} accounts`);
+      throw new BadRequestException(
+        `${account.providerCode} does not support ${credentials.type} accounts`,
+      );
     }
 
     await this.validateProviderUrl(account.providerCode, account.url);

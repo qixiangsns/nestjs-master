@@ -1,12 +1,12 @@
-import { PlayerGrpcService } from '@application/integrations/player-grpc';
-import { ExternalSmsMissionApi } from '@application/integrations/external-sms-mission';
+import { FpmsPlayerGrpcClient } from '@application/integrations/fpms-player-grpc/index.js';
+import { ExternalSmsMissionClient } from '@application/integrations/external-sms-mission/index.js';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PlayerService {
   constructor(
-    private readonly externalSmsMission: ExternalSmsMissionApi,
-    private readonly playerGrpcService: PlayerGrpcService,
+    private readonly externalSmsMission: ExternalSmsMissionClient,
+    private readonly playerGrpcService: FpmsPlayerGrpcClient,
   ) {}
 
   async getPhoneNumber(playerId: string): Promise<string | null> {

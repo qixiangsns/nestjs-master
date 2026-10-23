@@ -15,7 +15,6 @@ export function callerMixin(stackTrace?: string) {
     filePath = `${process.cwd()}/${fileRelativePath}`;
   }
 
-  return {
-    ...(filePath ? { logged_by: filePath } : {}),
-  };
+  if (filePath) return { logged_by: filePath };
+  return {};
 }

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { ViberSender } from '../../ports/viber-sender.port';
-import { SendViberResult } from '../../models/viber-message.model';
+import { ViberSender } from '../../ports/viber-sender.port.js';
+import { SendViberResult } from '../../models/viber-message.model.js';
 
 /**
  * Fake Viber provider for local end-to-end testing, every send succeeds without calling a real provider

@@ -1,5 +1,5 @@
-import { ViberAccount, ViberAccountBase } from './viber-account.model';
-import { MessageType } from './viber-log.model';
+import { ViberAccount, ViberAccountBase } from './viber-account.model.js';
+import { MessageType } from './viber-log.model.js';
 import { Except } from 'type-fest';
 
 export type RouteType = MessageType;
@@ -14,7 +14,10 @@ export interface RouteAccount {
   weight: number;
 }
 
-export type AccountDetailsRoutable = Except<ViberAccount, 'id' | 'name' | 'createdAt' | 'updatedAt'>;
+export type AccountDetailsRoutable = Except<
+  ViberAccount,
+  'id' | 'name' | 'createdAt' | 'updatedAt'
+>;
 export type AccountDetailsView = Except<ViberAccountBase, 'id'>;
 
 /**

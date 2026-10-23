@@ -6,7 +6,7 @@ import {
   type AccountEnabledSignal,
   type ViberProviderCode,
   type ViberWorkerManager,
-} from '@application/modules/viber';
+} from '@application/modules/viber/index.js';
 import { Injectable, Logger, OnModuleInit, OnApplicationShutdown } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import pLimit from 'p-limit';
@@ -65,6 +65,9 @@ export class ViberConsumerPromotexterService implements OnModuleInit, OnApplicat
   async onApplicationShutdown(signal?: string) {
     this.logger.log({ receivedAt: new Date(), signal }, 'Received shutdown signal at');
     await this.manager.stopConsumers();
-    this.logger.log({ finishedAt: new Date() }, 'Finished processing and disconnected from consumers');
+    this.logger.log(
+      { finishedAt: new Date() },
+      'Finished processing and disconnected from consumers',
+    );
   }
 }

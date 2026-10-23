@@ -47,10 +47,14 @@ export abstract class PulsarProducerService implements OnModuleDestroy, OnModule
     }
   }
 
-  protected async produce(topic: string, message: unknown, properties?: ProducerMessage['properties']) {
+  protected async produce(
+    topic: string,
+    message: unknown,
+    properties?: ProducerMessage['properties'],
+  ) {
     const producer = this.producers.get(topic) || (await this.createProducer(topic));
 
-    this.logger.log({ message, topic }, 'Producing message');
+    this.logger.log('Producing message', { message, topic });
     await producer.send({
       data: Buffer.from(JSON.stringify(message)),
       properties,

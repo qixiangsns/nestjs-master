@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { REDIS_TOKEN } from '@application/connections';
+import { REDIS_TOKEN } from '@application/connections/index.js';
 import { Redis } from 'ioredis';
 
 const DEFAULT_TTL_SECONDS = 60 * 60;

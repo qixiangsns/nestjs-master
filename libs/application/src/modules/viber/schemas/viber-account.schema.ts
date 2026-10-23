@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { LIMITER_POOL_MODEL } from '@application/modules/limiter';
-import { ViberProviderCode } from '../models/viber-provider.model';
-import { AccountType } from '../models/viber-account.model';
+import { LIMITER_POOL_MODEL } from '@application/modules/limiter/index.js';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
+import { AccountType } from '../models/viber-account.model.js';
 
 export const VIBER_ACCOUNT_MODEL = 'ViberAccountBase';
 export const VIBER_ACCOUNT_API_TOKEN_MODEL = 'ViberAccountApiToken';
@@ -77,7 +77,9 @@ export class ViberAccountApiKeySecretEntity implements ViberAccountBaseEntity {
   updatedAt: Date;
 }
 
-export const ViberAccountApiKeySecretSchema = SchemaFactory.createForClass(ViberAccountApiKeySecretEntity);
+export const ViberAccountApiKeySecretSchema = SchemaFactory.createForClass(
+  ViberAccountApiKeySecretEntity,
+);
 
 @Schema()
 export class ViberAccountBearerTokenEntity implements ViberAccountBaseEntity {
@@ -99,7 +101,9 @@ export class ViberAccountBearerTokenEntity implements ViberAccountBaseEntity {
   updatedAt: Date;
 }
 
-export const ViberAccountBearerTokenSchema = SchemaFactory.createForClass(ViberAccountBearerTokenEntity);
+export const ViberAccountBearerTokenSchema = SchemaFactory.createForClass(
+  ViberAccountBearerTokenEntity,
+);
 
 export type ViberAccountEntity =
   ViberAccountApiKeySecretEntity | ViberAccountApiTokenEntity | ViberAccountBearerTokenEntity;

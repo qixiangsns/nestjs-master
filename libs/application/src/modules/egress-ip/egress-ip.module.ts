@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { EgressIpService } from './services/egress-ip.service';
+import { EgressIpService } from './services/egress-ip.service.js';
 
 @Module({
   providers: [EgressIpService],

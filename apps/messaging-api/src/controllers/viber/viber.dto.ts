@@ -4,7 +4,7 @@ import {
   SendViberNotifSchema,
   SendViberOtpSchema,
   SendViberResponseSchema,
-} from '@application/modules/viber';
+} from '@application/modules/viber/index.js';
 
 export class SendViberOtpDto extends createZodDto(SendViberOtpSchema) {}
 export class SendViberNotifDto extends createZodDto(SendViberNotifSchema) {}

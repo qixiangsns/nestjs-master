@@ -5,6 +5,6 @@
  * @example
  * import '@framework/trace/register';
  */
-import { startTracing } from './setup/setup.trace';
+import { startTracing } from './setup/setup.trace.js';
 
 startTracing();

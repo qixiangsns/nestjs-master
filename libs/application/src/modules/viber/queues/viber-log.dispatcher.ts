@@ -1,8 +1,13 @@
-import { PulsarProducerService, Client } from '@framework/pulsar';
+import { PulsarProducerService } from '@framework/pulsar/index.js';
+import Pulsar from 'pulsar-client';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { PULSAR_CONN_TOKEN } from '@application/connections';
-import { type ViberDeliveryUpdatedQueue, type ViberLogCreatedQueue, ViberLogTopic } from './viber-log.queues';
-import { getTraceHeaders, TracePublish } from '@framework/trace';
+import { PULSAR_CONN_TOKEN } from '@application/connections/index.js';
+import {
+  type ViberDeliveryUpdatedQueue,
+  type ViberLogCreatedQueue,
+  ViberLogTopic,
+} from './viber-log.queues.js';
+import { getTraceHeaders, TracePublish } from '@framework/trace/index.js';
 import { trace } from '@opentelemetry/api';
 
 const tracer = trace.getTracer('viber-log-dispatcher');
@@ -14,7 +19,7 @@ const tracer = trace.getTracer('viber-log-dispatcher');
 export class ViberLogDispatcher extends PulsarProducerService {
   protected logger = new Logger(ViberLogDispatcher.name);
 
-  constructor(@Inject(PULSAR_CONN_TOKEN.PRIMARY) client: Client) {
+  constructor(@Inject(PULSAR_CONN_TOKEN.PRIMARY) client: Pulsar.Client) {
     super(client, {
       producerConfig: {
         batchingEnabled: true,

@@ -1,4 +1,4 @@
-import { InfobipErrorId, InfobipStatusGroup } from './infobip.constant';
+import { InfobipErrorId, InfobipStatusGroup } from './infobip.constant.js';
 
 export type ClientOptions = {
   /**

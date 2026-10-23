@@ -1,4 +1,5 @@
-import { maskPassword as maskDataPassword, maskEmail2, maskPhone, maskStringV2 } from 'maskdata';
+import Maskdata from 'maskdata';
+const { maskPassword: maskDataPassword, maskEmail2, maskPhone, maskStringV2 } = Maskdata;
 
 /**
  * Mask an API token, key or secret for logs and admin responses, keeping only the last 4 characters

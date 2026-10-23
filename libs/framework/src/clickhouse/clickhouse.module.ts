@@ -8,11 +8,13 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ClickHouseClient, createClient } from '@clickhouse/client';
-import { NodeClickHouseClientConfigOptions } from '@clickhouse/client/dist/config';
+import { NodeClickHouseClientConfigOptions } from '@clickhouse/client/dist/config.js';
 
 interface ClickhouseModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   provide: symbol | string;
-  useFactory?: (...args: unknown[]) => Promise<NodeClickHouseClientConfigOptions> | NodeClickHouseClientConfigOptions;
+  useFactory?: (
+    ...args: unknown[]
+  ) => Promise<NodeClickHouseClientConfigOptions> | NodeClickHouseClientConfigOptions;
   inject?: (InjectionToken | OptionalFactoryDependency)[];
 }
 
@@ -26,21 +28,22 @@ export class ClickhouseModule {
         const connectionOptions = await options.useFactory?.(...args);
         const client = createClient(connectionOptions);
 
-        logger.debug({ url: connectionOptions?.url }, `Connecting to Clickhouse ${options.provide.toString()}`);
+        logger.debug(`Connecting to Clickhouse ${options.provide.toString()}`, {
+          url: connectionOptions?.url,
+        });
 
         client
           .ping()
           .then(() => {
-            logger.log({ url: connectionOptions?.url }, `Connected to Clickhouse ${options.provide.toString()}`);
+            logger.log(`Connected to Clickhouse ${options.provide.toString()}`, {
+              url: connectionOptions?.url,
+            });
           })
           .catch((error) => {
-            logger.error(
-              {
-                url: connectionOptions?.url,
-                error: error instanceof Error ? error.message : 'Unknown error',
-              },
-              `Error connecting to Clickhouse`,
-            );
+            logger.error(`Error connecting to Clickhouse`, {
+              url: connectionOptions?.url,
+              error: error instanceof Error ? error.message : 'Unknown error',
+            });
           });
 
         return client;

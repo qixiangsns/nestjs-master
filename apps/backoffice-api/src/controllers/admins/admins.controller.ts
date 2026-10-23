@@ -1,5 +1,15 @@
-import { Body, Controller, Get, HttpStatus, Injectable, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiErrorResponse } from '@framework/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Injectable,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ApiErrorResponse } from '@framework/openapi/index.js';
 import {
   GetAdminListRequest,
   GetAdminListResponse,
@@ -10,7 +20,7 @@ import {
   ResetAdminTfaResponse,
   UpdateAdminStatusRequest,
   UpdateAdminStatusResponse,
-} from './admins.dto';
+} from './admins.dto.js';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
 

@@ -1,6 +1,16 @@
-import { Body, Controller, Get, HttpStatus, Injectable, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Injectable,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { IsObjectIdPipe } from '@nestjs/mongoose';
-import { ApiErrorResponse } from '@framework/swagger';
+import { ApiErrorResponse } from '@framework/openapi/index.js';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
 import {
@@ -8,7 +18,7 @@ import {
   ViberLogService,
   ViberProviderService,
   ViberRouteConfigService,
-} from '@application/modules/viber';
+} from '@application/modules/viber/index.js';
 import {
   CreateViberAccountRequest,
   CreateViberRouteConfigRequest,
@@ -20,7 +30,7 @@ import {
   GetViberRouteConfigResponse,
   PatchViberAccountRequest,
   PatchViberRouteConfigRequest,
-} from './viber.dto';
+} from './viber.dto.js';
 
 @Injectable()
 @Controller({ version: '1', path: 'viber' })
@@ -84,7 +94,8 @@ export class ViberController {
   @Get('logs')
   @ApiOperation({
     summary: 'Get viber log list',
-    description: 'Retrieve viber message logs within a time range, newest first. Message content is not returned.',
+    description:
+      'Retrieve viber message logs within a time range, newest first. Message content is not returned.',
   })
   @ZodResponse({ type: GetViberLogListResponse, status: HttpStatus.OK })
   async getViberLogList(@Query() query: GetViberLogListRequest): Promise<GetViberLogListResponse> {
@@ -103,10 +114,13 @@ export class ViberController {
   @Get('route-config')
   @ApiOperation({
     summary: 'Get viber route config',
-    description: 'Retrieve the route config of a platform and route type. Account credentials are never returned.',
+    description:
+      'Retrieve the route config of a platform and route type. Account credentials are never returned.',
   })
   @ZodResponse({ type: GetViberRouteConfigResponse, status: HttpStatus.OK })
-  async getViberRouteConfig(@Query() query: GetViberRouteConfigRequest): Promise<GetViberRouteConfigResponse> {
+  async getViberRouteConfig(
+    @Query() query: GetViberRouteConfigRequest,
+  ): Promise<GetViberRouteConfigResponse> {
     return this.viberRouteConfigService.getConfig(query);
   }
 

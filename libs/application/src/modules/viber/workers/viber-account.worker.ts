@@ -1,18 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import pLimit, { LimitFunction } from 'p-limit';
-import { RouteType } from '../models/viber-route-config.model';
+import { RouteType } from '../models/viber-route-config.model.js';
 import { Client, Consumer, Message } from 'pulsar-client';
-import { Pacer } from '@framework/utils';
-import { ViberProviderCode } from '../models/viber-provider.model';
-import { type ViberAccountSender } from '../models/viber-account.model';
-import { ViberLogDispatcher } from '../queues/viber-log.dispatcher';
-import { type ViberSender } from '../ports/viber-sender.port';
+import { Pacer } from '@framework/utils/index.js';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
+import { type ViberAccountSender } from '../models/viber-account.model.js';
+import { ViberLogDispatcher } from '../queues/viber-log.dispatcher.js';
+import { type ViberSender } from '../ports/viber-sender.port.js';
 import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
-import { getViberRouteTopic, ViberRequestSchema } from '../queues/viber-message.queues';
+import { getViberRouteTopic, ViberRequestSchema } from '../queues/viber-message.queues.js';
 import waitFor, { TimeoutError } from 'p-wait-for';
-import { SendViberResult } from '../models/viber-message.model';
-import { LimiterService } from '@application/modules/limiter';
-import { TraceConsumer } from '@framework/trace';
+import { SendViberResult } from '../models/viber-message.model.js';
+import { LimiterService } from '@application/modules/limiter/index.js';
+import { TraceConsumer } from '@framework/trace/index.js';
 import { trace } from '@opentelemetry/api';
 
 const tracer = trace.getTracer('viber-account-worker');
@@ -69,7 +69,8 @@ export class ViberAccountWorker {
       if (remainingMs < 0) break;
 
       try {
-        const received = this.takeBufferedMessage() ?? (await this.receive(priority, peekTimeoutMs));
+        const received =
+          this.takeBufferedMessage() ?? (await this.receive(priority, peekTimeoutMs));
         if (!received) continue;
 
         const { allowed, retryAfterMs } = await this.limiter.acquire(this.account.limiterPoolId);
@@ -179,7 +180,9 @@ export class ViberAccountWorker {
           if (!isRateLimited) this.pacer.rampUp();
 
           // Prepare sending
-          const tasks = batchMessages.map((message) => this.concurrency(() => this.sendMessage(message)));
+          const tasks = batchMessages.map((message) =>
+            this.concurrency(() => this.sendMessage(message)),
+          );
 
           // Send message concurrently
           const results = await Promise.allSettled(tasks);
@@ -187,7 +190,10 @@ export class ViberAccountWorker {
           // Log sending result
           const successResult = results.filter((res) => res.status === 'fulfilled');
           const errorResult = results.filter((res) => res.status === 'rejected');
-          this.logger.log({ success: successResult.length, error: errorResult.length }, 'Send message results');
+          this.logger.log('Send message results', {
+            success: successResult.length,
+            error: errorResult.length,
+          });
         } else if (!isRateLimited) {
           this.pacer.slowDown();
         }

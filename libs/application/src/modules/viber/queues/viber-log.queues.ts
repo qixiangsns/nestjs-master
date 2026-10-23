@@ -1,6 +1,12 @@
 import { z } from 'zod';
-import { DeliveryStatus, ErrorType, MessageType, RequestStatus, ViberLog } from '../models/viber-log.model';
-import { ViberProviderCode } from '../models/viber-provider.model';
+import {
+  DeliveryStatus,
+  ErrorType,
+  MessageType,
+  RequestStatus,
+  ViberLog,
+} from '../models/viber-log.model.js';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
 
 export const ViberLogTopic = {
   DeliveryUpdated: 'viber.log-delivery.updated',

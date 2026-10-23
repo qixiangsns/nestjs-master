@@ -1,4 +1,4 @@
-import { SecretProvider } from '../interface/provider.interface';
+import { SecretProvider } from '../interface/provider.interface.js';
 import { Logger } from '@nestjs/common';
 import * as fs from 'node:fs';
 

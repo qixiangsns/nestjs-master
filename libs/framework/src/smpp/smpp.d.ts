@@ -73,7 +73,10 @@ declare module 'smpp' {
     toBuffer(): Buffer;
 
     static commandLength(stream: NodeJS.ReadableStream): number | undefined;
-    static fromStream(stream: NodeJS.ReadableStream, commandLength?: number): PDU | false | undefined;
+    static fromStream(
+      stream: NodeJS.ReadableStream,
+      commandLength?: number,
+    ): PDU | false | undefined;
     static fromBuffer(buffer: Buffer): PDU;
   }
 
@@ -210,7 +213,10 @@ declare module 'smpp' {
     on(event: 'connect' | 'secureConnect' | 'close', listener: () => void): this;
     on(event: 'error', listener: (err: Error) => void): this;
     on(event: 'pdu' | 'send', listener: (pdu: PDU) => void): this;
-    on(event: 'debug', listener: (type: string | null, msg: string | null, payload?: unknown) => void): this;
+    on(
+      event: 'debug',
+      listener: (type: string | null, msg: string | null, payload?: unknown) => void,
+    ): this;
     on(
       event: 'metrics',
       listener: (
@@ -272,7 +278,10 @@ declare module 'smpp' {
   // Factory functions
   // ---------------------------------------------------------------------------
 
-  export function createServer(options?: ServerOptions, listener?: SessionListener): Server | SecureServer;
+  export function createServer(
+    options?: ServerOptions,
+    listener?: SessionListener,
+  ): Server | SecureServer;
   export function createServer(listener: SessionListener): Server;
 
   /** Connect with an options object (or URL inside options). */
@@ -282,7 +291,11 @@ declare module 'smpp' {
   /** Connect with just a listener (localhost:2775). */
   export function connect(listener: (session: Session) => void): Session;
   /** Legacy: connect(host, port, listener). */
-  export function connect(host: string, port: number, listener?: (session: Session) => void): Session;
+  export function connect(
+    host: string,
+    port: number,
+    listener?: (session: Session) => void,
+  ): Session;
 
   export const createSession: typeof connect;
 

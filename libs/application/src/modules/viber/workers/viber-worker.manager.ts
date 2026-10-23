@@ -1,11 +1,11 @@
-import { ViberAccountWorker } from './viber-account.worker';
+import { ViberAccountWorker } from './viber-account.worker.js';
 import { Logger } from '@nestjs/common';
-import { ViberProviderCode } from '../models/viber-provider.model';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
 import { Client } from 'pulsar-client';
-import { ViberLogDispatcher } from '../queues/viber-log.dispatcher';
-import { ViberSenderFactory } from '../adapters/viber-sender.factory';
-import { ViberAccountSender } from '../models/viber-account.model';
-import { LimiterService } from '@application/modules/limiter';
+import { ViberLogDispatcher } from '../queues/viber-log.dispatcher.js';
+import { ViberSenderFactory } from '../adapters/viber-sender.factory.js';
+import { ViberAccountSender } from '../models/viber-account.model.js';
+import { LimiterService } from '@application/modules/limiter/index.js';
 
 export class ViberWorkerManager {
   private accountConsumers: Map<string, ViberAccountWorker> = new Map();
@@ -40,7 +40,11 @@ export class ViberWorkerManager {
     await consumer.subscribe();
     this.accountConsumers.set(account.id, consumer);
     consumer.start().catch((err: unknown) => {
-      this.logger.error({ err, accountId: account.id }, 'Viber account worker stopped unexpectedly');
+      this.logger.error(
+        'Viber account worker stopped unexpectedly',
+        { accountId: account.id },
+        err,
+      );
     });
   }
 

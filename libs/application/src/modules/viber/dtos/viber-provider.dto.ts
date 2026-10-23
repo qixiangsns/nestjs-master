@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ViberProviderCode } from '../models/viber-provider.model';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
 
 export const GetViberProviderListResponseSchema = z
   .object({

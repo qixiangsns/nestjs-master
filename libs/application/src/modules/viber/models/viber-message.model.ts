@@ -1,5 +1,5 @@
 import { ExtractStrict } from 'type-fest';
-import { RouteType } from './viber-route-config.model';
+import { RouteType } from './viber-route-config.model.js';
 
 export type SendViberResult = {
   referenceId: string;

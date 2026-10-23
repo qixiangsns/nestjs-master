@@ -1,12 +1,20 @@
-import { CompositePropagator, W3CTraceContextPropagator, W3CBaggagePropagator } from '@opentelemetry/core';
-import { BatchSpanProcessor, ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-base';
+import {
+  CompositePropagator,
+  W3CTraceContextPropagator,
+  W3CBaggagePropagator,
+} from '@opentelemetry/core';
+import {
+  BatchSpanProcessor,
+  ParentBasedSampler,
+  TraceIdRatioBasedSampler,
+} from '@opentelemetry/sdk-trace-base';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
-import { getOtelConfig } from './setup.config';
+import { getOtelConfig } from './setup.config.js';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 
@@ -17,7 +25,11 @@ export function startTracing() {
   });
 
   const metricReaders = config.OTEL_METRIC_ADDRESS
-    ? [new PeriodicExportingMetricReader({ exporter: new OTLPMetricExporter({ url: config.OTEL_METRIC_ADDRESS }) })]
+    ? [
+        new PeriodicExportingMetricReader({
+          exporter: new OTLPMetricExporter({ url: config.OTEL_METRIC_ADDRESS }),
+        }),
+      ]
     : [];
 
   const otelSdk = new NodeSDK({

@@ -1,6 +1,5 @@
 import { HttpStatusCode } from 'axios';
 
-export type HttpStatusCode = (typeof HttpStatusCode)[keyof typeof HttpStatusCode];
 export class TelesignError extends Error {
   public readonly errorCode: number;
   public readonly statusCode: HttpStatusCode;

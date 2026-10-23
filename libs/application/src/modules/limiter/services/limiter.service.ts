@@ -1,12 +1,21 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
-import { REDIS_TOKEN } from '@application/connections';
-import { EgressIpService } from '@application/modules/egress-ip';
-import { LimiterCounter, LimiterGrant, LimiterRule, LimiterWindowSeconds } from '../models/limiter.model';
-import { LimiterPoolCache } from '../caches/limiter-pool.cache';
-import { LimiterPool } from '../models/limiter-pool.model';
-import { LIMITER_BLOCKED_RETRY_MS, LIMITER_DEFAULT_POINTS, LIMITER_KEY_PREFIX } from '../constants/limiter.constant';
+import { REDIS_TOKEN } from '@application/connections/index.js';
+import { EgressIpService } from '@application/modules/egress-ip/index.js';
+import {
+  LimiterCounter,
+  LimiterGrant,
+  LimiterRule,
+  LimiterWindowSeconds,
+} from '../models/limiter.model.js';
+import { LimiterPoolCache } from '../caches/limiter-pool.cache.js';
+import { LimiterPool } from '../models/limiter-pool.model.js';
+import {
+  LIMITER_BLOCKED_RETRY_MS,
+  LIMITER_DEFAULT_POINTS,
+  LIMITER_KEY_PREFIX,
+} from '../constants/limiter.constant.js';
 
 type CounterResult = { allowed: boolean; state: RateLimiterRes };
 
@@ -37,19 +46,21 @@ export class LimiterService {
       const pool = await this.poolCache.getPool(poolId);
 
       if (!pool?.isEnabled) {
-        this.logger.warn({ poolId }, 'Limiter pool missing or disabled, blocking');
+        this.logger.warn('Limiter pool missing or disabled, blocking', { poolId });
         return { allowed: false, retryAfterMs: LIMITER_BLOCKED_RETRY_MS };
       }
 
       return await this.consumeAll(await this.toCounters(pool), points);
     } catch (error: unknown) {
-      this.logger.error({ poolId, error }, 'Limiter unavailable, blocking');
+      this.logger.error('Limiter unavailable, blocking', { poolId }, error);
       return { allowed: false, retryAfterMs: LIMITER_BLOCKED_RETRY_MS };
     }
   }
 
   private async toCounters(pool: LimiterPool): Promise<LimiterCounter[]> {
-    return Promise.all(pool.rules.map(async (rule) => ({ key: await this.toKey(pool.id, rule), rule })));
+    return Promise.all(
+      pool.rules.map(async (rule) => ({ key: await this.toKey(pool.id, rule), rule })),
+    );
   }
 
   private async toKey(poolId: string, rule: LimiterRule) {

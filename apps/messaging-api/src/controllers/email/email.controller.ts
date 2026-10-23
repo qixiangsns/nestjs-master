@@ -1,8 +1,8 @@
 import { Body, Controller, HttpStatus, Injectable, Post } from '@nestjs/common';
-import { ApiErrorResponse } from '@framework/swagger';
+import { ApiErrorResponse } from '@framework/openapi/index.js';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
-import { SendMktEmailRequest, SendMktEmailResponse } from './email.dto';
+import { SendMktEmailRequest, SendMktEmailResponse } from './email.dto.js';
 
 @Injectable()
 @Controller({ version: '1', path: 'email' })

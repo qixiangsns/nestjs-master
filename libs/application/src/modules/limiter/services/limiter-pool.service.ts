@@ -1,9 +1,14 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { isArrayUnique } from '@framework/utils';
-import { LimiterRule, LimiterStrategy } from '../models/limiter.model';
-import { LimiterPoolRepository } from '../repositories/limiter-pool.repository';
-import { LimiterSignalBroadcaster } from '../signals/limiter-signal.broadcaster';
-import { CreateLimiterPool, PatchLimiterPool } from '../dtos/limiter-pool.dto';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { isArrayUnique } from '@framework/utils/index.js';
+import { LimiterRule, LimiterStrategy } from '../models/limiter.model.js';
+import { LimiterPoolRepository } from '../repositories/limiter-pool.repository.js';
+import { LimiterSignalBroadcaster } from '../signals/limiter-signal.broadcaster.js';
+import { CreateLimiterPool, PatchLimiterPool } from '../dtos/limiter-pool.dto.js';
 
 @Injectable()
 export class LimiterPoolService {

@@ -1,14 +1,14 @@
 import { Body, Controller, Get, HttpStatus, Injectable, Param, Patch, Post } from '@nestjs/common';
-import { ApiErrorResponse } from '@framework/swagger';
+import { ApiErrorResponse } from '@framework/openapi/index.js';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
-import { LimiterPoolService } from '@application/modules/limiter';
+import { LimiterPoolService } from '@application/modules/limiter/index.js';
 import {
   CreateLimiterPoolRequest,
   GetLimiterPoolListResponse,
   PatchLimiterPoolRequest,
   PatchLimiterPoolStatusRequest,
-} from './limiter.dto';
+} from './limiter.dto.js';
 
 @Injectable()
 @Controller({ version: '1', path: 'limiter' })
@@ -35,7 +35,8 @@ export class LimiterController {
   @Post('pools')
   @ApiOperation({
     summary: 'Create limiter pool',
-    description: 'Create a limiter pool. New pools start disabled, accounts using them are blocked until enabled.',
+    description:
+      'Create a limiter pool. New pools start disabled, accounts using them are blocked until enabled.',
   })
   async createLimiterPool(@Body() body: CreateLimiterPoolRequest): Promise<void> {
     await this.limiterPoolService.addPool(body);
@@ -44,9 +45,13 @@ export class LimiterController {
   @Patch('pools/:id')
   @ApiOperation({
     summary: 'Patch limiter pool',
-    description: 'Partially update a limiter pool (name, rules). Workers pick up the change immediately.',
+    description:
+      'Partially update a limiter pool (name, rules). Workers pick up the change immediately.',
   })
-  async patchLimiterPool(@Param('id') id: string, @Body() body: PatchLimiterPoolRequest): Promise<void> {
+  async patchLimiterPool(
+    @Param('id') id: string,
+    @Body() body: PatchLimiterPoolRequest,
+  ): Promise<void> {
     await this.limiterPoolService.updatePool(id, body);
   }
 
@@ -55,7 +60,10 @@ export class LimiterController {
     summary: 'Enable or disable limiter pool',
     description: 'A disabled pool blocks every account that uses it.',
   })
-  async patchLimiterPoolStatus(@Param('id') id: string, @Body() body: PatchLimiterPoolStatusRequest): Promise<void> {
+  async patchLimiterPoolStatus(
+    @Param('id') id: string,
+    @Body() body: PatchLimiterPoolStatusRequest,
+  ): Promise<void> {
     await this.limiterPoolService.updateStatus(id, body.isEnabled);
   }
 }

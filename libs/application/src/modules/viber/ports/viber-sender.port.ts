@@ -3,7 +3,7 @@ import {
   ViberTemplateRequest,
   ViberContentRequest,
   ViberOtpRequest,
-} from '../models/viber-message.model';
+} from '../models/viber-message.model.js';
 
 export interface ViberSender {
   /**

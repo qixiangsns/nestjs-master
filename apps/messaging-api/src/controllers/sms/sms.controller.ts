@@ -1,5 +1,5 @@
 import { Body, Controller, HttpStatus, Injectable, Post } from '@nestjs/common';
-import { ApiErrorResponse } from '@framework/swagger';
+import { ApiErrorResponse } from '@framework/openapi/index.js';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
 import {
@@ -11,7 +11,7 @@ import {
   SendRegisterOtpSmsResponse,
   SendNotificationSmsRequest,
   SendNotificationSmsResponse,
-} from './sms.dto';
+} from './sms.dto.js';
 
 @Injectable()
 @Controller({ version: '1', path: 'sms' })

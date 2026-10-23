@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Command, CommandRunner } from 'nest-commander';
-import { ViberSeeder } from '../seeds/viber/viber.seeder';
+import { ViberSeeder } from '../seeds/viber/viber.seeder.js';
 
 @Command({ name: 'seed', description: 'Seed reference data' })
 export class SeedCommand extends CommandRunner {

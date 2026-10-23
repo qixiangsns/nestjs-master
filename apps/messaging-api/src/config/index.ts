@@ -1,1 +1,1 @@
-export * from './api-env.schema';
+export * from './api-env.schema.js';

@@ -11,7 +11,8 @@ export class RedisHealthIndicator {
 
   pingCheck(key: string, client: Redis) {
     return this.healthIndicatorService.check(key).attempt(async () => {
-      if (client.status !== 'ready') throw new Error(`Redis client is not ready (status: ${client.status})`);
+      if (client.status !== 'ready')
+        throw new Error(`Redis client is not ready (status: ${client.status})`);
       await client.ping();
     });
   }

@@ -1,4 +1,4 @@
-import { PULSAR_CONN_TOKEN } from '@application/connections';
+import { PULSAR_CONN_TOKEN } from '@application/connections/index.js';
 import { Inject, Injectable, OnModuleInit, OnApplicationShutdown, Logger } from '@nestjs/common';
 import { Client, Consumer, ConsumerConfig } from 'pulsar-client';
 import PQueue from 'p-queue';
@@ -7,8 +7,8 @@ import {
   ViberLogService,
   ViberLogTopic,
   type ViberLogCreatedQueue,
-} from '@application/modules/viber';
-import { TraceJob } from '@framework/trace';
+} from '@application/modules/viber/index.js';
+import { TraceJob } from '@framework/trace/index.js';
 import { trace } from '@opentelemetry/api';
 
 const tracer = trace.getTracer('viber-log-consumer');
@@ -41,14 +41,27 @@ export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutd
   }
 
   private async unsubscribe() {
-    await this.consumer.unsubscribe();
+    await this.consumer.close();
   }
   private async start() {
     this.isConsuming = true;
     while (true) {
       if (!this.isConsuming) return;
 
-      const logs = await this.consumeBatch();
+      let logs: ViberLogCreatedQueue[];
+      try {
+        logs = await this.consumeBatch();
+      } catch (error: unknown) {
+        // Closing the consumer during shutdown rejects the pending batchReceive (AlreadyClosed)
+        if (!this.isConsuming) {
+          this.logger.log(
+            { stoppedAt: new Date() },
+            'Consumer closed, stopped consuming viber logs',
+          );
+          return;
+        }
+        throw error;
+      }
       if (logs.length > 0) this.queue.add(() => this.saveBatch(logs)).catch(() => undefined);
       await this.queue.onSizeLessThan(this.queue.concurrency);
     }
@@ -96,7 +109,10 @@ export class ViberLogConsumerService implements OnModuleInit, OnApplicationShutd
         const log = ViberLogCreatedQueueSchema.parse(JSON.parse(message.getData().toString()));
         logs.push(log);
       } catch (error: unknown) {
-        this.logger.error({ error, data: message.getData().toString() }, 'Failed to parse viber log');
+        this.logger.error(
+          { error, data: message.getData().toString() },
+          'Failed to parse viber log',
+        );
       }
       await this.consumer.acknowledge(message);
     }

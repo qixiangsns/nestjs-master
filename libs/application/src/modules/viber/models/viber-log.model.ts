@@ -1,4 +1,4 @@
-import { ViberProviderCode } from './viber-provider.model';
+import { ViberProviderCode } from './viber-provider.model.js';
 
 export const RequestStatus = ['Processing', 'Success', 'Failed'] as const;
 export type RequestStatus = (typeof RequestStatus)[number];
@@ -30,7 +30,9 @@ export interface ViberLog {
   updatedAt?: Date;
 }
 
-export type ViberLogFilterDto = Partial<Pick<ViberLog, 'type' | 'requestStatus' | 'deliveryStatus' | 'campaignId'>> & {
+export type ViberLogFilterDto = Partial<
+  Pick<ViberLog, 'type' | 'requestStatus' | 'deliveryStatus' | 'campaignId'>
+> & {
   startTime: Date;
   endTime: Date;
 };

@@ -6,4 +6,4 @@ if [ "$remote_name" = "upstream" ]; then
   exit 1
 fi
 
-pnpm typecheck
+pnpm type-check

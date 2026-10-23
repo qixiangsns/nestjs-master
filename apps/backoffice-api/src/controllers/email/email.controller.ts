@@ -1,5 +1,15 @@
-import { Body, Controller, Get, HttpStatus, Injectable, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiErrorResponse } from '@framework/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Injectable,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ApiErrorResponse } from '@framework/openapi/index.js';
 import {
   CreateEmailAccountRequest,
   CreateEmailAccountResponse,
@@ -18,7 +28,7 @@ import {
   PatchEmailRouteConfigResponse,
   SendEmailRequest,
   SendEmailResponse,
-} from './email.dto';
+} from './email.dto.js';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
 
@@ -34,7 +44,9 @@ export class EmailController {
     description: 'Register a new email sending account against a provider.',
   })
   @ZodResponse({ type: CreateEmailAccountResponse, status: HttpStatus.CREATED })
-  createEmailAccount(@Body() _body: CreateEmailAccountRequest): Promise<CreateEmailAccountResponse> {
+  createEmailAccount(
+    @Body() _body: CreateEmailAccountRequest,
+  ): Promise<CreateEmailAccountResponse> {
     throw new Error('Not implemented');
   }
 
@@ -44,14 +56,17 @@ export class EmailController {
     description: 'Search, filter and paginate email sending accounts.',
   })
   @ZodResponse({ type: GetEmailAccountListResponse, status: HttpStatus.OK })
-  getEmailAccountList(@Query() _query: GetEmailAccountListRequest): Promise<GetEmailAccountListResponse> {
+  getEmailAccountList(
+    @Query() _query: GetEmailAccountListRequest,
+  ): Promise<GetEmailAccountListResponse> {
     throw new Error('Not implemented');
   }
 
   @Patch('accounts/:id')
   @ApiOperation({
     summary: 'Patch email account',
-    description: 'Partially update an email sending account (sender details, quota, credentials, status).',
+    description:
+      'Partially update an email sending account (sender details, quota, credentials, status).',
   })
   @ZodResponse({ type: PatchEmailAccountResponse, status: HttpStatus.OK })
   patchEmailAccount(
@@ -84,7 +99,8 @@ export class EmailController {
   @Post('send')
   @ApiOperation({
     summary: 'Send test email',
-    description: 'Submit a test email through a specific account, or through routing when no account is given.',
+    description:
+      'Submit a test email through a specific account, or through routing when no account is given.',
   })
   @ZodResponse({ type: SendEmailResponse, status: HttpStatus.OK })
   sendEmail(@Body() _body: SendEmailRequest): Promise<SendEmailResponse> {
@@ -97,7 +113,9 @@ export class EmailController {
     description: 'Retrieve the routing rules selecting which account sends an email.',
   })
   @ZodResponse({ type: GetEmailRouteConfigListResponse, status: HttpStatus.OK })
-  getEmailRouteConfigList(@Query() _query: GetEmailRouteConfigListRequest): Promise<GetEmailRouteConfigListResponse> {
+  getEmailRouteConfigList(
+    @Query() _query: GetEmailRouteConfigListRequest,
+  ): Promise<GetEmailRouteConfigListResponse> {
     throw new Error('Not implemented');
   }
 
@@ -107,14 +125,17 @@ export class EmailController {
     description: 'Add a routing rule for email delivery.',
   })
   @ZodResponse({ type: CreateEmailRouteConfigResponse, status: HttpStatus.CREATED })
-  createEmailRouteConfig(@Body() _body: CreateEmailRouteConfigRequest): Promise<CreateEmailRouteConfigResponse> {
+  createEmailRouteConfig(
+    @Body() _body: CreateEmailRouteConfigRequest,
+  ): Promise<CreateEmailRouteConfigResponse> {
     throw new Error('Not implemented');
   }
 
   @Patch('route-configs/:id')
   @ApiOperation({
     summary: 'Patch email route config',
-    description: 'Partially update a routing rule (target account, priority, weight, criteria, status).',
+    description:
+      'Partially update a routing rule (target account, priority, weight, criteria, status).',
   })
   @ZodResponse({ type: PatchEmailRouteConfigResponse, status: HttpStatus.OK })
   patchEmailRouteConfig(

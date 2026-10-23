@@ -1,27 +1,32 @@
 import { Module } from '@nestjs/common';
-import { MongoSchemaModule } from './schemas';
-import { ViberAccountRepository } from './repositories/viber-account.repository';
-import { ViberAccountService } from './services/viber-account.service';
-import { ViberRouteConfigRepository } from './repositories/viber-route-config.repository';
-import { PlayerModule } from '@application/modules/player';
-import { LimiterModule } from '@application/modules/limiter';
-import { ViberProviderRepository } from './repositories/viber-provider.repository';
-import { ViberProviderService } from './services/viber-provider.service';
-import { ViberLogRepository } from './repositories/viber-log.repository';
-import { ViberLogService } from './services/viber-log.service';
-import { ViberRouteConfigCache } from './caches/viber-route-config.cache';
-import { ViberLogDispatcher } from './queues/viber-log.dispatcher';
-import { ViberRouteConfigService } from './services/viber-route-config.service';
-import { ViberSenderFactory } from './adapters/viber-sender.factory';
-import { ViberAccountTokenCache } from './caches/viber-account-token.cache';
-import { ViberPromotexterClientFactory } from './adapters/promotexter/viber-promotexter-client.factory';
-import { ViberPromotexterApixClientFactory } from './adapters/promotexter-apix/viber-promotexter-apix-client.factory';
-import { ViberSenderService } from './services/viber-sender.service';
-import { ViberMessageDispatcher } from './queues/viber-message.dispatcher';
-import { ViberSignalBroadcaster } from './signals/viber-signal.broadcaster';
-import { ViberWorkerManagerFactory } from './workers/viber-worker-manager.factory';
+import { MongoSchemaModule } from './schemas/index.js';
+import { ViberAccountRepository } from './repositories/viber-account.repository.js';
+import { ViberAccountService } from './services/viber-account.service.js';
+import { ViberRouteConfigRepository } from './repositories/viber-route-config.repository.js';
+import { PlayerModule } from '@application/modules/player/index.js';
+import { LimiterModule } from '@application/modules/limiter/index.js';
+import { ViberProviderRepository } from './repositories/viber-provider.repository.js';
+import { ViberProviderService } from './services/viber-provider.service.js';
+import { ViberLogRepository } from './repositories/viber-log.repository.js';
+import { ViberLogService } from './services/viber-log.service.js';
+import { ViberRouteConfigCache } from './caches/viber-route-config.cache.js';
+import { ViberLogDispatcher } from './queues/viber-log.dispatcher.js';
+import { ViberRouteConfigService } from './services/viber-route-config.service.js';
+import { ViberSenderFactory } from './adapters/viber-sender.factory.js';
+import { ViberAccountTokenCache } from './caches/viber-account-token.cache.js';
+import { ViberPromotexterClientFactory } from './adapters/promotexter/viber-promotexter-client.factory.js';
+import { ViberPromotexterApixClientFactory } from './adapters/promotexter-apix/viber-promotexter-apix-client.factory.js';
+import { ViberSenderService } from './services/viber-sender.service.js';
+import { ViberMessageDispatcher } from './queues/viber-message.dispatcher.js';
+import { ViberSignalBroadcaster } from './signals/viber-signal.broadcaster.js';
+import { ViberWorkerManagerFactory } from './workers/viber-worker-manager.factory.js';
 
-const Repositories = [ViberAccountRepository, ViberRouteConfigRepository, ViberProviderRepository, ViberLogRepository];
+const Repositories = [
+  ViberAccountRepository,
+  ViberRouteConfigRepository,
+  ViberProviderRepository,
+  ViberLogRepository,
+];
 const Services = [
   ViberAccountService,
   ViberProviderService,

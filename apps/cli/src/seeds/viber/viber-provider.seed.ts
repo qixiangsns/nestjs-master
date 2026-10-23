@@ -1,4 +1,4 @@
-import { type ViberProvider } from '@application/modules/viber';
+import { type ViberProvider } from '@application/modules/viber/index.js';
 
 export const VIBER_PROVIDERS: ViberProvider[] = [
   { code: 'Promotexter', name: 'Promotexter', urls: ['https://api.promotexter.com'] },

@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, QueryFilter, mongo } from 'mongoose';
-import { VIBER_LOG_MODEL, ViberLogEntity } from '../schemas/viber-log.schema';
-import { MONGO_CONN_NAME } from '@application/connections';
-import { ViberLogFilterDto, ViberLog } from '../models/viber-log.model';
+import { VIBER_LOG_MODEL, ViberLogEntity } from '../schemas/viber-log.schema.js';
+import { MONGO_CONN_NAME } from '@application/connections/index.js';
+import { ViberLogFilterDto, ViberLog } from '../models/viber-log.model.js';
 
 export type BatchInsertResult = { savedIds: string[]; failedIds: string[] };
 

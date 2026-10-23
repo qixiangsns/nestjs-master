@@ -9,17 +9,17 @@ import {
   ViberAccountApiTokenEntity,
   ViberAccountApiKeySecretEntity,
   type ViberAccountEntity,
-} from '../schemas/viber-account.schema';
+} from '../schemas/viber-account.schema.js';
 import {
   ViberAccount,
   ViberAccountApiKeySecret,
   ViberAccountApiToken,
   ViberAccountBase,
-} from '../models/viber-account.model';
-import { MONGO_CONN_NAME } from '@application/connections';
+} from '../models/viber-account.model.js';
+import { Lean } from '@framework/mongoose/index.js';
+import { MONGO_CONN_NAME } from '@application/connections/index.js';
 import { Except } from 'type-fest';
-import { Lean } from '@framework/mongoose';
-import { ViberProviderCode } from '../models/viber-provider.model';
+import { ViberProviderCode } from '../models/viber-provider.model.js';
 
 @Injectable()
 export class ViberAccountRepository {
@@ -37,12 +37,20 @@ export class ViberAccountRepository {
 
   async getAllAccount(): Promise<ViberAccount[]> {
     const accounts = await this.accountModel.find().lean<Lean<ViberAccountEntity>[]>();
-    return accounts.map((acc) => ({ ...acc, id: acc._id.toString(), limiterPoolId: acc.limiterPoolId.toString() }));
+    return accounts.map((acc) => ({
+      ...acc,
+      id: acc._id.toString(),
+      limiterPoolId: acc.limiterPoolId.toString(),
+    }));
   }
 
   async findAccount(id: string): Promise<ViberAccount | null> {
-    const acc = await this.accountModel.findById(new Types.ObjectId(id)).lean<Lean<ViberAccountEntity>>();
-    return acc ? { ...acc, id: acc._id.toString(), limiterPoolId: acc.limiterPoolId.toString() } : null;
+    const acc = await this.accountModel
+      .findById(new Types.ObjectId(id))
+      .lean<Lean<ViberAccountEntity>>();
+    return acc
+      ? { ...acc, id: acc._id.toString(), limiterPoolId: acc.limiterPoolId.toString() }
+      : null;
   }
 
   async findAccounts(ids: string[]) {
@@ -53,10 +61,16 @@ export class ViberAccountRepository {
     const accounts = await this.accountModel
       .find({ providerCode: code, isEnabled: true })
       .lean<Lean<ViberAccountEntity>[]>();
-    return accounts.map((acc) => ({ ...acc, id: acc._id.toString(), limiterPoolId: acc.limiterPoolId.toString() }));
+    return accounts.map((acc) => ({
+      ...acc,
+      id: acc._id.toString(),
+      limiterPoolId: acc.limiterPoolId.toString(),
+    }));
   }
 
-  async addApiKeySecretAcc(account: Except<ViberAccountApiKeySecret, 'id' | 'createdAt' | 'updatedAt'>) {
+  async addApiKeySecretAcc(
+    account: Except<ViberAccountApiKeySecret, 'id' | 'createdAt' | 'updatedAt'>,
+  ) {
     const acc = new this.accountApiKeySecretModel(account);
     acc.type = 'ApiKeySecret';
     await acc.save();
@@ -68,7 +82,10 @@ export class ViberAccountRepository {
     await acc.save();
   }
 
-  async updateAccount(id: string, account: Partial<Except<ViberAccountBase, 'id' | 'createdAt' | 'updatedAt'>>) {
+  async updateAccount(
+    id: string,
+    account: Partial<Except<ViberAccountBase, 'id' | 'createdAt' | 'updatedAt'>>,
+  ) {
     await this.accountModel.updateOne({ _id: new Types.ObjectId(id) }, account);
   }
 

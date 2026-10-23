@@ -1,1 +1,1 @@
-export * from './smpp-client';
+export * from './smpp-client.js';

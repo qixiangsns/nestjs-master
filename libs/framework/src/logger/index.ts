@@ -1,1 +1,1 @@
-export * from './pino-logger.config';
+export * from './pino-logger.config.js';

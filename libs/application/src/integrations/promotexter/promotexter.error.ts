@@ -1,7 +1,6 @@
-import { PromotexterErrorCode } from './promotexter.constant';
+import { PromotexterErrorCode } from './promotexter.constant.js';
 import { HttpStatusCode } from 'axios';
 
-export type HttpStatusCode = (typeof HttpStatusCode)[keyof typeof HttpStatusCode];
 export class PromotexterError extends Error {
   public readonly errorCode: PromotexterErrorCode;
   public readonly statusCode: HttpStatusCode;

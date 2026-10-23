@@ -10,9 +10,11 @@ import {
   GetViberRouteConfigResponseSchema,
   PatchViberAccountSchema,
   PatchViberRouteConfigSchema,
-} from '@application/modules/viber';
+} from '@application/modules/viber/index.js';
 
-export class GetViberProviderListResponse extends createZodDto(GetViberProviderListResponseSchema) {}
+export class GetViberProviderListResponse extends createZodDto(
+  GetViberProviderListResponseSchema,
+) {}
 export class GetViberAccountListResponse extends createZodDto(GetViberAccountListResponseSchema) {}
 export class CreateViberAccountRequest extends createZodDto(CreateViberAccountSchema) {}
 export class PatchViberAccountRequest extends createZodDto(PatchViberAccountSchema) {}

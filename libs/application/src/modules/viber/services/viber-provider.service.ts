@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { ViberProviderCode, ViberProvider } from '../models/viber-provider.model';
-import { ViberProviderRepository } from '../repositories/viber-provider.repository';
+import { ViberProviderCode, ViberProvider } from '../models/viber-provider.model.js';
+import { ViberProviderRepository } from '../repositories/viber-provider.repository.js';
 
 @Injectable()
 export class ViberProviderService {
@@ -19,7 +19,7 @@ export class ViberProviderService {
 
   async saveProvider(provider: ViberProvider) {
     await this.providerRepo.upsertProvider(provider);
-    this.logger.log({ code: provider.code }, 'Provider saved');
+    this.logger.log('Provider saved', { code: provider.code });
   }
 
   async findProvider(code: ViberProviderCode) {

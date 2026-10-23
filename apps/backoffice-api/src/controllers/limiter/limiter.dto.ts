@@ -4,7 +4,7 @@ import {
   GetLimiterPoolListResponseSchema,
   PatchLimiterPoolSchema,
   PatchLimiterPoolStatusSchema,
-} from '@application/modules/limiter';
+} from '@application/modules/limiter/index.js';
 
 export class GetLimiterPoolListResponse extends createZodDto(GetLimiterPoolListResponseSchema) {}
 export class CreateLimiterPoolRequest extends createZodDto(CreateLimiterPoolSchema) {}

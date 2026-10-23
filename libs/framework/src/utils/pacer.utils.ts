@@ -31,7 +31,10 @@ export class Pacer {
     if (this.currentDelayMs === this.options.minDelayMs) {
       this.currentDelayMs = this.options.initialBackoffMs;
     } else {
-      this.currentDelayMs = Math.min(this.currentDelayMs * this.options.backoffFactor, this.options.maxDelayMs);
+      this.currentDelayMs = Math.min(
+        this.currentDelayMs * this.options.backoffFactor,
+        this.options.maxDelayMs,
+      );
     }
   }
 

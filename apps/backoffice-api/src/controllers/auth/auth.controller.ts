@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpStatus, Injectable, Post, Req, Res } from '@nestjs/common';
-import { ApiErrorResponse } from '@framework/swagger';
+import { ApiErrorResponse } from '@framework/openapi/index.js';
 import {
   LoginRequest,
   LoginResponse,
@@ -7,12 +7,12 @@ import {
   VerifyTfaResponse,
   GetLarkLoginUrlResponse,
   LarkLoginCallbackRequest,
-} from './auth.dto';
+} from './auth.dto.js';
 import { ZodResponse } from 'nestjs-zod';
 import { ApiOperation } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { addMinutes } from 'date-fns';
-import { ApiResponseMfaToken } from './auth.decorator';
+import { ApiResponseMfaToken } from './auth.decorator.js';
 
 @Injectable()
 @Controller({ version: '1', path: 'auth' })
@@ -27,7 +27,10 @@ export class AuthController {
   })
   @ZodResponse({ type: LoginResponse, status: HttpStatus.OK })
   @ApiResponseMfaToken()
-  loginWithUsername(@Body() body: LoginRequest, @Res({ passthrough: true }) response: Response): LoginResponse {
+  loginWithUsername(
+    @Body() body: LoginRequest,
+    @Res({ passthrough: true }) response: Response,
+  ): LoginResponse {
     this._setMfaTokenCookie(response, '1');
 
     // set mfaToken in cookie server only path

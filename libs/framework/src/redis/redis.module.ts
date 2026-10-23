@@ -40,10 +40,14 @@ export class RedisModule {
 
         const { host, port } = connectionOptions;
         client.on('ready', () => {
-          logger.debug({ host, port }, `Connected to Redis ${options.provide.toString()}`);
+          logger.debug(`Connected to Redis ${options.provide.toString()}`, { host, port });
         });
         client.on('error', (error) => {
-          logger.error({ host, port, error: error.message }, `Error connecting to Redis ${options.provide.toString()}`);
+          logger.error(`Error connecting to Redis ${options.provide.toString()}`, {
+            host,
+            port,
+            error,
+          });
         });
         return client;
       },
@@ -75,13 +79,13 @@ export class RedisClusterModule {
         const client = new Cluster(clusterNodes, clusterOptions);
 
         client.on('ready', () => {
-          logger.log({ clusterNodes }, `Connected to Redis Cluster`);
+          logger.log(`Connected to Redis Cluster`, { clusterNodes });
         });
         client.on('error', (error) => {
-          logger.error(
-            { clusterNodes, error: error instanceof Error ? error.message : 'Unknown error' },
-            `Error connecting to Redis Cluster`,
-          );
+          logger.error(`Error connecting to Redis Cluster`, {
+            clusterNodes,
+            error: error instanceof Error ? error.message : 'Unknown error',
+          });
         });
         return client;
       },

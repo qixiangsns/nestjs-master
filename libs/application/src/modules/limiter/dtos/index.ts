@@ -1,1 +1,1 @@
-export * from './limiter-pool.dto';
+export * from './limiter-pool.dto.js';

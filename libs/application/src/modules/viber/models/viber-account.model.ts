@@ -1,5 +1,5 @@
 import { Except, ExtractStrict } from 'type-fest';
-import { ViberProviderCode } from './viber-provider.model';
+import { ViberProviderCode } from './viber-provider.model.js';
 
 export const AccountType = ['ApiToken', 'ApiKeySecret', 'BearerToken'] as const;
 export type AccountType = (typeof AccountType)[number];
@@ -49,9 +49,13 @@ export interface ViberAccountBearerToken extends ViberAccountBase {
   apiSecret: string;
 }
 
-export type ViberAccount = ViberAccountApiToken | ViberAccountApiKeySecret | ViberAccountBearerToken;
+export type ViberAccount =
+  ViberAccountApiToken | ViberAccountApiKeySecret | ViberAccountBearerToken;
 
 /**
  * Viber account required information to support sending API
  */
-export type ViberAccountSender = Except<ViberAccount, 'createdAt' | 'updatedAt' | 'name' | 'isEnabled'>;
+export type ViberAccountSender = Except<
+  ViberAccount,
+  'createdAt' | 'updatedAt' | 'name' | 'isEnabled'
+>;

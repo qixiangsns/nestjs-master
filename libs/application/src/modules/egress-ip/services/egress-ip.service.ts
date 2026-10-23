@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
-import { EGRESS_IP_LOOKUP_TIMEOUT_MS, EGRESS_IP_LOOKUP_URL } from '../constants/egress-ip.constant';
+import {
+  EGRESS_IP_LOOKUP_TIMEOUT_MS,
+  EGRESS_IP_LOOKUP_URL,
+} from '../constants/egress-ip.constant.js';
 
 /**
  * Public IP this pod's traffic leaves with, as seen by Cloudflare.
@@ -29,10 +32,10 @@ export class EgressIpService {
       const ip = /^ip=(.+)$/m.exec(data)?.[1];
       if (!ip) throw new Error('Cloudflare trace has no ip');
 
-      this.logger.log({ ip }, 'Egress IP resolved');
+      this.logger.log('Egress IP resolved', { ip });
       return ip;
     } catch (error: unknown) {
-      this.logger.warn({ error }, 'Egress IP lookup failed, using unknown until restart');
+      this.logger.warn('Egress IP lookup failed, using unknown until restart', error);
       return 'unknown';
     }
   }

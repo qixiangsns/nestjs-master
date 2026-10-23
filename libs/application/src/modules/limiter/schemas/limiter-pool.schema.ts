@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { LimiterStrategy, LimiterWindow } from '../models/limiter.model';
+import { LimiterStrategy, LimiterWindow } from '../models/limiter.model.js';
 
 export const LIMITER_POOL_MODEL = 'LimiterPool';
 

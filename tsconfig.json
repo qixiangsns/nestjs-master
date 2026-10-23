@@ -13,36 +13,55 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "rootDir": ".",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "types": [
+      "vitest/globals",
+      "node"
+    ],
     "paths": {
       "@application": [
-        "libs/application/src"
+        "./libs/application/src/index.ts"
       ],
       "@application/*": [
-        "libs/application/src/*"
-      ],
-      "@framework": [
-        "libs/framework/src"
+        "./libs/application/src/*"
       ],
       "@framework/*": [
-        "libs/framework/src/*"
-      ],
-      "@integrations": [
-        "libs/application/src/integrations"
-      ],
-      "@integrations/*": [
-        "libs/application/src/integrations/*"
+        "./libs/framework/src/*"
       ],
       "@package": [
         "./package.json"
       ]
     }
-  }
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/messaging-api/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/backoffice-api/tsconfig.app.json"
+    },
+    {
+      "path": "./libs/application/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/framework/tsconfig.lib.json"
+    },
+    {
+      "path": "./apps/cli/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/cron/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/log-consumer/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/viber-consumer-promotexter/tsconfig.app.json"
+    }
+  ]
 }

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { EgressIpModule } from '@application/modules/egress-ip';
-import { MongoSchemaModule } from './schemas';
-import { LimiterPoolRepository } from './repositories/limiter-pool.repository';
-import { LimiterPoolCache } from './caches/limiter-pool.cache';
-import { LimiterPoolService } from './services/limiter-pool.service';
-import { LimiterService } from './services/limiter.service';
-import { LimiterSignalBroadcaster } from './signals/limiter-signal.broadcaster';
+import { EgressIpModule } from '@application/modules/egress-ip/index.js';
+import { MongoSchemaModule } from './schemas/index.js';
+import { LimiterPoolRepository } from './repositories/limiter-pool.repository.js';
+import { LimiterPoolCache } from './caches/limiter-pool.cache.js';
+import { LimiterPoolService } from './services/limiter-pool.service.js';
+import { LimiterService } from './services/limiter.service.js';
+import { LimiterSignalBroadcaster } from './signals/limiter-signal.broadcaster.js';
 
 const Repositories = [LimiterPoolRepository];
 const Services = [LimiterService, LimiterPoolService];

@@ -1,8 +1,8 @@
-import Redis from 'ioredis';
-import { REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connections';
+import { Redis } from 'ioredis';
+import { REDIS_SUBSCRIBER_TOKEN, REDIS_TOKEN } from '@application/connections/index.js';
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { LimiterPoolSignal, LimiterPoolUpdatedSignal } from './limiter-pool.signals';
+import { LimiterPoolSignal, LimiterPoolUpdatedSignal } from './limiter-pool.signals.js';
 
 const LimiterSignalChannels = [LimiterPoolSignal.PoolUpdated];
 
@@ -22,7 +22,7 @@ export class LimiterSignalBroadcaster implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     this.subscriber.on('message', (channel, message) => this.relay(channel, message));
     await this.subscriber.subscribe(...LimiterSignalChannels);
-    this.logger.log({ channels: LimiterSignalChannels }, 'Subscribed to limiter signals');
+    this.logger.log('Subscribed to limiter signals', { channels: LimiterSignalChannels });
   }
 
   async broadcastPoolUpdated(signal: LimiterPoolUpdatedSignal): Promise<void> {
@@ -35,7 +35,7 @@ export class LimiterSignalBroadcaster implements OnModuleInit, OnModuleDestroy {
       try {
         payload = JSON.parse(message);
       } catch {
-        this.logger.error({ channel, message }, 'Failed to parse limiter signal');
+        this.logger.error('Failed to parse limiter signal', { channel, message });
         return;
       }
 
